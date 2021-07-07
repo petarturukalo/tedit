@@ -20,7 +20,7 @@ clean:
 	find build -name "*.o" -print -delete
 
 ctags:
-	myctags -R . /usr/include/sys/uio.h /usr/include/curses.h /usr/include/search.h
+	myctags -R . /usr/include/curses.h /usr/include/search.h
 
 
 install:

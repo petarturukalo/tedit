@@ -6,7 +6,6 @@
 #ifndef LINES_H
 #define LINES_H
 
-#include <sys/uio.h>
 #include <sys/file.h>
 #include <unistd.h>
 #include <errno.h>
