@@ -20,8 +20,8 @@ be linked to a new file later on with the write command.
 
 ## Commands
 
-Enter a command in the echo line buffer with format `cmd [args]` where cmdname is the name of the command
-and args are arguments (optionally) used by the command.
+Enter a command in the echo line buffer with format `cmd [args]` where `cmd` is the name of the command
+and `[args]` are arguments (optionally) used by the command.
 
 | Short name | Long name | Description |
 | --- | --- | --- |
