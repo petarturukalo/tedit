@@ -31,6 +31,12 @@ lines_t *lines_init(void);
  * @tabsz: see tab.h
  */
 lines_t *lines_from_fd(int fd, int tabsz);
+
+/**
+ * lines_from_file - Read a file into lines from a filepath
+ */
+lines_t *lines_from_file(char *filepath, int tabsz);
+
 /**
  * lines_free - Free the lines data structure
  */

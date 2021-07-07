@@ -79,6 +79,19 @@ lines_t *lines_from_fd(int fd, int tabsz)
 	return ls;
 }
 
+lines_t *lines_from_file(char *filepath, int tabsz)
+{
+	lines_t *ls;
+	int fd = open(filepath, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH);
+	
+	if (fd == -1)
+		return NULL;
+
+	ls = lines_from_fd(fd, tabsz);
+	close(fd);
+	return ls;
+}
+
 void lines_for_each(lines_t *l, void (*line_func)(line_t *, void *), void *data)
 {
 	for (int i = 0; i < l->sl_len; ++i) 
