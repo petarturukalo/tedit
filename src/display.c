@@ -12,7 +12,7 @@
 
 // Start and end range (both endpoints inclusive) for
 // ASCII characters that can be safely printed.
-#define ASCII_PRINT_START_INCL 27
+#define ASCII_PRINT_START_INCL 32
 #define ASCII_PRINT_END_INCL  127
 
 /**
