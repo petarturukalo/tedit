@@ -1,6 +1,6 @@
 # Description
 
-A simple curses terminal text editor with tab handling, editing multiple files (although only one in view
+A simple ncurses terminal text editor with tab handling, editing multiple files (although only one in view
 at a time), and some basic commands. Access commands by swapping between the current file buffer and echo line
 buffer (where commands are entered) using the escape key.
 
