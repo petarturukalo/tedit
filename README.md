@@ -31,8 +31,7 @@ and args are arguments (optionally) used by the command.
 | o | open | Open a file into a new file buffer. Requires a filepath argument to the file to open. |
 | e | edit | Swap to an already opened file buffer for editing with its name as argument. |
 | j | jump | Swap to an already opened file buffer for editing with its ID as argument. |
-| ls | list | List all the open file buffers. Shown are their names, IDs, and the current file buffer identified
-by an asterisk. |
+| ls | list | List all the open file buffers. Shown are their names, IDs, and the current file buffer identified by an asterisk. |
 | q | quit | Quit the text editor. Requires that the current file buffer be saved/written before exiting. |
 | fq | fquit | Force quit the text editor. Discards any unsaved edits. |
 
