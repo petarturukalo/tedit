@@ -14,7 +14,8 @@ char *fcmd_write_handle(bufs_t *b)
 	int bytes;
 
 	if ((bytes = bufs_write(b)) == -1) 
-		return chrpcpy_alloc("can't write to file");
+		return chrpprintf("can't write to file%s", 
+				  errno == EACCES ? ": permission denied" : "");
 	return chrpprintf("wrote %d bytes", bytes);
 }
 
@@ -25,8 +26,9 @@ char *fcmd_write_handle_other(bufs_t *b, char *fpath, WINDOW *w)
 {
 	int bytes, tabsz = b->b_active_fbuf->fb_tabsz;
 
-	if ((bytes = bufs_write_other(b, fpath, w, tabsz)) == -1)
-		return chrpprintf("can't write to file '%s'", fpath);
+	if ((bytes = bufs_write_other(b, fpath, w, tabsz)) == -1)  
+		return chrpprintf("can't write to file '%s'%s", fpath, 
+				  errno == EACCES ? ": permission denied" : "");
 	return chrpprintf("wrote %d bytes to file '%s'", bytes, fpath);
 }
 
@@ -35,7 +37,8 @@ char *fcmd_write_handle_new(bufs_t *b, char *fpath)
 	int bytes = bufs_link_write(b, fpath);
 
 	if (bytes == -1)
-		return chrpprintf("can't write to file '%s'", fpath);
+		return chrpprintf("can't write to file '%s'%s", fpath, 
+				  errno == EACCES ? ": permission denied" : "");
 	return chrpprintf("wrote %d bytes to file '%s'", bytes, fpath);
 }
 
@@ -100,7 +103,8 @@ char *fcmd_open_handler(char *fpath, bufs_t *b, WINDOW *w)
 	if (!fpath)
 		bufs_new(b, w, tabsz);
 	else if (bufs_open(b, fpath, w, tabsz) == -1) 
-		return chrpprintf("can't open file '%s'", fpath);
+		return chrpprintf("can't open file '%s'%s", fpath, 
+				  errno == EACCES ? ": permission denied" : "");
 	return NULL;
 }
 

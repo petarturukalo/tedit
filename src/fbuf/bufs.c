@@ -82,8 +82,12 @@ void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[], int nfpaths)
 	if (nfpaths > 0) {
 		for (int i = 0; i < nfpaths; ++i)
 			bufs_open(b, fpaths[i], w, TABSZ);
-	} else 
+	} 
+	// Handles both cases where there are no filepaths given and 
+	// when there are filepaths but none could be opened.
+	if (b->b_fbufs->sl_len == 0)
 		bufs_new(b, w, TABSZ);
+	
 	
 	b->b_active_buf = b->b_active_fbuf;
 }
