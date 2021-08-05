@@ -20,7 +20,7 @@ int tedata_init(tedata_t *t, char *fpaths[], int nfpaths)
 {
 	int err;
 
-	if (sem_init(&t->te_sem, 0, 1))
+	if (sem_init(&t->sem, 0, 1))
 		return -1;
 
 	// The default init screen window is only used to get characters with getch. This is
@@ -29,26 +29,26 @@ int tedata_init(tedata_t *t, char *fpaths[], int nfpaths)
 	// out if the display window is the same as the get character input window.
 	initscr();
 	refresh();  // Refresh once so that the first call to getch doesn't refresh.
-	t->te_win = newwin(0, 0, 0, 0);  // Display window (separate to get character stdscr window).
+	t->win = newwin(0, 0, 0, 0);  // Display window (separate to get character stdscr window).
 
-	if (!t->te_win) {
-		sem_destroy(&t->te_sem);
+	if (!t->win) {
+		sem_destroy(&t->sem);
 		return -1;
 	}
 
 	setup_curses();
-	bufs_init(&t->te_bufs, t->te_win, fpaths, nfpaths);
-	t->te_cmds = cmds_init();
+	bufs_init(&t->bufs, t->win, fpaths, nfpaths);
+	t->cmds = cmds_init();
 
 	return 0;
 }
 
 void tedata_free(tedata_t *t)
 {
-	delwin(t->te_win);
+	delwin(t->win);
 	endwin();
-	sem_destroy(&t->te_sem);
-	bufs_free(&t->te_bufs);
-	cmds_free(t->te_cmds);
+	sem_destroy(&t->sem);
+	bufs_free(&t->bufs);
+	cmds_free(t->cmds);
 }
 

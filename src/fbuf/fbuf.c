@@ -7,12 +7,12 @@
 
 int fbufs_len(fbufs_t *fs)
 {
-	return fs->sl_len;
+	return fs->len;
 }
 
 fbuf_t *fbufs_get(fbufs_t *fs, int i)
 {
-	return fs->sl_array[i];
+	return fs->array[i];
 }
 
 int fbufs_append(fbufs_t *fs, fbuf_t *f)

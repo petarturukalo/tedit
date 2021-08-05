@@ -7,22 +7,22 @@
 
 int fbaux_row(fbuf_t *f)
 {
-	return f->fb_cursor.c_row;
+	return f->cursor.row;
 }
 
 int fbaux_col(fbuf_t *f)
 {
-	return f->fb_cursor.c_col;
+	return f->cursor.col;
 }
 
 int fbaux_nlines(fbuf_t *f)
 {
-	return lines_len(f->fb_lines);
+	return lines_len(f->lines);
 }
 
 line_t *fbaux_line(fbuf_t *f, int line_nr)
 {
-	return lines_get(f->fb_lines, line_nr);
+	return lines_get(f->lines, line_nr);
 }
 
 line_t *fbaux_prev_line(fbuf_t *f)
@@ -36,7 +36,7 @@ line_t *fbaux_prev_line(fbuf_t *f)
 
 line_t *fbaux_cur_line(fbuf_t *f)
 {
-	return fbaux_line(f, f->fb_cursor.c_row);
+	return fbaux_line(f, f->cursor.row);
 }
 
 line_t *fbaux_next_line(fbuf_t *f)

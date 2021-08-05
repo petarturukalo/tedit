@@ -12,7 +12,7 @@
 void elinp_esc(bufs_t *b)
 {
 	bufs_active_buf_set_fbuf(b);
-	elbuf_set(&b->b_elbuf, "");
+	elbuf_set(&b->elbuf, "");
 }
 
 /**
@@ -23,7 +23,7 @@ void elinp_esc(bufs_t *b)
 void elinp_enter(bufs_t *b, cmds_t *cs, WINDOW *w)
 {
 	char *line_str, *echo_str;
-	elbuf_t *e = &b->b_elbuf;
+	elbuf_t *e = &b->elbuf;
 
 	line_str = elbuf_str(e);
 	echo_str = cmds_parse(line_str, cs, b, w);

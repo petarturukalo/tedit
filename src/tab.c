@@ -14,9 +14,9 @@ int tablen(str_t *s, int i)
 {
 	int spaces = 0;
 
-	if (s->s_buf[i++] == TAB_START)
+	if (s->buf[i++] == TAB_START)
 		++spaces;
-	for (; i < s->s_len && s->s_buf[i] == TAB_CONT; ++i)
+	for (; i < s->len && s->buf[i] == TAB_CONT; ++i)
 		++spaces;
 	return spaces;
 }
@@ -35,10 +35,10 @@ int str_insert_tab_spaces(str_t *s, int i, int tabsz)
 
 void str_delete_tab_spaces(str_t *s, int i)
 {
-	if (s->s_buf[i] == TAB_START) {
+	if (s->buf[i] == TAB_START) {
 		str_delete(s, i);
 		
-		while (i < s->s_len && s->s_buf[i] == TAB_CONT) 
+		while (i < s->len && s->buf[i] == TAB_CONT) 
 			str_delete(s, i);
 	}
 }
@@ -47,8 +47,8 @@ void str_expand_tab_spaces(str_t *s, int tabsz)
 {
 	int nspaces, i = 0;
 	
-	while (i < s->s_len) {
-		if (s->s_buf[i] == '\t') {
+	while (i < s->len) {
+		if (s->buf[i] == '\t') {
 			nspaces = dist_to_next_tabstop(i, tabsz);
 
 			str_delete(s, i);  // Remove tab.
@@ -68,8 +68,8 @@ int strcontractlen(str_t *s)
 	char *t;
 	int n, count;
 
-	t = s->s_buf;
-	n = s->s_len;
+	t = s->buf;
+	n = s->len;
 	count = 0;
 
 	for (int i = 0; i < n; ++i) {
@@ -83,10 +83,10 @@ void str_contract_tab_spaces(str_t *s, int tabsz)
 {
 	// Read, write and length.
 	int r, w, n;
-	char *t = s->s_buf;
+	char *t = s->buf;
 
 	r = w = 0;
-	n = s->s_len;
+	n = s->len;
 
 	for (; r < n; ++r) {
 		if (t[r] == TAB_CONT)
@@ -99,7 +99,7 @@ void str_contract_tab_spaces(str_t *s, int tabsz)
 			++w;
 		}
 	}
-	s->s_len = w;
+	s->len = w;
 	str_try_shrink(s);
 }
 
@@ -130,7 +130,7 @@ void str_align_tab(str_t *s, int i, int tabsz)
 
 void str_align_next_tab(str_t *s, int start_ind, int tabsz)
 {
-	int tab_ind = chrp_find(s->s_buf, TAB_START, start_ind, s->s_len-1);
+	int tab_ind = chrp_find(s->buf, TAB_START, start_ind, s->len-1);
 
 	if (tab_ind != -1)
 		str_align_tab(s, tab_ind, tabsz);

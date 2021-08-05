@@ -12,20 +12,20 @@
  */
 void elbuf_init_lines(elbuf_t *e)
 {
-	e->fb_lines = lines_init();
-	lines_insert(e->fb_lines, 0, str_alloc(0));
+	e->lines = lines_init();
+	lines_insert(e->lines, 0, str_alloc(0));
 }
 
 void elbuf_init(elbuf_t *e, WINDOW *w)
 {
-	cursor_reset(&e->fb_cursor);
-	view_init(&e->fb_view, w, -1, 0, 0, 0);
+	cursor_reset(&e->cursor);
+	view_init(&e->view, w, -1, 0, 0, 0);
 	elbuf_init_lines(e);
 }
 
 void elbuf_free(elbuf_t *e)
 {
-	lines_free(e->fb_lines);
+	lines_free(e->lines);
 }
 
 line_t *elbuf_line(elbuf_t *e)
@@ -39,8 +39,8 @@ char *elbuf_str(elbuf_t *e)
 	str_t *s = fbaux_line(e, 0);
 
 	// Calloc for implicit null termination character.
-	t = calloc(s->s_len+1, sizeof(char));
-	strncpy(t, s->s_buf, s->s_len);
+	t = calloc(s->len+1, sizeof(char));
+	strncpy(t, s->buf, s->len);
 
 	return t;
 }
@@ -50,5 +50,5 @@ void elbuf_set(elbuf_t *e, char *s)
 	line_t *l = elbuf_line(e);
 
 	str_set(l, s);
-	e->fb_cursor.c_col = l->s_len;
+	e->cursor.col = l->len;
 }

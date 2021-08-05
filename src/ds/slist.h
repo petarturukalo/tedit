@@ -14,9 +14,9 @@
 #include <stdbool.h>
 
 struct static_list {
-	void **sl_array;  // Array used to store user-defined structures.
-	int sl_len;  // Current number of elements in the array.
-	int sl_capacity;  // Maximum amount of elements that can be in the array.
+	void **array;  // Array used to store user-defined structures.
+	int len;  // Current number of elements in the array.
+	int capacity;  // Maximum amount of elements that can be in the array.
 };
 
 typedef struct static_list slist_t;

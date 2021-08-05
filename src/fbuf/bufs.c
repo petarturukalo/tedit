@@ -7,7 +7,7 @@
 
 void bufs_active_buf_set_elbuf(bufs_t *b)
 {
-	b->b_active_buf = &b->b_elbuf;
+	b->active_buf = &b->elbuf;
 }
 
 /**
@@ -16,19 +16,19 @@ void bufs_active_buf_set_elbuf(bufs_t *b)
  */
 int bufs_next_id(bufs_t *b)
 {
-	return b->b_nbufs++;
+	return b->nbufs++;
 }
 
 
 fbuf_t *bufs_last_fbuf(bufs_t *b)
 {
 	// TODO get the most recently accessed buffer instead of the first
-	return fbufs_len(b->b_fbufs) > 0 ? fbufs_get(b->b_fbufs, 0) : NULL;
+	return fbufs_len(b->fbufs) > 0 ? fbufs_get(b->fbufs, 0) : NULL;
 }
 
 void bufs_active_buf_set_fbuf(bufs_t *b)
 {
-	b->b_active_buf = b->b_active_fbuf;
+	b->active_buf = b->active_fbuf;
 }
 
 /**
@@ -37,9 +37,9 @@ void bufs_active_buf_set_fbuf(bufs_t *b)
 void bufs_fbufs_append(bufs_t *b, fbuf_t *f)
 {
 	// Set active buffer if don't have one.
-	if (fbufs_len(b->b_fbufs) == 0) 
-		b->b_active_fbuf = f;
-	fbufs_append(b->b_fbufs, f);
+	if (fbufs_len(b->fbufs) == 0) 
+		b->active_fbuf = f;
+	fbufs_append(b->fbufs, f);
 }
 
 int bufs_open(bufs_t *b, char *fpath, WINDOW *w, int tabsz)
@@ -51,7 +51,7 @@ int bufs_open(bufs_t *b, char *fpath, WINDOW *w, int tabsz)
 
 		if (f) {
 			bufs_fbufs_append(b, f);
-			b->b_active_fbuf = f;
+			b->active_fbuf = f;
 			return 0;
 		}
 	}
@@ -74,10 +74,10 @@ int bufs_new(bufs_t *b, WINDOW *w, int tabsz)
 
 void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[], int nfpaths)
 {
-	b->b_fbufs = dlist_init(0);
-	b->b_active_buf = NULL;
-	elbuf_init(&b->b_elbuf, w);
-	b->b_nbufs = 1;
+	b->fbufs = dlist_init(0);
+	b->active_buf = NULL;
+	elbuf_init(&b->elbuf, w);
+	b->nbufs = 1;
 
 	if (nfpaths > 0) {
 		for (int i = 0; i < nfpaths; ++i)
@@ -85,29 +85,29 @@ void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[], int nfpaths)
 	} 
 	// Handles both cases where there are no filepaths given and 
 	// when there are filepaths but none could be opened.
-	if (b->b_fbufs->sl_len == 0)
+	if (b->fbufs->len == 0)
 		bufs_new(b, w, TABSZ);
 	
 	
-	b->b_active_buf = b->b_active_fbuf;
+	b->active_buf = b->active_fbuf;
 }
 
 void bufs_free(bufs_t *b)
 {
-	fbufs_free(b->b_fbufs);
-	elbuf_free(&b->b_elbuf);
+	fbufs_free(b->fbufs);
+	elbuf_free(&b->elbuf);
 }
 
 int bufs_edit(bufs_t *b, char *fpath)
 {
 	fbuf_t *f;
-	int n = fbufs_len(b->b_fbufs);
+	int n = fbufs_len(b->fbufs);
 
 	for (int i = 0; i < n; ++i) {
-		f = fbufs_get(b->b_fbufs, i);
+		f = fbufs_get(b->fbufs, i);
 		
-		if (f->fb_filepath && strcmp(fpath, f->fb_filepath) == 0) {
-			b->b_active_fbuf = f;
+		if (f->filepath && strcmp(fpath, f->filepath) == 0) {
+			b->active_fbuf = f;
 			return 0;
 		}
 	}
@@ -117,13 +117,13 @@ int bufs_edit(bufs_t *b, char *fpath)
 int bufs_jump(bufs_t *b, int id)
 {
 	fbuf_t *f;
-	int n = fbufs_len(b->b_fbufs);
+	int n = fbufs_len(b->fbufs);
 
 	for (int i = 0; i < n; ++i) {
-		f = fbufs_get(b->b_fbufs, i);
+		f = fbufs_get(b->fbufs, i);
 
-		if (f->fb_id == id) {
-			b->b_active_fbuf = f;
+		if (f->id == id) {
+			b->active_fbuf = f;
 			return 0;
 		}
 	}
@@ -134,10 +134,10 @@ int bufs_write(bufs_t *b)
 {
 	fbuf_t *f;
 
-	if (b->b_active_fbuf) {
-		f = b->b_active_fbuf;
+	if (b->active_fbuf) {
+		f = b->active_fbuf;
 
-		if (f->fb_filepath)
+		if (f->filepath)
 			return fbuf_write(f);
 	}
 	return -1;
@@ -145,7 +145,7 @@ int bufs_write(bufs_t *b)
 
 int bufs_link_write(bufs_t *b, char *fpath)
 {
-	fbuf_t *f = b->b_active_fbuf;
+	fbuf_t *f = b->active_fbuf;
 
 	fbuf_link(f, fpath);
 	return fbuf_write(f);
@@ -154,7 +154,7 @@ int bufs_link_write(bufs_t *b, char *fpath)
 int bufs_write_other(bufs_t *b, char *fpath, WINDOW *w, int tabsz)
 {
 	int bytes;
-	fbuf_t *f = fbuf_fork(b->b_active_fbuf, w, bufs_next_id(b));
+	fbuf_t *f = fbuf_fork(b->active_fbuf, w, bufs_next_id(b));
 
 	if (f) {
 		fbuf_link(f, fpath);
@@ -164,8 +164,8 @@ int bufs_write_other(bufs_t *b, char *fpath, WINDOW *w, int tabsz)
 		if (bytes == -1) 
 			free(f);
 		else {
-			fbufs_append(b->b_fbufs, f);
-			b->b_active_fbuf = f;
+			fbufs_append(b->fbufs, f);
+			b->active_fbuf = f;
 			return bytes;
 		}
 	}
@@ -174,14 +174,14 @@ int bufs_write_other(bufs_t *b, char *fpath, WINDOW *w, int tabsz)
 
 void bufs_close(bufs_t *b, WINDOW *w)
 {
-	fbuf_t *f = b->b_active_fbuf;
+	fbuf_t *f = b->active_fbuf;
 
-	fbufs_delete_fbuf(b->b_fbufs, f);
+	fbufs_delete_fbuf(b->fbufs, f);
 	free(f);
 
-	b->b_active_fbuf = bufs_last_fbuf(b);
+	b->active_fbuf = bufs_last_fbuf(b);
 
 	// Resort to a new empty buffer if all become closed.
-	if (fbufs_len(b->b_fbufs) == 0)  
+	if (fbufs_len(b->fbufs) == 0)  
 		bufs_fbufs_append(b, fbuf_new(w, TABSZ, bufs_next_id(b)));
 }

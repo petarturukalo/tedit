@@ -29,14 +29,14 @@ line_t *line_init(char *str, int len, int tabsz)
 
 int line_len(line_t *l)
 {
-	if (l->s_len > 0 && l->s_buf[l->s_len-1] == '\n')
-		return l->s_len-1;  // Don't include newline.
-	return l->s_len;
+	if (l->len > 0 && l->buf[l->len-1] == '\n')
+		return l->len-1;  // Don't include newline.
+	return l->len;
 }
 
 int line_len_nl(line_t *l)
 {
-	return l->s_len;
+	return l->len;
 }
 
 void line_free_sl(void *line)

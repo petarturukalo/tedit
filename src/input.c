@@ -13,19 +13,19 @@ void input_start(tedata_t *t)
 	for (;;) {
 		c = mygetch();
 
-		sem_wait(&t->te_sem);
+		sem_wait(&t->sem);
 
 		// Have the character affect the buffer and then synchronise the view of the buffer
 		// before handing back over to the display to show the current view of the buffer.
-		f = t->te_bufs.b_active_buf;
+		f = t->bufs.active_buf;
 		
-		if (f == &t->te_bufs.b_elbuf)
-			elinp_handle_char(&t->te_bufs, c, t->te_cmds, t->te_win);
+		if (f == &t->bufs.elbuf)
+			elinp_handle_char(&t->bufs, c, t->cmds, t->win);
 		else 
-			fbinp_handle_char(&t->te_bufs, c);
-		view_sync_cursor(&f->fb_view, &f->fb_cursor, f->fb_lines);
+			fbinp_handle_char(&t->bufs, c);
+		view_sync_cursor(&f->view, &f->cursor, f->lines);
 
-		sem_post(&t->te_sem);
+		sem_post(&t->sem);
 	}
 }
 

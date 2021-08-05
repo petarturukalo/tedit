@@ -14,20 +14,20 @@
 
 struct view {
 	// First row and column displayed on the screen (inclusive), or in "view".
-	int v_lines_top_row;
-	int v_lines_first_col;
+	int lines_top_row;
+	int lines_first_col;
 	// Offsets from borders of curses windows. An offset is the distance from a border of the curses
 	// window that a file starts/finishes getting displayed.
 	// For the top row offset, for example, an offset of 0 means the file starts getting displayed on the
 	// top row (the 0th index row), and an offset of 1 the row with index 1. A negative index can also be
 	// supplied, wrapping around to the other side of the dimension: a -1 top row offset has the top row
 	// start at the last line (there is a distance of 1 moving upwards and wrapping around to the bottom row).
-	int v_win_top_row_off;
-	int v_win_bot_row_off;  // Bottom row.
-	int v_win_first_col_off;
-	int v_win_last_col_off;
-	WINDOW *v_win;
-	bool v_pgmv;  // Whether moved by a pgup/dn rather than arrow key.
+	int win_top_row_off;
+	int win_bot_row_off;  // Bottom row.
+	int win_first_col_off;
+	int win_last_col_off;
+	WINDOW *win;
+	bool pgmv;  // Whether moved by a pgup/dn rather than arrow key.
 };
 
 typedef struct view view_t;

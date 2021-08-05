@@ -17,11 +17,11 @@
 #define STR_MIN_CAP 16
 
 struct string {
-	char *s_buf;
-	int s_len;  // Current number of members in the string.
+	char *buf;
+	int len;  // Current number of members in the string.
 	// Current capacity of the string, the max amount of members that
 	// can be added. Grows and shrinks dynamically.
-	int s_capacity;  
+	int capacity;  
 };
 
 typedef struct string str_t;

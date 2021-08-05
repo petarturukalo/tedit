@@ -18,11 +18,11 @@ str_t *str_alloc(int capacity)
 	if (new_cap < STR_MIN_CAP)
 		new_cap = STR_MIN_CAP;
 
-	s->s_len = 0;
-	s->s_capacity = new_cap;
-	s->s_buf = malloc(new_cap*sizeof(char));
+	s->len = 0;
+	s->capacity = new_cap;
+	s->buf = malloc(new_cap*sizeof(char));
 
-	if (!s->s_buf) {
+	if (!s->buf) {
 		free(s);
 		return NULL;
 	}
@@ -35,8 +35,8 @@ str_t *str_ninit(char *str, int n)
 	str_t *s;
 
 	s = str_alloc(n);
-	strncpy(s->s_buf, str, n);
-	s->s_len = n;
+	strncpy(s->buf, str, n);
+	s->len = n;
 
 	return s;
 }
@@ -48,7 +48,7 @@ str_t *str_init(char *str)
 
 void str_free(str_t *s)
 {
-	free(s->s_buf);
+	free(s->buf);
 	free(s);
 }
 
@@ -59,13 +59,13 @@ void str_free(str_t *s)
  */
 int str_resize(str_t *s, int new_cap)
 {
-	void *new_buf = realloc(s->s_buf, new_cap*sizeof(void *));
+	void *new_buf = realloc(s->buf, new_cap*sizeof(void *));
 
 	if (!new_buf)
 		return -1;
 
-	s->s_buf = new_buf;
-	s->s_capacity = new_cap;
+	s->buf = new_buf;
+	s->capacity = new_cap;
 
 	return 0;
 }
@@ -77,8 +77,8 @@ int str_resize(str_t *s, int new_cap)
  */
 void str_try_grow(str_t *s)
 {
-	if (s->s_len == s->s_capacity) {
-		int new_cap = s->s_capacity<<1;
+	if (s->len == s->capacity) {
+		int new_cap = s->capacity<<1;
 
 		if (str_resize(s, new_cap) == -1)
 			fprintf(stderr, "str grow malloc\n");
@@ -87,10 +87,10 @@ void str_try_grow(str_t *s)
 
 void str_insert_aux(str_t *s, char c, int index)
 {
-	for (int i = s->s_len; i > index; --i) 
-		s->s_buf[i] = s->s_buf[i-1];
-	s->s_buf[index] = c;
-	++s->s_len;
+	for (int i = s->len; i > index; --i) 
+		s->buf[i] = s->buf[i-1];
+	s->buf[index] = c;
+	++s->len;
 }
 
 void str_insert(str_t *s, char c, int index)
@@ -103,23 +103,23 @@ void str_insert(str_t *s, char c, int index)
 void str_append(str_t *s, char c)
 {
 	str_try_grow(s);
-	s->s_buf[s->s_len++] = c;
+	s->buf[s->len++] = c;
 }
 
 
 void str_delete_aux(str_t *s, int index)
 {
-	--s->s_len;
+	--s->len;
 
-	for (int i = index; i < s->s_len; ++i)
-		s->s_buf[i] = s->s_buf[i+1];
+	for (int i = index; i < s->len; ++i)
+		s->buf[i] = s->buf[i+1];
 }
 
 void str_try_shrink(str_t *s)
 {
-	int new_cap = round_up_pow2(s->s_len);
+	int new_cap = round_up_pow2(s->len);
 	
-	if (new_cap >= STR_MIN_CAP && new_cap < s->s_capacity) {
+	if (new_cap >= STR_MIN_CAP && new_cap < s->capacity) {
 		if (str_resize(s, new_cap) == -1)
 			fprintf(stderr, "str shrink malloc\n");
 	}
@@ -133,7 +133,7 @@ void str_delete(str_t *s, int index)
 
 char str_pop(str_t *s)
 {
-	char c = s->s_buf[--s->s_len];
+	char c = s->buf[--s->len];
 	str_try_shrink(s);
 	return c;
 }
@@ -155,23 +155,23 @@ void str_copy(str_t *src, int sstart, int send, str_t *dst, int dstart, int dend
 	int j = dstart;
 
 	for (; i <= send && j <= dend; ++i, ++j)
-		dst->s_buf[j] = src->s_buf[i];
+		dst->buf[j] = src->buf[i];
 }
 
 str_t *str_split(str_t *s, int index)
 {
 	str_t *t;
-	int newlen = s->s_len-index;
+	int newlen = s->len-index;
 
 	t = str_alloc(newlen);
 	
 	// Copy substring spanning from index to end of string to 
 	// the new string.
-	str_copy(s, index, s->s_len-1, t, 0, newlen-1);
-	t->s_len = newlen;
+	str_copy(s, index, s->len-1, t, 0, newlen-1);
+	t->len = newlen;
 
 	// Truncate source string.
-	s->s_len = index;
+	s->len = index;
 	str_try_shrink(s);
 
 	return t;
@@ -179,15 +179,15 @@ str_t *str_split(str_t *s, int index)
 
 str_t *str_cat(str_t *dest, str_t *src)
 {
-	for (int i = 0; i < src->s_len; ++i)
-		str_append(dest, src->s_buf[i]);
+	for (int i = 0; i < src->len; ++i)
+		str_append(dest, src->buf[i]);
 }
 
 void str_set(str_t *s, char *t)
 {
 	int n;
 
-	s->s_len = 0;
+	s->len = 0;
 	str_try_shrink(s);
 
 	if (t) {
@@ -200,5 +200,5 @@ void str_set(str_t *s, char *t)
 
 str_t *str_cpy(str_t *s)
 {
-	return str_ninit(s->s_buf, s->s_len);
+	return str_ninit(s->buf, s->len);
 }

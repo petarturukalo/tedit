@@ -17,14 +17,14 @@
 struct file_buffer {
 	// Unique identifier for the file buffer in case there are multiple 
 	// unlinked files or buffers linked to the same filepath.
-	int fb_id;
-	cursor_t fb_cursor;
-	char *fb_filepath;  // Path to currently open file.
-	lines_t *fb_lines;  // Buffer of open file.
-	int fb_tabsz;
-	view_t fb_view;  // What the user sees.
+	int id;
+	cursor_t cursor;
+	char *filepath;  // Path to currently open file.
+	lines_t *lines;  // Buffer of open file.
+	int tabsz;
+	view_t view;  // What the user sees.
 	// Whether the file has been edited since last writing.
-	bool fb_unsaved_edit;
+	bool unsaved_edit;
 };
 
 typedef struct file_buffer fbuf_t;

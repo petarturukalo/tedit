@@ -14,59 +14,59 @@ slist_t *slist_init(int capacity)
 		return NULL;
 	}
 
-	s->sl_array = calloc(capacity, sizeof(void *));
+	s->array = calloc(capacity, sizeof(void *));
 
-	if (!s->sl_array) {
+	if (!s->array) {
 		fprintf(stderr, "can't alloc slist array\n");
 		free(s);
 		return NULL;
 	}
 		
-	s->sl_len = 0;
-	s->sl_capacity = capacity;
+	s->len = 0;
+	s->capacity = capacity;
 
 	return s;
 }
 
 void slist_for_each(slist_t *s, void (*func)(void *))
 {
-	for (int i = 0; i < s->sl_len; ++i)
-		func(s->sl_array[i]);
+	for (int i = 0; i < s->len; ++i)
+		func(s->array[i]);
 }
 
 void slist_free(slist_t *s, void (*free_elem)(void *))
 {
 	if (free_elem)
 		slist_for_each(s, free_elem);
-	free(s->sl_array);
+	free(s->array);
 	free(s);
 }
 
 void slist_append(slist_t *s, void *elem)
 {
-	s->sl_array[s->sl_len++] = elem;
+	s->array[s->len++] = elem;
 }
 
 void slist_insert(slist_t *s, int index, void *elem)
 {
-	for (int i = s->sl_len; i > index; --i)
-		s->sl_array[i] = s->sl_array[i-1];
-	s->sl_array[index] = elem;
-	++s->sl_len;
+	for (int i = s->len; i > index; --i)
+		s->array[i] = s->array[i-1];
+	s->array[index] = elem;
+	++s->len;
 }
 
 void slist_delete_ind(slist_t *s, int index)
 {
-	--s->sl_len;
+	--s->len;
 
-	for (; index < s->sl_len; ++index) 
-		s->sl_array[index] = s->sl_array[index+1];
+	for (; index < s->len; ++index) 
+		s->array[index] = s->array[index+1];
 }
 
 int slist_lookup(slist_t *s, void *target, bool (*match_func)(void *, void *))
 {
-	for (int i = 0; i < s->sl_len; ++i) {
-		if (match_func(target, s->sl_array[i]))
+	for (int i = 0; i < s->len; ++i) {
+		if (match_func(target, s->array[i]))
 			return i;
 	}
 	return -1;

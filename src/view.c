@@ -7,20 +7,20 @@
 
 void view_reset(view_t *v)
 {
-	v->v_lines_top_row = 0;
-	v->v_lines_first_col = 0;
-	v->v_pgmv = false;
+	v->lines_top_row = 0;
+	v->lines_first_col = 0;
+	v->pgmv = false;
 }
 
 void view_init(view_t *v, WINDOW *w, int top_row_offset, int bot_row_offset, 
 	       int first_col_offset, int last_col_offset)
 {
 	view_reset(v);
-	v->v_win = w;
-	v->v_win_top_row_off = top_row_offset;
-	v->v_win_bot_row_off = bot_row_offset;
-	v->v_win_first_col_off = first_col_offset;
-	v->v_win_last_col_off = last_col_offset;
+	v->win = w;
+	v->win_top_row_off = top_row_offset;
+	v->win_bot_row_off = bot_row_offset;
+	v->win_first_col_off = first_col_offset;
+	v->win_last_col_off = last_col_offset;
 }
 
 /**
@@ -62,22 +62,22 @@ int len_shrink(int len, int start_offset, int end_offset)
 
 int view_height(view_t *v)
 {
-	return len_shrink(getmaxy(v->v_win), v->v_win_top_row_off, v->v_win_bot_row_off);
+	return len_shrink(getmaxy(v->win), v->win_top_row_off, v->win_bot_row_off);
 }
 
 int view_width(view_t *v)
 {
-	return len_shrink(getmaxx(v->v_win), v->v_win_first_col_off, v->v_win_last_col_off);
+	return len_shrink(getmaxx(v->win), v->win_first_col_off, v->win_last_col_off);
 }
 
 int view_display_top_row(view_t *v)
 {
-	return len_start_ind(getmaxy(v->v_win), v->v_win_top_row_off);
+	return len_start_ind(getmaxy(v->win), v->win_top_row_off);
 }
 
 int view_display_first_col(view_t *v)
 {
-	return len_start_ind(getmaxx(v->v_win), v->v_win_first_col_off);
+	return len_start_ind(getmaxx(v->win), v->win_first_col_off);
 }
 
 /**
@@ -88,7 +88,7 @@ int view_display_first_col(view_t *v)
  */
 int view_lines_bot_row(view_t *v)
 {
-	return v->v_lines_top_row+view_height(v)-1;
+	return v->lines_top_row+view_height(v)-1;
 }
 
 /**
@@ -99,7 +99,7 @@ int view_lines_bot_row(view_t *v)
  */
 int view_lines_last_col(view_t *v)
 {
-	return v->v_lines_first_col+view_width(v)-1;
+	return v->lines_first_col+view_width(v)-1;
 }
 
 /**
@@ -107,7 +107,7 @@ int view_lines_last_col(view_t *v)
  */
 bool view_crs_above(view_t *v, cursor_t *c)
 {
-	return c->c_row < v->v_lines_top_row;
+	return c->row < v->lines_top_row;
 }
 
 /**
@@ -115,7 +115,7 @@ bool view_crs_above(view_t *v, cursor_t *c)
  */
 int view_crs_above_dist(view_t *v, cursor_t *c)
 {
-	return v->v_lines_top_row - c->c_row;
+	return v->lines_top_row - c->row;
 }
 
 /**
@@ -123,7 +123,7 @@ int view_crs_above_dist(view_t *v, cursor_t *c)
  */
 bool view_crs_below(view_t *v, cursor_t *c)
 {
-	return c->c_row > view_lines_bot_row(v);
+	return c->row > view_lines_bot_row(v);
 }
 
 /**
@@ -131,7 +131,7 @@ bool view_crs_below(view_t *v, cursor_t *c)
  */
 int view_crs_below_dist(view_t *v, cursor_t *c)
 {
-	return c->c_row - view_lines_bot_row(v);
+	return c->row - view_lines_bot_row(v);
 }
 
 /**
@@ -139,7 +139,7 @@ int view_crs_below_dist(view_t *v, cursor_t *c)
  */
 bool view_crs_leftward(view_t *v, cursor_t *c)
 {
-	return c->c_col < v->v_lines_first_col;
+	return c->col < v->lines_first_col;
 }
 
 /**
@@ -147,7 +147,7 @@ bool view_crs_leftward(view_t *v, cursor_t *c)
  */
 int view_crs_leftward_dist(view_t *v, cursor_t *c)
 {
-	return v->v_lines_first_col - c->c_col;
+	return v->lines_first_col - c->col;
 }
 
 /**
@@ -155,7 +155,7 @@ int view_crs_leftward_dist(view_t *v, cursor_t *c)
  */
 bool view_crs_rightward(view_t *v, cursor_t *c)
 {
-	return c->c_col > view_lines_last_col(v);
+	return c->col > view_lines_last_col(v);
 }
 
 /**
@@ -163,7 +163,7 @@ bool view_crs_rightward(view_t *v, cursor_t *c)
  */
 int view_crs_rightward_dist(view_t *v, cursor_t *c)
 {
-	return c->c_col - view_lines_last_col(v);
+	return c->col - view_lines_last_col(v);
 }
 
 /**
@@ -171,13 +171,13 @@ int view_crs_rightward_dist(view_t *v, cursor_t *c)
  */
 void view_sync_crs_row_above(view_t *v, cursor_t *c, int nlines)
 {
-	if (v->v_pgmv) {
-		v->v_lines_top_row -= view_height(v);
+	if (v->pgmv) {
+		v->lines_top_row -= view_height(v);
 
-		if (v->v_lines_top_row < 0)
-			v->v_lines_top_row = 0;
+		if (v->lines_top_row < 0)
+			v->lines_top_row = 0;
 	} else
-		v->v_lines_top_row -= 1;
+		v->lines_top_row -= 1;
 }
 
 /**
@@ -185,10 +185,10 @@ void view_sync_crs_row_above(view_t *v, cursor_t *c, int nlines)
  */
 void view_sync_crs_row_below(view_t *v, cursor_t *c, int nlines)
 {
-	if (v->v_pgmv) 
-		v->v_lines_top_row += view_height(v);
+	if (v->pgmv) 
+		v->lines_top_row += view_height(v);
 	else 
-		v->v_lines_top_row += 1;
+		v->lines_top_row += 1;
 }
 
 /**
@@ -201,7 +201,7 @@ void view_sync_crs_row(view_t *v, cursor_t *c, int nlines)
 		view_sync_crs_row_above(v, c, nlines);
 	else if (view_crs_below(v, c)) 
 		view_sync_crs_row_below(v, c, nlines);
-	v->v_pgmv = false;  // Always force off in case tried to pgup/dn when in view.
+	v->pgmv = false;  // Always force off in case tried to pgup/dn when in view.
 }
 
 /**
@@ -211,7 +211,7 @@ void view_sync_crs_col_leftward(view_t *v, cursor_t *c, int linelen)
 {
 	int dist = view_crs_leftward_dist(v, c);
 	// Fit cursor by make leftmost part of view include the column cursor is at.
-	v->v_lines_first_col -= dist;
+	v->lines_first_col -= dist;
 }
 
 /**
@@ -221,7 +221,7 @@ void view_sync_crs_col_rightward(view_t *v, cursor_t *c, int linelen)
 {
 	int dist = view_crs_rightward_dist(v, c);
 	// Fit cursor by make rightmost part of view include the column cursor is at.
-	v->v_lines_first_col += dist;  
+	v->lines_first_col += dist;  
 }
 
 /**
@@ -239,7 +239,7 @@ void view_sync_crs_col(view_t *v, cursor_t *c, int linelen)
 
 void view_sync_cursor(view_t *v, cursor_t *c, lines_t *ls)
 {
-	line_t *cur = ls->sl_array[c->c_row];
+	line_t *cur = ls->array[c->row];
 
 	view_sync_crs_row(v, c, lines_len(ls));
 	view_sync_crs_col(v, c, line_len(cur));
@@ -247,10 +247,10 @@ void view_sync_cursor(view_t *v, cursor_t *c, lines_t *ls)
 
 int view_cursor_display_row(view_t *v, cursor_t *c)
 {
-	return view_display_top_row(v)+(c->c_row-v->v_lines_top_row);
+	return view_display_top_row(v)+(c->row-v->lines_top_row);
 }
 
 int view_cursor_display_col(view_t *v, cursor_t *c)
 {
-	return view_display_first_col(v)+(c->c_col-v->v_lines_first_col);
+	return view_display_first_col(v)+(c->col-v->lines_first_col);
 }

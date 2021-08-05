@@ -12,9 +12,9 @@ cmd_t *cmd_init(char *short_name, char *long_name, char *(*handler)(char *, bufs
 	if (!c)
 		return NULL;
 
-	c->c_short_name = short_name;
-	c->c_long_name = long_name;
-	c->c_handler = handler;
+	c->short_name = short_name;
+	c->long_name = long_name;
+	c->handler = handler;
 
 	return c;
 }

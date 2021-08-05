@@ -46,9 +46,9 @@ cmds_t *cmds_init(void)
 
 		// A command can be accessed by either short or long name.
 		e.data = (void *)c;
-		e.key = c->c_short_name;
+		e.key = c->short_name;
 		hsearch_r(e, ENTER, &ep, cs->htbl);
-		e.key = c->c_long_name;
+		e.key = c->long_name;
 		hsearch_r(e, ENTER, &ep, cs->htbl);
 	}
 	return cs;

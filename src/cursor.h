@@ -14,11 +14,11 @@
  * A row, column position over a list of lines.
  */
 struct cursor {
-	int c_row;
-	int c_col;
+	int row;
+	int col;
 	// Last column manually moved to, where manual refers to
 	// having been moved by the user pressing a keyboard key. 
-	int c_prev_manual_mv_col;
+	int prev_manual_mv_col;
 };
 
 typedef struct cursor cursor_t;

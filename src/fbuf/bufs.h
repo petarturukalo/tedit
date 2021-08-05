@@ -15,16 +15,16 @@
 #include "elbuf.h"
 
 struct buffers {
-	fbufs_t *b_fbufs;  // List of file buffers.
-	elbuf_t b_elbuf;  // Echo line buffer at bottom of screen for running commands from.
+	fbufs_t *fbufs;  // List of file buffers.
+	elbuf_t elbuf;  // Echo line buffer at bottom of screen for running commands from.
 	// Currently active buffer which keys will be sent to (which could be
 	// an echo line buffer rather than a standard file buffer).
-	fbuf_t *b_active_buf;  
+	fbuf_t *active_buf;  
 	// Currently active file buffer (file buffer which will be displayed along with the
 	// echo line buffer).
-	fbuf_t *b_active_fbuf;
+	fbuf_t *active_fbuf;
 	// Total number of buffers made, still keeping count of those deleted.
-	int b_nbufs;
+	int nbufs;
 };
 
 typedef struct buffers bufs_t;

@@ -14,12 +14,12 @@
 #include "../fbuf/bufs.h"
 
 struct command {
-	char *c_short_name;  // Unique few character identifier for the command.
-	char *c_long_name;  // Unique longer string identifier for command.
+	char *short_name;  // Unique few character identifier for the command.
+	char *long_name;  // Unique longer string identifier for command.
 	// Function to run command. First parameter is remaining part of string that user
 	// entered (not the command name). Return is an error/success message which is
 	// echoed back to the echo line.
-	char *(*c_handler)(char *, bufs_t *, WINDOW *);
+	char *(*handler)(char *, bufs_t *, WINDOW *);
 };
 
 typedef struct command cmd_t;

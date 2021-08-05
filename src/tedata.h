@@ -16,12 +16,12 @@
 #include "cmd/cmds.h"
 
 struct text_editor_data {
-	WINDOW *te_win;  // Curses window for displaying file buffers in.
-	bufs_t te_bufs;
-	cmds_t *te_cmds;
+	WINDOW *win;  // Curses window for displaying file buffers in.
+	bufs_t bufs;
+	cmds_t *cmds;
 	// Lock which must be acquired before accessing other fields
 	// of this data structure.
-	sem_t te_sem;  
+	sem_t sem;  
 };
 
 typedef struct text_editor_data tedata_t;

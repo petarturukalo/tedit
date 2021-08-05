@@ -60,7 +60,7 @@ void display_fbuf_line(line_t *l, int i, int first_col, int view_width,
 
 	wmove(w, view_disp_top_row+i, view_disp_first_col);
 
-	addtabsubstr(l->s_buf, first_col, end_col, last_line, w);
+	addtabsubstr(l->buf, first_col, end_col, last_line, w);
 }
 
 /*
@@ -72,10 +72,10 @@ void display_fbuf_lines(fbuf_t *f, WINDOW *w)
 	int top_row, bot_row, first_col, end_col;
 	int i, vheight, vwidth, view_disp_top_row, view_disp_first_col;
 	line_t *l;
-	view_t *v = &f->fb_view;
+	view_t *v = &f->view;
 
-	top_row = v->v_lines_top_row;
-	first_col = v->v_lines_first_col;
+	top_row = v->lines_top_row;
+	first_col = v->lines_first_col;
 	vheight = view_height(v);
 	vwidth = view_width(v);
 
@@ -103,9 +103,9 @@ void display_fbuf_lines(fbuf_t *f, WINDOW *w)
 void display_fbuf_cursor(fbuf_t *f, WINDOW *w)
 {
 	view_t *v;
-	cursor_t *c = &f->fb_cursor;
+	cursor_t *c = &f->cursor;
 
-	v = &f->fb_view;
+	v = &f->view;
 
 	wmove(w, view_cursor_display_row(v, c), view_cursor_display_col(v, c));
 }
@@ -117,10 +117,10 @@ void display_buffers(bufs_t *b, WINDOW *w)
 {
 	werase(w);
 	// Show current file buffer being edited along with echo line buffer where user enters commands.
-	display_fbuf_lines(b->b_active_fbuf, w);
-	display_fbuf_lines(&b->b_elbuf, w);
+	display_fbuf_lines(b->active_fbuf, w);
+	display_fbuf_lines(&b->elbuf, w);
 	// Active buffer might be the echo line buffer and only want to display one cursor.
-	display_fbuf_cursor(b->b_active_buf, w);
+	display_fbuf_cursor(b->active_buf, w);
 	wrefresh(w);
 }
 
@@ -129,15 +129,15 @@ void display_buffers(bufs_t *b, WINDOW *w)
  */
 void display_text_editor(tedata_t *t)
 {
-	display_buffers(&t->te_bufs, t->te_win);
+	display_buffers(&t->bufs, t->win);
 }
 
 void display_start(tedata_t *t)
 {
 	for (;;) {
-		sem_wait(&t->te_sem);
+		sem_wait(&t->sem);
 		display_text_editor(t);
-		sem_post(&t->te_sem);
+		sem_post(&t->sem);
 
 		usleep(REFRESH_RATE_MAX_USEC);
 	}

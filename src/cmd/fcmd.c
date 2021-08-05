@@ -24,7 +24,7 @@ char *fcmd_write_handle(bufs_t *b)
  */
 char *fcmd_write_handle_other(bufs_t *b, char *fpath, WINDOW *w)
 {
-	int bytes, tabsz = b->b_active_fbuf->fb_tabsz;
+	int bytes, tabsz = b->active_fbuf->tabsz;
 
 	if ((bytes = bufs_write_other(b, fpath, w, tabsz)) == -1)  
 		return chrpprintf("can't write to file '%s'%s", fpath, 
@@ -47,7 +47,7 @@ char *fcmd_write_handle_new(bufs_t *b, char *fpath)
  */
 char *fcmd_write_handler(char *fpath, bufs_t *b, WINDOW *w)
 {
-	if (b->b_active_fbuf->fb_filepath) {
+	if (b->active_fbuf->filepath) {
 		if (fpath) 
 			return fcmd_write_handle_other(b, fpath, w);
 		return fcmd_write_handle(b);
@@ -67,10 +67,10 @@ char *fcmd_write_handler(char *fpath, bufs_t *b, WINDOW *w)
  */
 char *fcmd_close_handler(char *s, bufs_t *b, WINDOW *w)
 {
-	fbuf_t *f = b->b_active_fbuf;
+	fbuf_t *f = b->active_fbuf;
 
 	if (f) {
-		if (f->fb_unsaved_edit)
+		if (f->unsaved_edit)
 			return chrpcpy_alloc("need to write before close");
 		bufs_close(b, w);
 		return NULL;
@@ -84,7 +84,7 @@ char *fcmd_close_handler(char *s, bufs_t *b, WINDOW *w)
  */
 char *fcmd_fclose_handler(char *s, bufs_t *b, WINDOW *w)
 {
-	fbuf_t *f = b->b_active_fbuf;
+	fbuf_t *f = b->active_fbuf;
 
 	if (f) {
 		bufs_close(b, w);
@@ -98,7 +98,7 @@ char *fcmd_fclose_handler(char *s, bufs_t *b, WINDOW *w)
  */
 char *fcmd_open_handler(char *fpath, bufs_t *b, WINDOW *w)
 {
-	int tabsz = b->b_active_fbuf->fb_tabsz;
+	int tabsz = b->active_fbuf->tabsz;
 
 	if (!fpath)
 		bufs_new(b, w, tabsz);

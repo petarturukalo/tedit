@@ -16,15 +16,15 @@ int lslen(fbufs_t *fs)
 	for (int i = 0; i < fbufs_len(fs); ++i) {
 		f = fbufs_get(fs, i);
 
-		if (f->fb_filepath)
-			len += strlen(f->fb_filepath);
+		if (f->filepath)
+			len += strlen(f->filepath);
 		else
 			len += strlen("unnamed");
 
 		// 2 for single quotes wrapping filepath, 1 for intermediary space, 
 		// 2 for square brackets around file buffer id, and 2 for trailing spaces.
 		len += 7;  
-		len += ndigits(f->fb_id);
+		len += ndigits(f->id);
 	}
 	// Remove last 2 spaces, add 1 for asterisk identifier of active buf.
 	len -= 1;
@@ -46,7 +46,7 @@ char *lsstr(fbufs_t *fs, fbuf_t *active_fbuf)
 	for (int i = 0; i < fbufs_len(fs); ++i) {
 		f = fbufs_get(fs, i);
 
-		s += sprintf(s, "'%s' [%d", f->fb_filepath ? f->fb_filepath : "unnamed", f->fb_id);
+		s += sprintf(s, "'%s' [%d", f->filepath ? f->filepath : "unnamed", f->id);
 
 		if (active_fbuf == f)
 			s += sprintf(s, "*");
@@ -64,7 +64,7 @@ char *lsstr(fbufs_t *fs, fbuf_t *active_fbuf)
  */
 char *acmd_list_handler(char *s, bufs_t *b, WINDOW *w)
 {
-	return lsstr(b->b_fbufs, b->b_active_fbuf);
+	return lsstr(b->fbufs, b->active_fbuf);
 }
 
 /**
@@ -73,9 +73,9 @@ char *acmd_list_handler(char *s, bufs_t *b, WINDOW *w)
  */
 char *acmd_quit_handler(char *s, bufs_t *b, WINDOW *w)
 {
-	fbuf_t *f = b->b_active_fbuf;
+	fbuf_t *f = b->active_fbuf;
 
-	if (f->fb_unsaved_edit)
+	if (f->unsaved_edit)
 		return chrpcpy_alloc("need to write before quit");
 	exit(EXIT_SUCCESS);
 }

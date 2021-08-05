@@ -11,10 +11,10 @@
  */
 void fbuf_reset_most(fbuf_t *f)
 {
-	f->fb_filepath = NULL;
-	f->fb_lines = NULL;
-	cursor_reset(&f->fb_cursor);
-	f->fb_unsaved_edit = false;
+	f->filepath = NULL;
+	f->lines = NULL;
+	cursor_reset(&f->cursor);
+	f->unsaved_edit = false;
 }
 
 /**
@@ -23,7 +23,7 @@ void fbuf_reset_most(fbuf_t *f)
 void fbuf_reset(fbuf_t *f)
 {
 	fbuf_reset_most(f);
-	view_reset(&f->fb_view);
+	view_reset(&f->view);
 }
 
 /**
@@ -41,9 +41,9 @@ fbuf_t *fbuf_init(WINDOW *w, int tabsz, int id)
 		return NULL;
 
 	fbuf_reset_most(f);
-	view_init(&f->fb_view, w, 0, 1, 0, 0);
-	f->fb_tabsz = tabsz;
-	f->fb_id = id;
+	view_init(&f->view, w, 0, 1, 0, 0);
+	f->tabsz = tabsz;
+	f->id = id;
 
 	return f;
 }
@@ -63,15 +63,15 @@ fbuf_t *fbuf_new(WINDOW *w, int tabsz, int id)
 		return NULL;
 	}
 	lines_append(l, str_alloc(0));
-	f->fb_lines = l;
+	f->lines = l;
 	return f;
 }
 
 int fbuf_link(fbuf_t *f, char *fpath)
 {
-	f->fb_filepath = chrpcpy_alloc(fpath);
+	f->filepath = chrpcpy_alloc(fpath);
 
-	if (!f->fb_filepath)
+	if (!f->filepath)
 		return -1;
 	return 0;
 }
@@ -83,13 +83,13 @@ fbuf_t *fbuf_fork(fbuf_t *f, WINDOW *w, int id)
 	if (!new)
 		return NULL;
 
-	new->fb_id = id;
-	new->fb_cursor = f->fb_cursor;
-	new->fb_filepath = f->fb_filepath;
-	new->fb_lines = lines_fork(f->fb_lines);
-	new->fb_tabsz = f->fb_tabsz;
-	new->fb_view = f->fb_view;
-	new->fb_unsaved_edit = false;
+	new->id = id;
+	new->cursor = f->cursor;
+	new->filepath = f->filepath;
+	new->lines = lines_fork(f->lines);
+	new->tabsz = f->tabsz;
+	new->view = f->view;
+	new->unsaved_edit = false;
 
 	return new;
 }
@@ -101,7 +101,7 @@ fbuf_t *fbuf_fork(fbuf_t *f, WINDOW *w, int id)
  */
 int fbuf_openfd(fbuf_t *f)
 {
-	return open(f->fb_filepath, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH);
+	return open(f->filepath, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH);
 }
 
 fbuf_t *fbuf_open(char *fpath, WINDOW *w, int tabsz, int id)
@@ -115,10 +115,10 @@ fbuf_t *fbuf_open(char *fpath, WINDOW *w, int tabsz, int id)
 	if (fd == -1)
 		return NULL;
 
-	f->fb_lines = lines_from_fd(fd, tabsz);
+	f->lines = lines_from_fd(fd, tabsz);
 	close(fd);
 
-	if (!f->fb_lines) {
+	if (!f->lines) {
 		fbuf_free(f);
 		return NULL;
 	}
@@ -129,14 +129,14 @@ int fbuf_write(fbuf_t *f)
 {
 	int fd, bytes;
 
-	if (f->fb_filepath) {
+	if (f->filepath) {
 		fd = fbuf_openfd(f);
 		
 		if (fd != -1) {
-			bytes = lines_write(f->fb_lines, f->fb_tabsz, fd);
+			bytes = lines_write(f->lines, f->tabsz, fd);
 
 			if (bytes != -1)
-				f->fb_unsaved_edit = false;
+				f->unsaved_edit = false;
 			close(fd);
 			return bytes;
 		}
@@ -146,10 +146,10 @@ int fbuf_write(fbuf_t *f)
 
 void fbuf_free(fbuf_t *f)
 {
-	if (f->fb_filepath)
-		free(f->fb_filepath);
-	if (f->fb_lines) 
-		lines_free(f->fb_lines);
+	if (f->filepath)
+		free(f->filepath);
+	if (f->lines) 
+		lines_free(f->lines);
 	free(f);
 }
 

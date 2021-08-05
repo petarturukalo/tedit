@@ -94,8 +94,8 @@ lines_t *lines_from_file(char *filepath, int tabsz)
 
 void lines_for_each(lines_t *l, void (*line_func)(line_t *, void *), void *data)
 {
-	for (int i = 0; i < l->sl_len; ++i) 
-		line_func(l->sl_array[i], data);
+	for (int i = 0; i < l->len; ++i) 
+		line_func(l->array[i], data);
 }
 
 /**
@@ -146,10 +146,10 @@ int lines_write(lines_t *ls, int tabsz, int fd)
 	ftruncate(fd, 0);
 	lseek(fd, 0, SEEK_SET);
 
-	for (int i = 0; i < ls->sl_len; ++i) {
-		l = ls->sl_array[i];
+	for (int i = 0; i < ls->len; ++i) {
+		l = ls->array[i];
 		
-		bytes = write(fd, l->s_buf, l->s_len);
+		bytes = write(fd, l->buf, l->len);
 		
 		if (bytes == -1)
 			return -1;
@@ -164,12 +164,12 @@ int lines_write(lines_t *ls, int tabsz, int fd)
 
 line_t *lines_get(lines_t *l, int nr)
 {
-	return l->sl_array[nr];
+	return l->array[nr];
 }
 
 void lines_delete(lines_t *l, int nr)
 {
-	str_free(l->sl_array[nr]);
+	str_free(l->array[nr]);
 	dlist_delete_ind(l, nr);
 }
 
@@ -180,7 +180,7 @@ void lines_insert(lines_t *ls, int index, line_t *l)
 
 int lines_len(lines_t *ls)
 {
-	return ls->sl_len;
+	return ls->len;
 }
 
 lines_t *lines_fork(lines_t *ls)

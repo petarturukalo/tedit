@@ -10,7 +10,7 @@
  */
 void fbinp_left(fbuf_t *f)
 {
-	mv_left(&f->fb_cursor, fbaux_cur_line(f));
+	mv_left(&f->cursor, fbaux_cur_line(f));
 }
 
 /**
@@ -18,7 +18,7 @@ void fbinp_left(fbuf_t *f)
  */
 void fbinp_down(fbuf_t *f)
 {
-	mv_down(&f->fb_cursor, f->fb_lines);
+	mv_down(&f->cursor, f->lines);
 }
 
 /**
@@ -26,7 +26,7 @@ void fbinp_down(fbuf_t *f)
  */
 void fbinp_up(fbuf_t *f)
 {
-	mv_up(&f->fb_cursor, f->fb_lines);
+	mv_up(&f->cursor, f->lines);
 }
 
 /**
@@ -34,7 +34,7 @@ void fbinp_up(fbuf_t *f)
  */
 void fbinp_right(fbuf_t *f)
 {
-	mv_right(&f->fb_cursor, fbaux_cur_line(f));
+	mv_right(&f->cursor, fbaux_cur_line(f));
 }
 
 /**
@@ -42,7 +42,7 @@ void fbinp_right(fbuf_t *f)
  */
 void fbinp_home(fbuf_t *f)
 {
-	mv_start(&f->fb_cursor);
+	mv_start(&f->cursor);
 }
 
 /**
@@ -50,7 +50,7 @@ void fbinp_home(fbuf_t *f)
  */
 void fbinp_end(fbuf_t *f)
 {
-	mv_end(&f->fb_cursor, fbaux_cur_line(f));
+	mv_end(&f->cursor, fbaux_cur_line(f));
 }
 
 /**
@@ -58,7 +58,7 @@ void fbinp_end(fbuf_t *f)
  */
 void fbinp_pgup(fbuf_t *f)
 {
-	mv_view_pgup(&f->fb_cursor, f->fb_lines, &f->fb_view);
+	mv_view_pgup(&f->cursor, f->lines, &f->view);
 }
 
 /**
@@ -66,7 +66,7 @@ void fbinp_pgup(fbuf_t *f)
  */
 void fbinp_pgdn(fbuf_t *f)
 {
-	mv_view_pgdn(&f->fb_cursor, f->fb_lines, &f->fb_view);
+	mv_view_pgdn(&f->cursor, f->lines, &f->view);
 }
 
 /**
@@ -74,11 +74,11 @@ void fbinp_pgdn(fbuf_t *f)
  */
 void fbinp_delete(fbuf_t *f)
 {
-	f->fb_unsaved_edit = true;
+	f->unsaved_edit = true;
 
-	if (lins_delete(fbaux_cur_line(f), fbaux_next_line(f), &f->fb_cursor, f->fb_tabsz))
+	if (lins_delete(fbaux_cur_line(f), fbaux_next_line(f), &f->cursor, f->tabsz))
 		// Delete next line since merged with current (cursor stay still so still +1 for next).
-		lines_delete(f->fb_lines, fbaux_row(f)+1);  
+		lines_delete(f->lines, fbaux_row(f)+1);  
 }
 
 /**
@@ -86,9 +86,9 @@ void fbinp_delete(fbuf_t *f)
  */
 void fbinp_backspace(fbuf_t *f)
 {
-	if (lins_backspace(fbaux_cur_line(f), fbaux_prev_line(f), &f->fb_cursor, f->fb_tabsz))
+	if (lins_backspace(fbaux_cur_line(f), fbaux_prev_line(f), &f->cursor, f->tabsz))
 		// Delete current line since merged with previous (cursor moved up so +1 for "current").
-		lines_delete(f->fb_lines, fbaux_row(f)+1);  
+		lines_delete(f->lines, fbaux_row(f)+1);  
 }
 
 /**
@@ -97,10 +97,10 @@ void fbinp_backspace(fbuf_t *f)
  */
 void fbinp_enter(fbuf_t *f)
 {
-	line_t *nl = lins_split(fbaux_cur_line(f), &f->fb_cursor, f->fb_tabsz);
+	line_t *nl = lins_split(fbaux_cur_line(f), &f->cursor, f->tabsz);
 	// Cursor got moved down by one so inserting on new current line will insert the new line
 	// after the line entered from.
-	lines_insert(f->fb_lines, fbaux_row(f), nl);
+	lines_insert(f->lines, fbaux_row(f), nl);
 }
 
 /**
@@ -116,7 +116,7 @@ void fbinp_esc(bufs_t *b)
  */
 void fbinp_handle_seq_char(bufs_t *b, int c)
 {
-	fbuf_t *f = b->b_active_buf;
+	fbuf_t *f = b->active_buf;
 
 	switch (c) {
 		case KEY_LEFT:	fbinp_left(f); break;
@@ -137,7 +137,7 @@ void fbinp_handle_seq_char(bufs_t *b, int c)
  */
 void fbinp_insert_char(fbuf_t *f, char c)
 {
-	lins_insert_char(fbaux_cur_line(f), &f->fb_cursor, c, f->fb_tabsz);
+	lins_insert_char(fbaux_cur_line(f), &f->cursor, c, f->tabsz);
 }
 
 /**
@@ -146,12 +146,12 @@ void fbinp_insert_char(fbuf_t *f, char c)
  */
 void fbinp_handle_reg_char(bufs_t *b, int c)
 {
-	fbuf_t *f = b->b_active_buf;
+	fbuf_t *f = b->active_buf;
 
 	if (c == ASCII_ESC)
 		fbinp_esc(b);
 	else {
-		f->fb_unsaved_edit = true;
+		f->unsaved_edit = true;
 
 		if (c == ASCII_BS)
 			fbinp_backspace(f);
