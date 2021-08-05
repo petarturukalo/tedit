@@ -73,10 +73,12 @@ char *cmds_parse_aux(char *args, char *cmd_name, char *remain_args, cmds_t *cs, 
 	if (c) {
 		sn = c->c_short_name;
 
-		// Quit and force quit commands exit before returning and so don't get to free
+		// Force quit command exits before returning and so doesn't get to free
 		// the command string after returning, so do it here instead (pedantic).
-		if (sn[0] == 'q' || (sn[0] == 'f' && sn[0] == 'q'))
+		if (sn[0] == 'f' && sn[1] == 'q')
 			free(args);
+		// TODO handle mem leak not freeing args on regular quit command (needs to only free if
+		// there isn't an unsaved edit)
 		return c->c_handler(remain_args, b, w);
 	}
 	return chrpcpy_alloc("invalid command");
