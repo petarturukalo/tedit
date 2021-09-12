@@ -90,9 +90,9 @@ void str_contract_tab_spaces(str_t *s, int tabsz)
 
 	for (; r < n; ++r) {
 		if (t[r] != TAB_CONT) {
-			if (t[r] == TAB_START) {
+			if (t[r] == TAB_START) 
 				t[w] = '\t';
-			} else
+			else
 				t[w] = t[r];
 			++w;
 		}
