@@ -17,49 +17,49 @@ static void test_dlist(void)
 	for (i = 0; i < BUFSZ; ++i)
 		buf[i] = i;
 
-	assert(l->sl_capacity == DLIST_MIN_CAP);
+	assert(l->capacity == DLIST_MIN_CAP);
 
 	for (i = 0; i < 16; ++i)
 		dlist_append(l, (void *)(buf+i));
 
-	assert(l->sl_capacity == DLIST_MIN_CAP);
+	assert(l->capacity == DLIST_MIN_CAP);
 	dlist_append(l, (void *)(buf+i++));
-	assert(l->sl_capacity == 2*DLIST_MIN_CAP);
+	assert(l->capacity == 2*DLIST_MIN_CAP);
 
 	for (; i < 32; ++i)
 		dlist_insert(l, i, (void *)(buf+i));  // Insert instead of append.
 
-	assert(l->sl_capacity == 2*DLIST_MIN_CAP);
+	assert(l->capacity == 2*DLIST_MIN_CAP);
 	dlist_append(l, (void *)(buf+i++));
-	assert(l->sl_capacity == 4*DLIST_MIN_CAP);
+	assert(l->capacity == 4*DLIST_MIN_CAP);
 
 	for (; i < BUFSZ; ++i)
 		dlist_append(l, (void *)(buf+i));
 	
-	assert(l->sl_capacity == 4*DLIST_MIN_CAP);
+	assert(l->capacity == 4*DLIST_MIN_CAP);
 	dlist_append(l, (void *)(buf+i++));
-	assert(l->sl_capacity == 8*DLIST_MIN_CAP);
+	assert(l->capacity == 8*DLIST_MIN_CAP);
 
 	dlist_delete_ind(l, 0);
-	assert(l->sl_capacity == 4*DLIST_MIN_CAP);
+	assert(l->capacity == 4*DLIST_MIN_CAP);
 
 	for (i = 0; i < 31; ++i)
 		dlist_delete_ind(l, 0);
 
-	assert(l->sl_capacity == 4*DLIST_MIN_CAP);
+	assert(l->capacity == 4*DLIST_MIN_CAP);
 	dlist_delete_ind(l, 0);
-	assert(l->sl_capacity == 2*DLIST_MIN_CAP);
+	assert(l->capacity == 2*DLIST_MIN_CAP);
 
 	for (i = 0; i < 15; ++i)
 		dlist_delete_ind(l, 0);
 
-	assert(l->sl_capacity == 2*DLIST_MIN_CAP);
+	assert(l->capacity == 2*DLIST_MIN_CAP);
 	dlist_delete_ind(l, 0);
-	assert(l->sl_capacity == DLIST_MIN_CAP);
+	assert(l->capacity == DLIST_MIN_CAP);
 
 	for (i = 0; i < 16; ++i) {
 		dlist_delete_ind(l, 0);
-		assert(l->sl_capacity == DLIST_MIN_CAP);
+		assert(l->capacity == DLIST_MIN_CAP);
 	}
 
 	slist_free(l, NULL);

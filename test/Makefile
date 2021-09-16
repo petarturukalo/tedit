@@ -1,3 +1,6 @@
+# TODO try to automate collecting these object files with something
+# like gcc -M
+#
 # Test assert object files.
 AOBJS=build/test-assert.o build/test-ds.o build/test-tab.o
 # Test memory leak object files.
@@ -33,5 +36,3 @@ build/%.o: src/%.c
 clean:
 	rm test-{assert,mem} build/*.o vgcore*
 
-ctags:
-	myctags -R ..
