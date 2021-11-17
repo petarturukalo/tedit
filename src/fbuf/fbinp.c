@@ -124,6 +124,8 @@ void fbinp_handle_seq_char(bufs_t *b, int c)
 		case KEY_UP:	fbinp_up(f); break;  
 		case KEY_RIGHT:	fbinp_right(f); break;
 
+		case KEY_BACKSPACE:	fbinp_backspace(f); break; 
+
 		case KEY_DC:	fbinp_delete(f); break; 
 		case KEY_HOME:	fbinp_home(f); break;
 		case KEY_END:	fbinp_end(f); break;
