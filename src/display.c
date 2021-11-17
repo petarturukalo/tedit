@@ -30,11 +30,11 @@ static bool ascii_printable(char c)
  * @start: index of first character in string to display (inclusive)
  * @end: index of last character in string to display (inclusive)
  */
-void addtabsubstr(char *s, int start, int end, bool last_line, WINDOW *w)
+void addtabsubstr(char *s, int start, int end, WINDOW *w)
 {
 	int i = start;
 
-	for (; i <= end; ++i)  {
+	for (; i <= end; ++i) {
 		if (s[i] == TAB_START || s[i] == TAB_CONT)
 			waddch(w, ' ');
 		else if (s[i] == '\n' || ascii_printable(s[i]))
@@ -54,13 +54,13 @@ void addtabsubstr(char *s, int start, int end, bool last_line, WINDOW *w)
  * @view_disp_top_col: column of top left anchor point of view on window
  */
 void display_fbuf_line(line_t *l, int i, int first_col, int view_width, 
-		       int view_disp_top_row, int view_disp_first_col, bool last_line, WINDOW *w)
+		       int view_disp_top_row, int view_disp_first_col, WINDOW *w)
 {
 	int end_col = first_col+view_width-1 > line_len_nl(l)-1 ? line_len_nl(l)-1 : first_col+view_width-1;
 
 	wmove(w, view_disp_top_row+i, view_disp_first_col);
 
-	addtabsubstr(l->buf, first_col, end_col, last_line, w);
+	addtabsubstr(l->buf, first_col, end_col, w);
 }
 
 /*
@@ -94,7 +94,7 @@ void display_fbuf_lines(fbuf_t *f, WINDOW *w)
 	i = 0;
 	for (int lnr = top_row; lnr <= bot_row; ++lnr, ++i) 
 		display_fbuf_line(fbaux_line(f, lnr), i, first_col, vwidth, 
-				  view_disp_top_row, view_disp_first_col, lnr == bot_row, w);
+				  view_disp_top_row, view_disp_first_col, w);
 }
 
 /**

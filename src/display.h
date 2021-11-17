@@ -7,6 +7,7 @@
 #define DISPLAY_H
 
 #include <stdbool.h>
+#include <curses.h>
 #include "tedata.h"
 #include "fbuf/fbaux.h"
 
