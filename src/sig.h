@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
+#include <curses.h>
 #include "tedata.h"
 
 /**
@@ -18,5 +19,8 @@
  *	exiting
  */
 void sig_clean_exit(int sig);
+
+void sig_handle_tstp(int sig);
+void sig_handle_cont(int sig);
 
 #endif

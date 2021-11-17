@@ -44,4 +44,9 @@ int tedata_init(tedata_t *t, char *fpaths[], int nfpaths);
  */
 void tedata_free(tedata_t *t);
 
+/**
+ * setup_curses - Set up default curses settings
+ */
+void setup_curses(void);
+
 #endif

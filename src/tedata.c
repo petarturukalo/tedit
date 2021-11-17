@@ -5,10 +5,7 @@
  */
 #include "tedata.h"
 
-/**
- * setup_curses - Set up default curses settings
- */
-static void setup_curses(void)
+void setup_curses(void)
 {
 	cbreak();
 	noecho();
@@ -18,8 +15,6 @@ static void setup_curses(void)
 
 int tedata_init(tedata_t *t, char *fpaths[], int nfpaths)
 {
-	int err;
-
 	if (sem_init(&t->sem, 0, 1))
 		return -1;
 

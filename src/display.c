@@ -8,7 +8,7 @@
 // Refresh rates in micro seconds.
 #define REFRESH_RATE_60_HZ_USEC 16667
 #define REFRESH_RATE_120_HZ_USEC 8333 
-#define REFRESH_RATE_MAX_USEC 100
+#define REFRESH_RATE_USE_USEC 100  // Refresh rate that gets used.
 
 // Start and end range (both endpoints inclusive) for
 // ASCII characters that can be safely printed.
@@ -139,7 +139,7 @@ void display_start(tedata_t *t)
 		display_text_editor(t);
 		sem_post(&t->sem);
 
-		usleep(REFRESH_RATE_MAX_USEC);
+		usleep(REFRESH_RATE_USE_USEC);
 	}
 }
 

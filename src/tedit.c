@@ -36,9 +36,17 @@ void tedit_start(char *fpaths[], int nfpaths)
 	pthread_t tids[2];
 
 	// Interrupt is ignored entirely and termination ignored while initialising
-	// data in case it's called 
+	// data in case it's called. Doing this in the first place feels like this sort
+	// of signal guarding should be done everywhere random mallocs and such are done
+	// and not just here, to avoid tiny memory leaks on exit. Or that other dynamically 
+	// allocated memory could just become static instead.
 	signal(SIGINT, SIG_IGN);
 	signal(SIGTERM, SIG_IGN);
+	// Use own sigcont and sigtstp handlers for job control as the default curses
+	// implementations jumble the screen on returning to the foreground by its use of
+	// the doupdate function.
+	signal(SIGTSTP, sig_handle_tstp);
+	signal(SIGCONT, sig_handle_cont);
 
 	tedata_init(&t, fpaths, nfpaths);
 
@@ -53,3 +61,4 @@ void tedit_start(char *fpaths[], int nfpaths)
 	pthread_join(tids[0], NULL);
 	pthread_join(tids[1], NULL);
 }
+
