@@ -38,11 +38,14 @@ void elbuf_free(elbuf_t *e);
 line_t *elbuf_line(elbuf_t *e);
 
 /**
- * elbuf_str - Get an echo line buffer's single line as a null terminated string
- *
- * Returned string is dynamically allocated. Free with free.
+ * elbuf_str - Get the string underlying the echo line buffer
  */
 char *elbuf_str(elbuf_t *e);
+
+/**
+ * elbuf_strlen - Get the length of the string underlying the echo line buffer
+ */
+int elbuf_strlen(elbuf_t *e);
 
 /**
  * elbuf_set - Set the contents of an echo line buf to a string

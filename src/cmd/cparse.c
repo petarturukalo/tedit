@@ -65,34 +65,26 @@ char *args_parse_cmdname(char *args)
 	return args+i;
 }
 
-char *cmds_parse_aux(char *args, char *cmd_name, char *remain_args, cmds_t *cs, bufs_t *b, WINDOW *w)
+void cmds_parse_aux(char *args, char *cmd_name, char *remain_args, cmds_t *cs, bufs_t *b, WINDOW *w)
 {
-	char *sn;  // Short name.
 	cmd_t *c = cmds_search(cs, cmd_name);
 
-	if (c) {
-		sn = c->short_name;
-
-		// Force quit command exits before returning and so doesn't get to free
-		// the command string after returning, so do it here instead (pedantic).
-		if (sn[0] == 'f' && sn[1] == 'q')
-			free(args);
-		// TODO handle mem leak not freeing args on regular quit command (needs to only free if
-		// there isn't an unsaved edit)
-		return c->handler(remain_args, b, w);
-	}
-	return chrpcpy_alloc("invalid command");
+	if (c) 
+		c->handler(remain_args, b, w);
+	else
+		strcpy(b->cmd_ostr, "invalid command");
 }
 
-char *cmds_parse(char *args, cmds_t *cs, bufs_t *b, WINDOW *w)
+void cmds_parse(char *args, cmds_t *cs, bufs_t *b, WINDOW *w)
 {
 	char *cmd_name, *remain_args;
 
 	remain_args = args_parse_remain_args(args);
 	cmd_name = args_parse_cmdname(args);
 	
-	if (cmd_name)
-		return cmds_parse_aux(args, cmd_name, remain_args, cs, b, w);
-	return "no command name given";
+	if (cmd_name) 
+		cmds_parse_aux(args, cmd_name, remain_args, cs, b, w);
+	else
+		strcpy(b->cmd_ostr, "no command name given");
 }
 

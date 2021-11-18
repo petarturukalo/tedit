@@ -5,7 +5,7 @@
  */
 #include "cmd.h"
 
-cmd_t *cmd_init(char *short_name, char *long_name, char *(*handler)(char *, bufs_t *, WINDOW *))
+cmd_t *cmd_init(char *short_name, char *long_name, void (*handler)(char *, bufs_t *, WINDOW *))
 {
 	cmd_t *c = malloc(sizeof(cmd_t));
 

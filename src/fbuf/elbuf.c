@@ -35,14 +35,12 @@ line_t *elbuf_line(elbuf_t *e)
 
 char *elbuf_str(elbuf_t *e)
 {
-	char *t;
-	str_t *s = fbaux_line(e, 0);
+	return fbaux_line(e, 0)->buf;
+}
 
-	// Calloc for implicit null termination character.
-	t = calloc(s->len+1, sizeof(char));
-	strncpy(t, s->buf, s->len);
-
-	return t;
+int elbuf_strlen(elbuf_t *e)
+{
+	return fbaux_line(e, 0)->len;
 }
 
 void elbuf_set(elbuf_t *e, char *s)

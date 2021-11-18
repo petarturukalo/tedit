@@ -22,20 +22,24 @@ void elinp_esc(bufs_t *b)
  */
 void elinp_enter(bufs_t *b, cmds_t *cs, WINDOW *w)
 {
-	char *line_str, *echo_str;
 	elbuf_t *e = &b->elbuf;
+	char *s = elbuf_str(e);
+	int n = elbuf_strlen(e);
 
-	line_str = elbuf_str(e);
-	echo_str = cmds_parse(line_str, cs, b, w);
+	// Echo line string doesn't have tabs to worry about so can use its buf directly.
+	strncpy(b->cmd_istr, elbuf_str(e), CMD_ISTR_LEN);
+	if (n >= CMD_ISTR_LEN)
+		b->cmd_istr[CMD_ISTR_LEN] = '\0';
+	else
+		b->cmd_istr[n] = '\0';
 
-	elbuf_set(e, echo_str);
+	b->cmd_ostr[0] = '\0';
+	cmds_parse(b->cmd_istr, cs, b, w);
+	elbuf_set(e, b->cmd_ostr);
 
 	// Jump back to file buffer if no string is echoed back.
-	if ((echo_str && strlen(echo_str) == 0) || !echo_str)
+	if ((b->cmd_ostr && strlen(b->cmd_ostr) == 0) || !b->cmd_ostr)
 		elinp_esc(b);
-
-	free(echo_str);
-	free(line_str);
 }
 
 /**
@@ -48,6 +52,7 @@ void elinp_handle_seq_char(bufs_t *b, int c)
 		// such as up, down, page up and page down.
 		case KEY_LEFT:
 		case KEY_RIGHT:
+		case KEY_BACKSPACE:
 		case KEY_DL:
 		case KEY_HOME: 
 		case KEY_END:  

@@ -32,7 +32,7 @@ int lslen(fbufs_t *fs)
 }
 
 /**
- * lsstr - Get a string of a list of the open files in the file buffer
+ * lsstr - Get a string of a list of the open files in the file buffers
  */
 char *lsstr(fbufs_t *fs, fbuf_t *active_fbuf)
 {
@@ -59,31 +59,29 @@ char *lsstr(fbufs_t *fs, fbuf_t *active_fbuf)
 	return start;
 }
 
-/**
- * acmd_list_handler - Where to run a command from
- */
-char *acmd_list_handler(char *s, bufs_t *b, WINDOW *w)
+void acmd_list_handler(char *s, bufs_t *b, WINDOW *w)
 {
-	return lsstr(b->fbufs, b->active_fbuf);
+	char *t = lsstr(b->fbufs, b->active_fbuf);
+	snprintf(b->cmd_ostr, CMD_OSTR_LEN, "%s", t);
+	free(t);
 }
 
 /**
  * acmd_quit_handler - Handle the quit command by attempting to quit the program,
  *	and cleaning up before doing so
  */
-char *acmd_quit_handler(char *s, bufs_t *b, WINDOW *w)
+void acmd_quit_handler(char *s, bufs_t *b, WINDOW *w)
 {
 	fbuf_t *f;
-	char *t;
 
 	for (int i = 0; i < fbufs_len(b->fbufs); ++i) {
 		f = fbufs_get(b->fbufs, i);
 		if (f->unsaved_edit) {
-			// TODO don't like this magic number
-			t = malloc(sizeof(char)*200);  // Won't show long filenames properly.
-			snprintf(t, 200, "unsaved edit in buf '%s' [%d]; need to write/save before quit",
-				 f->filepath, f->id);
-			return t;
+			snprintf(b->cmd_ostr, CMD_OSTR_LEN, 
+				 "unsaved edit in buf '%s' [%d]; "
+				 "need to write/save before quit", 
+				 f->filepath ? f->filepath : "unnamed", f->id);
+			return;
 		}
 	}
 	exit(EXIT_SUCCESS);
@@ -93,7 +91,7 @@ char *acmd_quit_handler(char *s, bufs_t *b, WINDOW *w)
  * acmd_fquit_handler - Handle the force quit command by quitting the program and
  *	cleaning up before doing so
  */
-char *acmd_fquit_handler(char *s, bufs_t *b, WINDOW *w)
+void acmd_fquit_handler(char *s, bufs_t *b, WINDOW *w)
 {
 	exit(EXIT_SUCCESS);
 }

@@ -15,8 +15,11 @@
 #include "../chrp.h"
 
 /**
- * cmds_parse - Parse an array of commands
+ * cmds_parse - Parse and run a command
+ * @args: arguments containing command name and input arguments for the command
+ * 
+ * Sets cmd_ostr in bufs_t as out-parameter, a message describing the command.
  */
-char *cmds_parse(char *args, cmds_t *cs, bufs_t *b, WINDOW *w);
+void cmds_parse(char *args, cmds_t *cs, bufs_t *b, WINDOW *w);
 
 #endif

@@ -64,9 +64,7 @@ int bufs_new(bufs_t *b, WINDOW *w, int tabsz)
 
 	if (f) {
 		bufs_fbufs_append(b, f);
-		// Can't make a new empty file buffer without closing all or
-		// not specifiying filepaths at command line, so don't need to set
-		// active file buffer since done in append.
+		b->active_fbuf = f;
 		return 0;
 	}
 	return -1;
@@ -78,6 +76,8 @@ void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[], int nfpaths)
 	b->active_buf = NULL;
 	elbuf_init(&b->elbuf, w);
 	b->nbufs = 1;
+	b->cmd_istr = malloc(sizeof(char)*CMD_ISTR_LEN);
+	b->cmd_ostr = malloc(sizeof(char)*CMD_OSTR_LEN);
 
 	if (nfpaths > 0) {
 		for (int i = 0; i < nfpaths; ++i)
@@ -87,8 +87,7 @@ void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[], int nfpaths)
 	// when there are filepaths but none could be opened.
 	if (b->fbufs->len == 0)
 		bufs_new(b, w, TABSZ);
-	
-	
+
 	b->active_buf = b->active_fbuf;
 }
 
@@ -96,6 +95,8 @@ void bufs_free(bufs_t *b)
 {
 	fbufs_free(b->fbufs);
 	elbuf_free(&b->elbuf);
+	free(b->cmd_istr);
+	free(b->cmd_ostr);
 }
 
 int bufs_edit(bufs_t *b, char *fpath)
