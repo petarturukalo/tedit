@@ -8,7 +8,7 @@
 // Refresh rates in micro seconds.
 #define REFRESH_RATE_60_HZ_USEC 16667
 #define REFRESH_RATE_120_HZ_USEC 8333 
-#define REFRESH_RATE_USE_USEC 100  // Refresh rate that gets used.
+#define REFRESH_RATE_USE_USEC REFRESH_RATE_60_HZ_USEC  // Refresh rate that gets used.
 
 // Start and end range (both endpoints inclusive) for
 // ASCII characters that can be safely printed.
@@ -115,6 +115,8 @@ void display_fbuf_cursor(fbuf_t *f, WINDOW *w)
  */
 void display_buffers(bufs_t *b, WINDOW *w)
 {
+	// TODO tty display gets fixed when using clear instead of erase,
+	// but it introduces flicker which is why it was avoided
 	werase(w);
 	// Show current file buffer being edited along with echo line buffer where user enters commands.
 	display_fbuf_lines(b->active_fbuf, w);
