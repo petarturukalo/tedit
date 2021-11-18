@@ -42,16 +42,16 @@ void tedit_start(char *fpaths[], int nfpaths)
 	// allocated memory could just become static instead.
 	signal(SIGINT, SIG_IGN);
 	signal(SIGTERM, SIG_IGN);
-	// Use own sigcont and sigtstp handlers for job control as the default curses
-	// implementations jumble the screen on returning to the foreground by its use of
-	// the doupdate function.
-	signal(SIGTSTP, sig_handle_tstp);
-	signal(SIGCONT, sig_handle_cont);
 
 	tedata_init(&t, fpaths, nfpaths);
 
 	atexit(cleanup);  // Clean up program on exit.
 	signal(SIGTERM, sig_clean_exit);  // Calls exit to clean up.
+	// Use own sigcont and sigtstp handlers for job control as the default curses
+	// implementations jumble the screen on returning to the foreground by its use of
+	// the doupdate function.
+	signal(SIGTSTP, sig_handle_tstp);
+	signal(SIGCONT, sig_handle_cont);
 
 	// Below is expected to be exited by the user running a quit command or
 	// receiving a kill/termination signal.
