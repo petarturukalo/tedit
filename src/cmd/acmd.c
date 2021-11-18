@@ -73,10 +73,19 @@ char *acmd_list_handler(char *s, bufs_t *b, WINDOW *w)
  */
 char *acmd_quit_handler(char *s, bufs_t *b, WINDOW *w)
 {
-	fbuf_t *f = b->active_fbuf;
+	fbuf_t *f;
+	char *t;
 
-	if (f->unsaved_edit)
-		return chrpcpy_alloc("need to write before quit");
+	for (int i = 0; i < fbufs_len(b->fbufs); ++i) {
+		f = fbufs_get(b->fbufs, i);
+		if (f->unsaved_edit) {
+			// TODO don't like this magic number
+			t = malloc(sizeof(char)*200);  // Won't show long filenames properly.
+			snprintf(t, 200, "unsaved edit in buf '%s' [%d]; need to write/save before quit",
+				 f->filepath, f->id);
+			return t;
+		}
+	}
 	exit(EXIT_SUCCESS);
 }
 
