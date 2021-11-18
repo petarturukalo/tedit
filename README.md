@@ -35,7 +35,3 @@ and `[args]` are arguments (optionally) used by the command.
 | q | quit | Quit the text editor. Requires that the current file buffer be saved/written before exiting. |
 | fq | fquit | Force quit the text editor. Discards any unsaved edits. |
 
-
-## TODO
-
-* Tabs not always displayed as spaces properly when ran in tty. Works fine in pty (gnome terminal). Using non-breaking space instead of a regular space didn't fix it. Could be a problem to do with waddch trying to complete a multi-byte sequence or something dependent on the environment.
