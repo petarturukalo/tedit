@@ -79,9 +79,7 @@ void str_try_grow(str_t *s)
 {
 	if (s->len == s->capacity) {
 		int new_cap = s->capacity<<1;
-
-		if (str_resize(s, new_cap) == -1)
-			fprintf(stderr, "str grow malloc\n");
+		str_resize(s, new_cap);
 	}
 }
 
@@ -119,10 +117,8 @@ void str_try_shrink(str_t *s)
 {
 	int new_cap = round_up_pow2(s->len);
 	
-	if (new_cap >= STR_MIN_CAP && new_cap < s->capacity) {
-		if (str_resize(s, new_cap) == -1)
-			fprintf(stderr, "str shrink malloc\n");
-	}
+	if (new_cap >= STR_MIN_CAP && new_cap < s->capacity) 
+		str_resize(s, new_cap);
 }
 
 void str_delete(str_t *s, int index)

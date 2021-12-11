@@ -47,9 +47,7 @@ void dlist_try_grow(dlist_t *d)
 {
 	if (d->len == d->capacity) {
 		int new_cap = d->capacity<<1;
-
-		if (dlist_resize(d, new_cap) == -1)
-			fprintf(stderr, "dlist grow malloc\n");
+		dlist_resize(d, new_cap):
 	}
 }
 
@@ -64,10 +62,8 @@ void dlist_try_shrink(dlist_t *d)
 {
 	int new_cap = round_up_pow2(d->len);
 
-	if (new_cap >= DLIST_MIN_CAP && new_cap < d->capacity) {
-		if (dlist_resize(d, new_cap) == -1)
-			fprintf(stderr, "dlist shrink malloc\n");
-	}
+	if (new_cap >= DLIST_MIN_CAP && new_cap < d->capacity) 
+		dlist_resize(d, new_cap);
 }
 
 void dlist_append(dlist_t *d, void *elem)

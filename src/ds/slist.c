@@ -9,15 +9,12 @@ slist_t *slist_init(int capacity)
 {
 	slist_t *s = malloc(sizeof(slist_t));
 
-	if (!s) {
-		fprintf(stderr, "can't alloc slist\n");
+	if (!s) 
 		return NULL;
-	}
 
 	s->array = calloc(capacity, sizeof(void *));
 
 	if (!s->array) {
-		fprintf(stderr, "can't alloc slist array\n");
 		free(s);
 		return NULL;
 	}
