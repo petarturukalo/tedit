@@ -47,7 +47,7 @@ void dlist_try_grow(dlist_t *d)
 {
 	if (d->len == d->capacity) {
 		int new_cap = d->capacity<<1;
-		dlist_resize(d, new_cap):
+		dlist_resize(d, new_cap);
 	}
 }
 

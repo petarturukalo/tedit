@@ -31,8 +31,8 @@ struct buffers {
 	fbuf_t *active_fbuf;
 	// Total number of buffers made, still keeping count of those deleted.
 	int nbufs;
-	char *cmd_istr;  // Command input string.
-	char *cmd_ostr;  // Command output string.
+	char cmd_istr[CMD_ISTR_LEN];  // Command input string.
+	char cmd_ostr[CMD_OSTR_LEN];  // Command output string.
 };
 
 typedef struct buffers bufs_t;
@@ -129,5 +129,14 @@ int bufs_write_other(bufs_t *b, char *fpath, WINDOW *w, int tabsz);
  * Closes even if there are changes that need to be saved.
  */
 void bufs_close(bufs_t *b, WINDOW *w);
+
+/*
+ * Safely set the input string of the buffer.
+ * @s: string to set input string to
+ * @n: length of string
+ *
+ * Sets the command output string to a length 0 null-terminated string.
+ */
+void bufs_reset_cmd_strs(bufs_t *b, char *s, int n);
 
 #endif

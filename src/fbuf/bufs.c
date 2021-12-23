@@ -76,8 +76,8 @@ void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[], int nfpaths)
 	b->active_buf = NULL;
 	elbuf_init(&b->elbuf, w);
 	b->nbufs = 1;
-	b->cmd_istr = malloc(sizeof(char)*CMD_ISTR_LEN);
-	b->cmd_ostr = malloc(sizeof(char)*CMD_OSTR_LEN);
+	b->cmd_istr[0] = '\0';
+	b->cmd_ostr[0] = '\0';
 
 	if (nfpaths > 0) {
 		for (int i = 0; i < nfpaths; ++i)
@@ -95,8 +95,6 @@ void bufs_free(bufs_t *b)
 {
 	fbufs_free(b->fbufs);
 	elbuf_free(&b->elbuf);
-	free(b->cmd_istr);
-	free(b->cmd_ostr);
 }
 
 int bufs_edit(bufs_t *b, char *fpath)
@@ -185,4 +183,15 @@ void bufs_close(bufs_t *b, WINDOW *w)
 	// Resort to a new empty buffer if all become closed.
 	if (fbufs_len(b->fbufs) == 0)  
 		bufs_fbufs_append(b, fbuf_new(w, TABSZ, bufs_next_id(b)));
+}
+
+void bufs_reset_cmd_strs(bufs_t *b, char *s, int n)
+{
+	// Echo line string doesn't have tabs to worry about so can use its buf directly.
+	strncpy(b->cmd_istr, s, CMD_ISTR_LEN);
+	if (n >= CMD_ISTR_LEN)
+		b->cmd_istr[CMD_ISTR_LEN-1] = '\0';
+	else
+		b->cmd_istr[n] = '\0';
+	b->cmd_ostr[0] = '\0';
 }

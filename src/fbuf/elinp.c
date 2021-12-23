@@ -23,17 +23,8 @@ void elinp_esc(bufs_t *b)
 void elinp_enter(bufs_t *b, cmds_t *cs, WINDOW *w)
 {
 	elbuf_t *e = &b->elbuf;
-	char *s = elbuf_str(e);
-	int n = elbuf_strlen(e);
 
-	// Echo line string doesn't have tabs to worry about so can use its buf directly.
-	strncpy(b->cmd_istr, elbuf_str(e), CMD_ISTR_LEN);
-	if (n >= CMD_ISTR_LEN)
-		b->cmd_istr[CMD_ISTR_LEN] = '\0';
-	else
-		b->cmd_istr[n] = '\0';
-
-	b->cmd_ostr[0] = '\0';
+	bufs_reset_cmd_strs(b, elbuf_str(e), elbuf_strlen(e));
 	cmds_parse(b->cmd_istr, cs, b, w);
 	elbuf_set(e, b->cmd_ostr);
 
