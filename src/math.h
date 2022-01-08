@@ -10,7 +10,7 @@
 
 #include <math.h>
 
-/**
+/*
  * round_up_pow2 - Round a number up to the nearest power of 2 
  *
  * Example: rounding 6 up to the nearest power of 2 would round it up 
@@ -18,7 +18,7 @@
  */
 int round_up_pow2(int n);
 
-/**
+/*
  * ndigits - Get the amount of digits in a number (base 10 decimal)
  */
 int ndigits(int nr);

@@ -15,7 +15,7 @@
 #include <stdarg.h>
 #include "math.h"
 
-/**
+/*
  * chrp_find - Find the index of the first occurrence of a character 
  *	in a substring
  * @c: character to find
@@ -27,7 +27,7 @@
  */
 int chrp_find(char *s, char c, int start, int end);
 
-/**
+/*
  * chrp_find_reverse - Find the index of the first occurrence of a character in a substring
  *	(traversing right to left, so first occurrence is rightmost reached from starting point)
  * @c: character to find
@@ -38,7 +38,7 @@ int chrp_find(char *s, char c, int start, int end);
  */
 int chrp_find_reverse(char *s, char c, int start, int end);
 
-/** 
+/* 
  * chrpcpy_alloc - Copy a string to a newly dynamically allocated string (null-terminated)
  * @s: null-terminated string
  *
@@ -46,7 +46,7 @@ int chrp_find_reverse(char *s, char c, int start, int end);
  */
 char *chrpcpy_alloc(char *s);
 
-/**
+/*
  * chrpprintf - Initialise a new string with printf style formatting and arrangement
  * @len: length >= that of outputted format string (length of returned string; leave room
  *	for null termination character)
@@ -56,12 +56,12 @@ char *chrpcpy_alloc(char *s);
  */
 char *chrpprintf(char *format, ...);
 
-/**
+/*
  * chrp_nmatched - Get the number of consecutive matches of a character along a substring
  */
 int chrp_nmatched(char *s, char c, int start, int end);
 
-/**
+/*
  * chrp_nmatched_reverse - Get the number of consecutive matches of a character along a 
  *	substring in reverse
  */

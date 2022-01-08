@@ -15,7 +15,7 @@
 #define ASCII_PRINT_START_INCL 32
 #define ASCII_PRINT_END_INCL  127
 
-/**
+/*
  * ascii_printable - Get whether a character is an ASCII printable character
  */
 static bool ascii_printable(char c)
@@ -23,7 +23,7 @@ static bool ascii_printable(char c)
 	return c >= ASCII_PRINT_START_INCL && c <= ASCII_PRINT_END_INCL;
 }
 
-/**
+/*
  * addnstrtab - Similar to curses addnstr but displays tab characters as specified in
  *	tab.h as spaces
  * @s: string to display
@@ -44,7 +44,7 @@ void addtabsubstr(char *s, int start, int end, WINDOW *w)
 	}
 }
 
-/**
+/*
  * display_fbuf_line - Display the view of a line in the file buffer
  * @l: line to display
  * @i: index row in view (first displayed line has this 0, second has 1, etc., by 0-indexing)
@@ -97,7 +97,7 @@ void display_fbuf_lines(fbuf_t *f, WINDOW *w)
 				  view_disp_top_row, view_disp_first_col, w);
 }
 
-/**
+/*
  * display_fbuf_cursor - Display the file buffer cursor in view on the curses standard screen
  */
 void display_fbuf_cursor(fbuf_t *f, WINDOW *w)
@@ -110,7 +110,7 @@ void display_fbuf_cursor(fbuf_t *f, WINDOW *w)
 	wmove(w, view_cursor_display_row(v, c), view_cursor_display_col(v, c));
 }
 
-/**
+/*
  * display_buffers - Display all file buffers to the curses standard screen
  */
 void display_buffers(bufs_t *b, WINDOW *w)
@@ -126,7 +126,7 @@ void display_buffers(bufs_t *b, WINDOW *w)
 	wrefresh(w);
 }
 
-/**
+/*
  * display_text_editor - Display the text editor to the curses standard screen
  */
 void display_text_editor(tedata_t *t)

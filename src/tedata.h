@@ -27,7 +27,7 @@ struct text_editor_data {
 typedef struct text_editor_data tedata_t;
 
 
-/**
+/*
  * tedata_init - Set default values for text editor data fields.
  * @fpaths: paths to files to initially open
  * @nfpaths: number of file paths
@@ -37,14 +37,14 @@ typedef struct text_editor_data tedata_t;
  */
 int tedata_init(tedata_t *t, char *fpaths[], int nfpaths);
 
-/**
+/*
  * tedata_free - Clean up the text editor data
  *
  * Doesn't use any explicit mallocs (called free for consistency).
  */
 void tedata_free(tedata_t *t);
 
-/**
+/*
  * setup_curses - Set up default curses settings
  */
 void setup_curses(void);

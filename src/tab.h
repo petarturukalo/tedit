@@ -24,7 +24,7 @@
 #define TAB_START -2
 #define TAB_CONT  -1
 
-/**
+/*
  * dist_to_next_tabstop - Get the distance in spaces to fill string length to the
  *	next tabstop
  * @i: index start in imaginary string to get distance to next tab stop from
@@ -32,7 +32,7 @@
  */
 int dist_to_next_tabstop(int i, int tabsz);
 
-/**
+/*
  * tablen - Get the current length of a tab filled with spaces in a string which
  *	uses space filled tabs
  * @i: index of start of tab character in string
@@ -41,7 +41,7 @@ int dist_to_next_tabstop(int i, int tabsz);
  */
 int tablen(str_t *s, int i);
 
-/**
+/*
  * str_insert_tab_spaces - Insert a tab as spaces at an index
  * @s: string to insert tab into
  * @i: index in str to insert tab at
@@ -51,26 +51,26 @@ int tablen(str_t *s, int i);
  */
 int str_insert_tab_spaces(str_t *s, int i, int tabsz);
 
-/**
+/*
  * str_delete_tab_spaces - Delete a tab as spaces at an index
  * @s: string to delete tab from
  * @i: index in str to delete tab at (expected to be a TAB_START character)
  */
 void str_delete_tab_spaces(str_t *s, int i);
 
-/**
+/*
  * str_contract_tab_spaces - Contract all space-filled tabs back into tabs
  */
 void str_contract_tab_spaces(str_t *s, int tabsz);
 
-/**
+/*
  * str_expand_tab_spaces - Expand all tabs into spaces
  *
  * O(n*tabsz) worst case time complexity where n is the length of the string.
  */
 void str_expand_tab_spaces(str_t *s, int tabsz);
 
-/**
+/*
  * str_align_next_tab - Align the first next seen tab to its tab bar in case
  *	it is misaligned
  * @start_ind: index to start looking for a tab at 

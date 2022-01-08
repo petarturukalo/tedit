@@ -14,7 +14,7 @@
 #include <curses.h>
 #include "tedata.h"
 
-/**
+/*
  * sig_clean_exit - Signal handler to clean up and free all initialised data before
  *	exiting
  */

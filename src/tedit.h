@@ -16,7 +16,7 @@
 #include "fbuf/fbuf.h"
 #include "fbuf/fbio.h"
 
-/**
+/*
  * tedit_start - Entry point to starting the text editor.
  * @fpaths: paths to files to open
  * @nfpaths: number of files to open

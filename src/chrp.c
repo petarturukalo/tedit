@@ -39,7 +39,7 @@ char *chrpcpy_alloc(char *s)
 	return t;
 }
 
-/**
+/*
  * strcount - Get a count of characters in a null-terminated string
  */
 static int strcount(char *s, int c)
@@ -56,7 +56,7 @@ static int strcount(char *s, int c)
 	return cnt;
 }
 
-/**
+/*
  * strlenf - Get the length of a formatted string after substitution
  * 
  * Only handles string and int, and breaks on % characters substituted in.

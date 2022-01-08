@@ -15,7 +15,7 @@
 #define ASCII_ESC 27	// Escape.
 #define ASCII_BS 127	// Backspace.
 
-/**
+/*
  * mygetch - Read a single character from stdin with the stdscr window
  *
  * Also returns escape sequence produced keys as a single character.

@@ -24,7 +24,7 @@ struct cursor {
 typedef struct cursor cursor_t;
 
 
-/**
+/*
  * cursor_set_row - Set the row position of a cursor
  * @ls: lines of file buffer to move to
  *
@@ -32,7 +32,7 @@ typedef struct cursor cursor_t;
  */
 void cursor_set_row(cursor_t *c, int row, lines_t *ls);
 
-/**
+/*
  * cursor_add_row - Set the row position of a cursor manually by the user pressing a 
  *	keyboard key
  * @offset: offset to add to current cursor row
@@ -41,7 +41,7 @@ void cursor_set_row(cursor_t *c, int row, lines_t *ls);
  */
 void cursor_add_row(cursor_t *c, int offset, lines_t *ls);
 
-/**
+/*
  * cursor_set_col_manual - Set the column position of a cursor manually by the user
  *	pressing a keyboard key
  * @col: column to set cursor column to
@@ -50,7 +50,7 @@ void cursor_add_row(cursor_t *c, int offset, lines_t *ls);
  */
 void cursor_set_col_manual(cursor_t *c, int col);
 
-/**
+/*
  * cursor_add_col_manual - Set the column position of a cursor manually by the user
  *	pressing a keyboard key
  * @offset: offset to add to current cursor column
@@ -59,7 +59,7 @@ void cursor_set_col_manual(cursor_t *c, int col);
  */
 void cursor_add_col_manual(cursor_t *c, int offset);
 
-/**
+/*
  * cursor_reset - Reset the cursor to default row and column positions.
  */
 void cursor_reset(cursor_t *c);

@@ -60,7 +60,7 @@ void str_expand_tab_spaces(str_t *s, int tabsz)
 	}
 }
 
-/**
+/*
  * strcontractlen - Get the length of a tab space expanded string if it were to be contracted
  */
 int strcontractlen(str_t *s)
@@ -101,7 +101,7 @@ void str_contract_tab_spaces(str_t *s, int tabsz)
 	str_try_shrink(s);
 }
 
-/**
+/*
  * str_align_tab - Align a tab to its tab bar if it's misaligned
  * @i: index of start of tab character in line (since a tab can span
  *	multiple characters)

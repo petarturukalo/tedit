@@ -13,7 +13,7 @@ lines_t *lines_init(void)
 	return dlist_init(64);
 }
 
-/**
+/*
  * lines_free - Free a dynamic list of strings representing lines.
  */
 void lines_free(lines_t *l)
@@ -28,7 +28,7 @@ void lines_append(lines_t *ls, line_t *l)
 
 void lines_expand_tab_spaces(lines_t *ls, int tabsz);
 
-/**
+/*
  * lines_from_file_aux - Read all lines from a file into a list of lines
  */
 int lines_from_file_aux(int fd, lines_t *ls, int tabsz)
@@ -98,7 +98,7 @@ void lines_for_each(lines_t *l, void (*line_func)(line_t *, void *), void *data)
 		line_func(l->array[i], data);
 }
 
-/**
+/*
  * line_expand_tab_spaces - Expand all tabs in a line into spaces
  * @tabsz: void pointer to tab size so this function can be passed to lines_for_each
  */
@@ -108,7 +108,7 @@ void line_expand_tab_spaces(line_t *l, void *tabsz)
 	str_expand_tab_spaces(l, tsz);
 }
 
-/**
+/*
  * lines_expand_tab_spaces - Expand all tabs in a list of lines into pseudo spaces
  */
 void lines_expand_tab_spaces(lines_t *ls, int tabsz)
@@ -116,7 +116,7 @@ void lines_expand_tab_spaces(lines_t *ls, int tabsz)
 	lines_for_each(ls, line_expand_tab_spaces, (void *)&tabsz);
 }
 
-/**
+/*
  * line_contract_tab_spaces - Contract all spaces in a line that were tabs back into tabs
  * @tabsz: void pointer to tab size so this function can be passed to lines_for_each
  */
@@ -126,7 +126,7 @@ void line_contract_tab_spaces(line_t *l, void *tabsz)
 	str_contract_tab_spaces(l, tsz);
 }
 
-/**
+/*
  * lines_contract_tab_spaces - Contract all spaces there were tabs back into tabs
  */
 void lines_contract_tab_spaces(lines_t *ls, int tabsz)

@@ -5,7 +5,7 @@
  */
 #include "linsert.h"
 
-/**
+/*
  * lins_insert_reg - Insert a regular character into a line
  *
  * O(n*tabsz) worst case time complexity where n is the length of the line.
@@ -33,7 +33,7 @@ void lins_insert_reg(line_t *l, cursor_t *crs, char c, int tabsz)
 }
 
 
-/**
+/*
  * lins_insert_tab - Insert a tab character into a line
  *
  * O(n*tabsz) worst case time complexity where n is the length of the line.
@@ -66,7 +66,7 @@ void lins_insert_char(line_t *l, cursor_t *crs, char c, int tabsz)
 		lins_insert_reg(l, crs, c, tabsz);
 }
 
-/**
+/*
  * lins_delete_reg - Delete a regular character where the cursor is (a
  *	regular character being a non-tab character)
  *
@@ -78,7 +78,7 @@ void lins_delete_reg(line_t *l, cursor_t *c, int tabsz)
 	str_align_next_tab(l, c->col, tabsz);
 }
 
-/**
+/*
  * lins_delete_tab - Delete a tab character where the cursor is 
  *
  * O(n*tabsz) worst case time complexity where n is the length of the line.
@@ -89,7 +89,7 @@ void lins_delete_tab(line_t *l, cursor_t *c, int tabsz)
 	str_align_next_tab(l, c->col, tabsz);
 }
 
-/**
+/*
  * lins_linecat - Concatenate two lines together
  * @dest: line to concat src line to end of
  * @src: line to concat onto end of dest line
@@ -107,7 +107,7 @@ void lins_linecat(line_t *dest, line_t *src, int tabsz)
 	str_align_next_tab(dest, n, tabsz);
 }
 
-/**
+/*
  * lins_delete_newline - Delete a newline character off the end of the current line.
  */
 void lins_delete_newline(line_t *cur, line_t *next, int tabsz)
@@ -138,7 +138,7 @@ bool lins_delete(line_t *cur, line_t *next, cursor_t *crs, int tabsz)
 	return false;
 }
 
-/**
+/*
  * lins_backspace_tab - Backspace a tab character in a line, knowing that the previous
  *	character is part of a tab
  *
@@ -166,7 +166,7 @@ void lins_backspace_tab(line_t *l, cursor_t *crs, int tabsz)
 	str_align_next_tab(l, crs->col, tabsz);
 }
 
-/**
+/*
  * lins_backspace_reg - Backspace a regular character on the current line before the current
  *	cursor position.
  *
@@ -178,7 +178,7 @@ void lins_backspace_reg(line_t *l, cursor_t *c, int tabsz)
 	lins_delete_reg(l, c, tabsz);
 }
 
-/**
+/*
  * lins_backspace_start - Backspace the start of the current line, concatenating it to the end
  *	of the previous line
  *

@@ -12,14 +12,14 @@
 
 typedef str_t line_t;
 
-/**
+/*
  * line_alloc - Allocate memory for a line
  *
  * Wrapper for str_alloc (see it for more info).
  */
 line_t *line_alloc(int capacity);
 
-/**
+/*
  * line_init - Dynamically allocate a line 
  * @s: string contents of line
  * @n: length of string
@@ -31,21 +31,21 @@ line_t *line_alloc(int capacity);
 line_t *line_init(char *s, int n, int tabsz);
 
 
-/**
+/*
  * line_append - Append a character to a line.
  * 
  * Wrapper for str_append (see it for more info).
  */
 void line_append(line_t *l, char c);
 
-/**
+/*
  * line_free_sl - Free a line as part of a static list (list of lines)
  * @line: line cast to void pointer for compatibility with slist_free since
  *	that's how a list of lines is implemented
  */
 void line_free_sl(void *line);
 
-/**
+/*
  * line_len - Get the length of a line
  *
  * Doesn't include the end newline character to keep lengths synchronised
@@ -53,12 +53,12 @@ void line_free_sl(void *line);
  */
 int line_len(line_t *l);
 
-/**
+/*
  * line_len_nl - Get the length of a line including the end newline
  */
 int line_len_nl(line_t *l);
 
-/**
+/*
  * line_split - Split a line into two
  * @l: line to split
  * @col: column to split at, with the at and after columns making

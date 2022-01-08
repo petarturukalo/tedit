@@ -12,7 +12,7 @@
 #include "fbuf/elinp.h"
 #include "getch.h"
 
-/**
+/*
  * input_start - Start waiting and reading input for use by the text editor
  */
 void input_start(tedata_t *t);

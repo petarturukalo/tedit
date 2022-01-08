@@ -11,7 +11,7 @@
 #include "tedata.h"
 #include "fbuf/fbaux.h"
 
-/**
+/*
  * display_start - Start the display part of the text editor
  *
  * Starts the curses screen to show the text editor and editing file.

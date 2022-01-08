@@ -7,7 +7,7 @@
 
 tedata_t t;  // Global text editor data.
 
-/**
+/*
  * thread_input - Wrapper for input_start.
  */
 void *thread_input(void *data)
@@ -15,7 +15,7 @@ void *thread_input(void *data)
 	input_start((tedata_t *)data);
 }
 
-/**
+/*
  * thread_display - Wrapper for display_start.
  */
 void *thread_display(void *data)
@@ -23,7 +23,7 @@ void *thread_display(void *data)
 	display_start((tedata_t *)data);
 }
 
-/**
+/*
  * cleanup - Free the global text editor data.
  */
 void cleanup(void)
