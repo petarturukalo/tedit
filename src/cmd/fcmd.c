@@ -5,7 +5,7 @@
  */
 #include "fcmd.h"
 
-/**
+/*
  * fcmd_write_handle - Handle writing to the currently active file buffer to its
  *	linked file
  */
@@ -20,7 +20,7 @@ void fcmd_write_handle(bufs_t *b)
 		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "wrote %d bytes", bytes);
 }
 
-/**
+/*
  * fcmd_write_handle_other - Handle writing the currently active file buffer to a new file
  */
 void fcmd_write_handle_other(bufs_t *b, char *fpath, WINDOW *w)
@@ -45,7 +45,7 @@ void fcmd_write_handle_new(bufs_t *b, char *fpath)
 		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "wrote %d bytes to file '%s'", bytes, fpath);
 }
 
-/**
+/*
  * fcmd_write_handler - Handle a write operation
  */
 void fcmd_write_handler(char *fpath, bufs_t *b, WINDOW *w)
@@ -64,7 +64,7 @@ void fcmd_write_handler(char *fpath, bufs_t *b, WINDOW *w)
 	}
 }
 
-/**
+/*
  * fcmd_close_handler - Handle closing the currently active file buffer
  *
  * Only closes it if there are no unsaved changes.
@@ -81,19 +81,17 @@ void fcmd_close_handler(char *s, bufs_t *b, WINDOW *w)
 	}
 }
 
-/**
+/*
  * fcmd_fclose_handler - Force close the currently active file buffer, 
  *	losing any unsaved changes
  */
 void fcmd_fclose_handler(char *s, bufs_t *b, WINDOW *w)
 {
-	fbuf_t *f = b->active_fbuf;
-
-	if (f)
+	if (b->active_fbuf)
 		bufs_close(b, w);
 }
 
-/**
+/*
  * fcmd_open_handler - Handle opening of a new file and making it the active file buffer
  */
 void fcmd_open_handler(char *fpath, bufs_t *b, WINDOW *w)
@@ -107,7 +105,7 @@ void fcmd_open_handler(char *fpath, bufs_t *b, WINDOW *w)
 			 errno == EACCES ? ": permission denied" : "");
 }
 
-/**
+/*
  * fcmd_edit_handler - Handle editing of an existing file already opened in a file buffer
  */
 void fcmd_edit_handler(char *fpath, bufs_t *b, WINDOW *w)
@@ -119,7 +117,7 @@ void fcmd_edit_handler(char *fpath, bufs_t *b, WINDOW *w)
 		strcpy(b->cmd_ostr, "no filepath");
 }
 
-/**
+/*
  * fcmd_jump_handler - Handle jumping to buffer with an id
  * @sid: id as string
  */
@@ -130,10 +128,9 @@ void fcmd_jump_handler(char *sid, bufs_t *b, WINDOW *w)
 	if (sid) {
 		id = atoi(sid);
 
-		if (id > 0)
-			bufs_jump(b, id);
-		else 
-			snprintf(b->cmd_ostr, CMD_OSTR_LEN, "buf id %s not in available bufs", sid);
+		if (id > 0 && bufs_jump(b, id) != -1) 
+			return;
+		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "buf id %s not in available bufs", sid);
 	} else
 		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "no buf id given");
 }

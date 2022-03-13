@@ -16,7 +16,7 @@
 #include "../tedata.h"
 #include "../getch.h"
 
-/**
+/*
  * fbinp_handle_char - Handle having read a character 
  *
  * Have the read character affect the file buffer by potentially

@@ -5,7 +5,7 @@
  */
 #include "cparse.h"
 
-/**
+/*
  * args_parse_remain_args - Get the arguments part of an argument string (which includes command name),
  *	with leading whitespace and trailing whitespace removed
  */
@@ -41,7 +41,7 @@ char *args_parse_remain_args(char *args)
 	return args+i+len1;
 }
 
-/**
+/*
  * args_parse_cmdname - Get the command name part of an argument string
  *
  * Call this after args_parse_remain_args since it possibly sets a null termination character

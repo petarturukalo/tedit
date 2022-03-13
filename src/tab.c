@@ -14,9 +14,9 @@ int tablen(str_t *s, int i)
 {
 	int spaces = 0;
 
-	if (s->buf[i++] == TAB_START)
+	if (s->array[i++] == TAB_START)
 		++spaces;
-	for (; i < s->len && s->buf[i] == TAB_CONT; ++i)
+	for (; i < s->len && s->array[i] == TAB_CONT; ++i)
 		++spaces;
 	return spaces;
 }
@@ -35,11 +35,11 @@ int str_insert_tab_spaces(str_t *s, int i, int tabsz)
 
 void str_delete_tab_spaces(str_t *s, int i)
 {
-	if (s->buf[i] == TAB_START) {
-		str_delete(s, i);
+	if (s->array[i] == TAB_START) {
+		dlist_delete_ind(s, i, NULL);
 		
-		while (i < s->len && s->buf[i] == TAB_CONT) 
-			str_delete(s, i);
+		while (i < s->len && s->array[i] == TAB_CONT) 
+			dlist_delete_ind(s, i, NULL);
 	}
 }
 
@@ -48,10 +48,10 @@ void str_expand_tab_spaces(str_t *s, int tabsz)
 	int nspaces, i = 0;
 	
 	while (i < s->len) {
-		if (s->buf[i] == '\t') {
+		if (s->array[i] == '\t') {
 			nspaces = dist_to_next_tabstop(i, tabsz);
 
-			str_delete(s, i);  // Remove tab.
+			dlist_delete_ind(s, i, NULL);  // Remove tab.
 			str_insert_tab_spaces(s, i, tabsz);  // Replace with pseudo spaces.
 
 			i += nspaces;
@@ -68,7 +68,7 @@ int strcontractlen(str_t *s)
 	char *t;
 	int n, count;
 
-	t = s->buf;
+	t = s->array;
 	n = s->len;
 	count = 0;
 
@@ -83,7 +83,7 @@ void str_contract_tab_spaces(str_t *s, int tabsz)
 {
 	// Read, write and length.
 	int r, w, n;
-	char *t = s->buf;
+	char *t = s->array;
 
 	r = w = 0;
 	n = s->len;
@@ -98,7 +98,7 @@ void str_contract_tab_spaces(str_t *s, int tabsz)
 		}
 	}
 	s->len = w;
-	str_try_shrink(s);
+	dlist_try_shrink(s);
 }
 
 /*
@@ -121,14 +121,14 @@ void str_align_tab(str_t *s, int i, int tabsz)
 		++cur_spaces;
 	}  // Shrink tab.
 	while (cur_spaces > target_spaces) {
-		str_delete(s, i+1);
+		dlist_delete_ind(s, i+1, NULL);
 		--cur_spaces;
 	}
 }
 
 void str_align_next_tab(str_t *s, int start_ind, int tabsz)
 {
-	int tab_ind = chrp_find(s->buf, TAB_START, start_ind, s->len-1);
+	int tab_ind = chrp_find(s->array, TAB_START, start_ind, s->len-1);
 
 	if (tab_ind != -1)
 		str_align_tab(s, tab_ind, tabsz);

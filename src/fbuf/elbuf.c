@@ -5,15 +5,16 @@
  */
 #include "elbuf.h"
 
-/**
+/*
  * elbuf_init_lines - Initialise the echo line buffer's lines
  *
  * Only ever has one line.
  */
 void elbuf_init_lines(elbuf_t *e)
 {
-	e->lines = lines_init();
-	lines_insert(e->lines, 0, str_alloc(0));
+	// TODO same code as in fbuf, make an aux?
+	lines_alloc(&e->lines);
+	dlist_append_init(&e->lines, (void (*)(void *))line_alloc);
 }
 
 void elbuf_init(elbuf_t *e, WINDOW *w)
@@ -25,28 +26,28 @@ void elbuf_init(elbuf_t *e, WINDOW *w)
 
 void elbuf_free(elbuf_t *e)
 {
-	lines_free(e->lines);
+	lines_free(&e->lines);
 }
 
 line_t *elbuf_line(elbuf_t *e)
 {
-	return fbaux_line(e, 0);
+	return dlist_get_address(&e->lines, 0);
 }
 
 char *elbuf_str(elbuf_t *e)
 {
-	return fbaux_line(e, 0)->buf;
+	return elbuf_line(e)->array;
 }
 
 int elbuf_strlen(elbuf_t *e)
 {
-	return fbaux_line(e, 0)->len;
+	return elbuf_line(e)->len;
 }
 
 void elbuf_set(elbuf_t *e, char *s)
 {
 	line_t *l = elbuf_line(e);
 
-	str_set(l, s);
+	str_copy(l, s);
 	e->cursor.col = l->len;
 }

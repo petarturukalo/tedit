@@ -13,7 +13,7 @@ void cursor_set_col_manual(cursor_t *c, int col)
 
 void cursor_set_row(cursor_t *c, int row, lines_t *ls)
 {
-	line_t *l = lines_get(ls, row);
+	line_t *l = dlist_get_address(ls, row);
 
 	c->row = row;
 	c->col = c->prev_manual_mv_col;
@@ -24,7 +24,7 @@ void cursor_set_row(cursor_t *c, int row, lines_t *ls)
 	if (line_len(l) < c->col)
 		c->col = line_len(l);  // (Don't move automatically.)
 	// Don't let the cursor sit on the space-filled (imaginary) part of a tab.
-	while (l->buf[c->col] == TAB_CONT)
+	while (l->array[c->col] == TAB_CONT)
 		++c->col;
 }
 

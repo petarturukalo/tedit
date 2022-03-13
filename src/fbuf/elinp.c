@@ -5,7 +5,7 @@
  */
 #include "elinp.h"
 
-/**
+/*
  * elinp_esc - Handle having pressed the escape character from an echo line buffer
  *	by swapping back to the most recent file buffer
  */
@@ -15,7 +15,7 @@ void elinp_esc(bufs_t *b)
 	elbuf_set(&b->elbuf, "");
 }
 
-/**
+/*
  * elinp_enter - Handle the enter key having been pressed in an echo line buffer
  *
  * Tries to parse and run a command.
@@ -33,7 +33,7 @@ void elinp_enter(bufs_t *b, cmds_t *cs, WINDOW *w)
 		elinp_esc(b);
 }
 
-/**
+/*
  * elinp_handle_seq_char - Handle having pressed a key character produced by a sequence
  */
 void elinp_handle_seq_char(bufs_t *b, int c)
@@ -52,7 +52,7 @@ void elinp_handle_seq_char(bufs_t *b, int c)
 	}
 }
 
-/**
+/*
  * elinp_handle_reg_char - Handle having pressed a key not produced by a sequence 
  *	(a regular character)
  * @c: character from pressed key

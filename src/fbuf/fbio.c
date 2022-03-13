@@ -5,124 +5,92 @@
  */
 #include "fbio.h"
 
-/**
- * fbuf_reset - Reset all of a file buffer's fields to default values except for
+/*
+ * fbuf_reset - Reset all of a file buffer's struct members to default values except for
  *	its view (and leaves tab size unchanged)
  */
-void fbuf_reset_most(fbuf_t *f)
+static void fbuf_reset_most(fbuf_t *f)
 {
 	f->filepath = NULL;
-	f->lines = NULL;
 	cursor_reset(&f->cursor);
 	f->unsaved_edit = false;
 }
 
-/**
- * fbuf_reset - Reset all of a file buffer's fields to default values
+/*
+ * fbuf_reset - Reset all of a file buffer's struct members to default values
  */
-void fbuf_reset(fbuf_t *f)
+static void fbuf_reset(fbuf_t *f)
 {
 	fbuf_reset_most(f);
 	view_reset(&f->view);
 }
 
-/**
- * fbuf_init - Initialise a new, empty file buffer
+/*
+ * fbuf_init_most - Initialise the values of a file buffer except for its lines
+ * @f: out-param file buffer to initialise
  * @w: curses window file buffer is displayed to
  * @id: see fbuf struct
- *
- * Return NULL on error. Must be freed with fbuf_free.
  */
-fbuf_t *fbuf_init(WINDOW *w, int tabsz, int id)
+static void fbuf_init_most(fbuf_t *f, WINDOW *w, int tabsz, int id)
 {
-	fbuf_t *f = malloc(sizeof(fbuf_t));
-
-	if (!f)
-		return NULL;
-
 	fbuf_reset_most(f);
 	view_init(&f->view, w, 0, 1, 0, 0);
 	f->tabsz = tabsz;
 	f->id = id;
-
-	return f;
 }
 
-fbuf_t *fbuf_new(WINDOW *w, int tabsz, int id)
+void fbuf_new(fbuf_t *f, WINDOW *w, int tabsz, int id)
 {
-	fbuf_t *f;
-	lines_t *l = lines_init();
-
-	if (!l) 
-		return NULL;
-	
-	f = fbuf_init(w, tabsz, id);
-
-	if (!f) {
-		lines_free(l);
-		return NULL;
-	}
-	lines_append(l, str_alloc(0));
-	f->lines = l;
-	return f;
+	fbuf_init_most(f, w, tabsz, id);
+	lines_alloc(&f->lines);
+	// Add a single empty line which the user will start on.
+	dlist_append_init(&f->lines, (void (*)(void *))line_alloc);
 }
 
-int fbuf_link(fbuf_t *f, char *fpath)
+bool fbuf_link(fbuf_t *f, char *fpath)
 {
 	f->filepath = chrpcpy_alloc(fpath);
-
-	if (!f->filepath)
-		return -1;
-	return 0;
+	return f->filepath;
 }
 
-fbuf_t *fbuf_fork(fbuf_t *f, WINDOW *w, int id)
+void fbuf_fork(fbuf_t *dest, fbuf_t *src, WINDOW *w, int id)
 {
-	fbuf_t *new = malloc(sizeof(fbuf_t));
-
-	if (!new)
-		return NULL;
-
-	new->id = id;
-	new->cursor = f->cursor;
-	new->filepath = f->filepath;
-	new->lines = lines_fork(f->lines);
-	new->tabsz = f->tabsz;
-	new->view = f->view;
-	new->unsaved_edit = false;
-
-	return new;
+	dest->id = id;
+	dest->cursor = src->cursor;
+	dest->filepath = src->filepath;
+	lines_fork(&src->lines, &dest->lines);
+	dest->tabsz = src->tabsz;
+	dest->view = src->view;
+	dest->unsaved_edit = false;
 }
 
-/**
- * fbuf_openfd - Open the file associated with a file buffer as a file descriptor
- *
- * Return -1 on error. Assumes the file buffer has an associated file.
+/*
+ * Open the file linked to a file buffer and return a file descriptor for it.
+ * Assumes the file buffer has been linked to a file.
  */
 int fbuf_openfd(fbuf_t *f)
 {
 	return open(f->filepath, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH);
 }
 
-fbuf_t *fbuf_open(char *fpath, WINDOW *w, int tabsz, int id)
+bool fbuf_open(fbuf_t *f, char *fpath, WINDOW *w, int tabsz, int id)
 {
 	int fd; 
-	fbuf_t *f = fbuf_init(w, tabsz, id);
+	bool read_success;
 
+	fbuf_init_most(f, w, tabsz, id);
 	fbuf_link(f, fpath);
 	fd = fbuf_openfd(f);
 
 	if (fd == -1)
-		return NULL;
+		return false;
 
-	f->lines = lines_from_fd(fd, tabsz);
+	read_success = lines_from_fd(&f->lines, fd, tabsz);
 	close(fd);
 
-	if (!f->lines) {
+	if (!read_success) 
 		fbuf_free(f);
-		return NULL;
-	}
-	return f;
+	return read_success;
 }
 
 int fbuf_write(fbuf_t *f)
@@ -133,7 +101,7 @@ int fbuf_write(fbuf_t *f)
 		fd = fbuf_openfd(f);
 		
 		if (fd != -1) {
-			bytes = lines_write(f->lines, f->tabsz, fd);
+			bytes = lines_write(&f->lines, f->tabsz, fd);
 
 			if (bytes != -1)
 				f->unsaved_edit = false;
@@ -144,25 +112,3 @@ int fbuf_write(fbuf_t *f)
 	return -1;
 }
 
-void fbuf_free(fbuf_t *f)
-{
-	if (f->filepath)
-		free(f->filepath);
-	if (f->lines) 
-		lines_free(f->lines);
-	free(f);
-}
-
-/**
- * fbuf_free_vdata - Wrapper for fbuf_free which frees a file buffer cast to void pointer
- * @f: file buffer cast to void pointer
- */
-void fbuf_free_vdata(void *f)
-{
-	fbuf_free((fbuf_t *)f);
-}
-
-void fbufs_free(fbufs_t *fs)
-{
-	slist_free(fs, fbuf_free_vdata);
-}

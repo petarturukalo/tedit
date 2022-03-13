@@ -8,49 +8,42 @@
 // Number of bytes to read per read operation.
 #define READSZ 4096
 
-lines_t *lines_init(void)
+static char readbuf[READSZ];
+
+
+void lines_alloc(lines_t *ls)
 {
-	return dlist_init(64);
+	dlist_init(ls, 64, sizeof(line_t));
 }
+
+void lines_free(lines_t *ls)
+{
+	dlist_free(ls, (void (*)(void *))line_free);
+}
+
+static void lines_expand_tab_spaces(lines_t *ls, int tabsz);
 
 /*
- * lines_free - Free a dynamic list of strings representing lines.
- */
-void lines_free(lines_t *l)
-{
-	slist_free(l, line_free_sl);
-}
-
-void lines_append(lines_t *ls, line_t *l)
-{
-	dlist_append(ls, (void *)l);
-}
-
-void lines_expand_tab_spaces(lines_t *ls, int tabsz);
-
-/*
- * lines_from_file_aux - Read all lines from a file into a list of lines
+ * Read all lines from a file into a list of lines.
  */
 int lines_from_file_aux(int fd, lines_t *ls, int tabsz)
 {
 	int i, bread;  // Bytes read.
-	char *buf;
-	line_t *l;
+	line_t l;
 
-	buf = malloc(READSZ*sizeof(char));
-	l = line_alloc(0);
+	line_alloc(&l);
 
 	flock(fd, LOCK_EX);
 
-	while ((bread = read(fd, buf, READSZ)) > 0) {
+	while ((bread = read(fd, readbuf, READSZ)) > 0) {
 		for (i = 0; i < bread;) {
-			for (; i < bread && buf[i] != '\n'; ++i)
-				line_append(l, buf[i]);
-			if (i < bread && buf[i] == '\n') {
+			for (; i < bread && readbuf[i] != '\n'; ++i)
+				str_append(&l, readbuf[i]);
+			if (i < bread && readbuf[i] == '\n') {
 				// End current line working on and start a new one.
-				line_append(l, '\n');
-				lines_append(ls, l);
-				l = line_alloc(0);
+				str_append(&l, '\n');
+				dlist_append(ls, &l);
+				line_alloc(&l);
 				++i;
 			}
 		}
@@ -58,80 +51,62 @@ int lines_from_file_aux(int fd, lines_t *ls, int tabsz)
 
 	flock(fd, LOCK_UN);
 
-	free(buf);
-
-	if (bread == 0)  {
-		lines_append(ls, l);  // Save the last line.
+	if (bread == 0) {
+		dlist_append(ls, &l);
 		lines_expand_tab_spaces(ls, tabsz);
 		return 0;
 	} else
 		return -1;
 }
 
-lines_t *lines_from_fd(int fd, int tabsz)
+bool lines_from_fd(lines_t *ls, int fd, int tabsz)
 {
-	lines_t *ls = lines_init();
+	lines_alloc(ls);
 
 	if (lines_from_file_aux(fd, ls, tabsz) == -1) {
 		lines_free(ls);
-		return NULL;
+		return false;
 	}
-	return ls;
+	return true;
 }
 
-lines_t *lines_from_file(char *filepath, int tabsz)
+bool lines_from_file(lines_t *ls, char *filepath, int tabsz)
 {
-	lines_t *ls;
+	bool ret;
 	int fd = open(filepath, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH);
 	
 	if (fd == -1)
-		return NULL;
+		return false;
 
-	ls = lines_from_fd(fd, tabsz);
+	ret = lines_from_fd(ls, fd, tabsz);
 	close(fd);
-	return ls;
+	return ret;
 }
 
-void lines_for_each(lines_t *l, void (*line_func)(line_t *, void *), void *data)
+static void line_expand_tab_spaces(line_t *l, int *tabsz)
 {
-	for (int i = 0; i < l->len; ++i) 
-		line_func(l->array[i], data);
-}
-
-/*
- * line_expand_tab_spaces - Expand all tabs in a line into spaces
- * @tabsz: void pointer to tab size so this function can be passed to lines_for_each
- */
-void line_expand_tab_spaces(line_t *l, void *tabsz)
-{
-	int tsz = *(int *)tabsz;
-	str_expand_tab_spaces(l, tsz);
+	str_expand_tab_spaces(l, *tabsz);
 }
 
 /*
- * lines_expand_tab_spaces - Expand all tabs in a list of lines into pseudo spaces
+ * Expand all tabs in a list of lines into pseudo spaces
  */
-void lines_expand_tab_spaces(lines_t *ls, int tabsz)
+static void lines_expand_tab_spaces(lines_t *ls, int tabsz)
 {
-	lines_for_each(ls, line_expand_tab_spaces, (void *)&tabsz);
+	dlist_for_each_data(ls, (void (*)(void *, void *))line_expand_tab_spaces, (void *)&tabsz);
+}
+
+static void line_contract_tab_spaces(line_t *l, int *tabsz)
+{
+	str_contract_tab_spaces(l, *tabsz);
 }
 
 /*
- * line_contract_tab_spaces - Contract all spaces in a line that were tabs back into tabs
- * @tabsz: void pointer to tab size so this function can be passed to lines_for_each
+ * Contract all spaces there were tabs back into tabs
  */
-void line_contract_tab_spaces(line_t *l, void *tabsz)
+static void lines_contract_tab_spaces(lines_t *ls, int tabsz)
 {
-	int tsz = *(int *)tabsz;
-	str_contract_tab_spaces(l, tsz);
-}
-
-/*
- * lines_contract_tab_spaces - Contract all spaces there were tabs back into tabs
- */
-void lines_contract_tab_spaces(lines_t *ls, int tabsz)
-{
-	lines_for_each(ls, line_contract_tab_spaces, (void *)&tabsz);
+	dlist_for_each_data(ls, (void (*)(void *, void *))line_contract_tab_spaces, (void *)&tabsz);
 }
 
 int lines_write(lines_t *ls, int tabsz, int fd)
@@ -147,9 +122,9 @@ int lines_write(lines_t *ls, int tabsz, int fd)
 	lseek(fd, 0, SEEK_SET);
 
 	for (int i = 0; i < ls->len; ++i) {
-		l = ls->array[i];
+		l = dlist_get_address(ls, i);
 		
-		bytes = write(fd, l->buf, l->len);
+		bytes = write(fd, l->array, l->len);
 		
 		if (bytes == -1)
 			return -1;
@@ -162,35 +137,21 @@ int lines_write(lines_t *ls, int tabsz, int fd)
 	return ttl_bytes;
 }
 
-line_t *lines_get(lines_t *l, int nr)
+void lines_delete(lines_t *ls, int nr)
 {
-	return l->array[nr];
+	line_t *l = dlist_get_address(ls, nr);
+	dlist_delete_ind(ls, nr, (void (*)(void *))line_free);
 }
 
-void lines_delete(lines_t *l, int nr)
+static void lines_append_forked_line(line_t *line, lines_t *out_lines)
 {
-	str_free(l->array[nr]);
-	dlist_delete_ind(l, nr);
+	line_t l;
+	dlist_copy_new(line, &l);
+	dlist_append(out_lines, &l);
 }
 
-void lines_insert(lines_t *ls, int index, line_t *l)
+void lines_fork(lines_t *src, lines_t *dest)
 {
-	dlist_insert(ls, index, (void *)l);
-}
-
-int lines_len(lines_t *ls)
-{
-	return ls->len;
-}
-
-lines_t *lines_fork(lines_t *ls)
-{
-	line_t *l;
-	lines_t *new = lines_init();
-
-	for (int i = 0; i < lines_len(ls); ++i) {
-		l = str_cpy(lines_get(ls, i));
-		lines_append(new, l);
-	}
-	return new;
+	lines_alloc(dest);
+	dlist_for_each_data(src, (void (*)(void *, void *))lines_append_forked_line, (void *)dest);
 }

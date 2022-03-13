@@ -14,7 +14,7 @@
 #include "cmds.h"
 #include "../chrp.h"
 
-/**
+/*
  * cmds_parse - Parse and run a command
  * @args: arguments containing command name and input arguments for the command
  * 

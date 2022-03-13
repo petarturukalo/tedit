@@ -1,7 +1,7 @@
 srcs=$(shell find src -name "*.c" -print)
 objs=$(patsubst src/%.c, build/%.o, $(srcs))
 CC=gcc
-CFLAGS=-c 
+CFLAGS=-c -g
 LFLAGS=-lm -lcurses -lpthread
 
 tedit: $(objs)
@@ -16,7 +16,7 @@ build/%.o: src/%.c $$(wildcard src/%.h)
 
 
 clean:
-	rm -f vgcore* tedit
+	rm -f tedit
 	find build -name "*.o" -print -delete
 
 install:

@@ -5,13 +5,10 @@
  */
 #include "cmds.h"
 
-#define NCMDS 9
-
 void cmds_free(cmds_t *c)
 {
 	hdestroy_r(c->htbl);
 	free(c->htbl);
-	free(c);
 }
 
 cmd_t *cmds_search(cmds_t *c, char *name)
@@ -25,32 +22,27 @@ cmd_t *cmds_search(cmds_t *c, char *name)
 	return NULL;
 }
 
-cmds_t *cmds_init(void)
+void cmds_init(cmds_t *cs)
 {
 	ENTRY e, *ep;
 	cmd_t *c;
-	cmds_t *cs;
 	cmd_t *CMDS[] = {
 		&fcmd_write, &fcmd_close, &fcmd_fclose, &fcmd_open, &fcmd_edit, &acmd_list, 
-		&fcmd_jump, &acmd_quit, &acmd_fquit
+		&fcmd_jump, &acmd_quit, &acmd_fquit, NULL
 	};
 
-	cs = malloc(sizeof(cmds_t));
 	cs->htbl = malloc(sizeof(struct hsearch_data));
-
-	memset((void *)cs->htbl, 0, sizeof(struct hsearch_data));
+	bzero(cs->htbl, sizeof(struct hsearch_data));
 	hcreate_r(64, cs->htbl);
 
-	for (int i = 0; i < NCMDS; ++i) {
+	// Insert commands into the hash table, accessible by both short or long name.
+	for (int i = 0; CMDS[i]; ++i) {
 		c = CMDS[i];
-
-		// A command can be accessed by either short or long name.
 		e.data = (void *)c;
 		e.key = c->short_name;
 		hsearch_r(e, ENTER, &ep, cs->htbl);
 		e.key = c->long_name;
 		hsearch_r(e, ENTER, &ep, cs->htbl);
 	}
-	return cs;
 }
 

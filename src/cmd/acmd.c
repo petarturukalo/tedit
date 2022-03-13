@@ -5,7 +5,7 @@
  */
 #include "acmd.h"
 
-/**
+/*
  *lslen - Get the length of the result of a ls command over a list of file buffers
  */
 int lslen(fbufs_t *fs)
@@ -13,8 +13,8 @@ int lslen(fbufs_t *fs)
 	fbuf_t *f;
 	int len = 0;
 
-	for (int i = 0; i < fbufs_len(fs); ++i) {
-		f = fbufs_get(fs, i);
+	for (int i = 0; i < fs->len; ++i) {
+		f = dlist_get_address(fs, i);
 
 		if (f->filepath)
 			len += strlen(f->filepath);
@@ -31,7 +31,7 @@ int lslen(fbufs_t *fs)
 	return len;
 }
 
-/**
+/*
  * lsstr - Get a string of a list of the open files in the file buffers
  */
 char *lsstr(fbufs_t *fs, fbuf_t *active_fbuf)
@@ -43,8 +43,8 @@ char *lsstr(fbufs_t *fs, fbuf_t *active_fbuf)
 	start = malloc((n+1)*sizeof(char));
 	s = start;
 
-	for (int i = 0; i < fbufs_len(fs); ++i) {
-		f = fbufs_get(fs, i);
+	for (int i = 0; i < fs->len; ++i) {
+		f = dlist_get_address(fs, i);
 
 		s += sprintf(s, "'%s' [%d", f->filepath ? f->filepath : "unnamed", f->id);
 
@@ -52,7 +52,7 @@ char *lsstr(fbufs_t *fs, fbuf_t *active_fbuf)
 			s += sprintf(s, "*");
 		s += sprintf(s, "]");
 
-		if (i < fbufs_len(fs)-1)
+		if (i < fs->len-1)
 			s += sprintf(s, ", ");
 	}
 	start[n] = '\0';
@@ -61,12 +61,12 @@ char *lsstr(fbufs_t *fs, fbuf_t *active_fbuf)
 
 void acmd_list_handler(char *s, bufs_t *b, WINDOW *w)
 {
-	char *t = lsstr(b->fbufs, b->active_fbuf);
+	char *t = lsstr(&b->fbufs, b->active_fbuf);
 	snprintf(b->cmd_ostr, CMD_OSTR_LEN, "%s", t);
 	free(t);
 }
 
-/**
+/*
  * acmd_quit_handler - Handle the quit command by attempting to quit the program,
  *	and cleaning up before doing so
  */
@@ -74,8 +74,8 @@ void acmd_quit_handler(char *s, bufs_t *b, WINDOW *w)
 {
 	fbuf_t *f;
 
-	for (int i = 0; i < fbufs_len(b->fbufs); ++i) {
-		f = fbufs_get(b->fbufs, i);
+	for (int i = 0; i < b->fbufs.len; ++i) {
+		f = dlist_get_address(&b->fbufs, i);
 		if (f->unsaved_edit) {
 			snprintf(b->cmd_ostr, CMD_OSTR_LEN, 
 				 "unsaved edit in buf '%s' [%d]; "
@@ -87,7 +87,7 @@ void acmd_quit_handler(char *s, bufs_t *b, WINDOW *w)
 	exit(EXIT_SUCCESS);
 }
 
-/**
+/*
  * acmd_fquit_handler - Handle the force quit command by quitting the program and
  *	cleaning up before doing so
  */

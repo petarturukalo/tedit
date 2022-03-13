@@ -26,7 +26,7 @@ void view_init(view_t *v, WINDOW *w, int top_row_offset, int bot_row_offset,
 /*
  * len_start_ind - Restrict a length by adding an offset from the start
  *
- * See struct view fields for descriptions of offset params.
+ * See struct view struct members for descriptions of offset params.
  */
 int len_start_ind(int len, int start_offset)
 {
@@ -36,7 +36,7 @@ int len_start_ind(int len, int start_offset)
 /*
  * len_end_ind - Restrict a length by adding an offset from the end
  *
- * See struct view fields for descriptions of offset params.
+ * See struct view struct members for descriptions of offset params.
  */
 int len_end_ind(int len, int end_offset)
 {
@@ -46,7 +46,7 @@ int len_end_ind(int len, int end_offset)
 /*
  * len_shrink - Shrink a length to a smaller length by applying two border offsets
  *
- * See struct view fields for descriptions of offset params.
+ * See struct view struct member for descriptions of offset params.
  */
 int len_shrink(int len, int start_offset, int end_offset)
 {
@@ -239,9 +239,9 @@ void view_sync_crs_col(view_t *v, cursor_t *c, int linelen)
 
 void view_sync_cursor(view_t *v, cursor_t *c, lines_t *ls)
 {
-	line_t *cur = ls->array[c->row];
+	line_t *cur = dlist_get_address(ls, c->row);
 
-	view_sync_crs_row(v, c, lines_len(ls));
+	view_sync_crs_row(v, c, ls->len);
 	view_sync_crs_col(v, c, line_len(cur));
 }
 

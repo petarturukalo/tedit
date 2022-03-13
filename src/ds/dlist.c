@@ -4,26 +4,37 @@
  * Copyright (C) 2021 Petar Turukalo
  */
 #include "dlist.h"
+// TODO some copy functions in here can be improved with a single call to memcpy
 
 /*
  * Get the byte address of element at index i.
  */
 static char *byte_address(dlist_t *d, int i)
 {
-	return (char *)d->array + i*d->eltsz;
+	return d->array + i*d->eltsz;
 }
 
-static void for_each(dlist_t *d, void (*func)(void *))
+void dlist_for_each(dlist_t *d, void (*func)(void *))
 {
 	char *cur;
 
-	for (int i = 0; i < s->len; ++i) {
+	for (int i = 0; i < d->len; ++i) {
 		cur = byte_address(d, i);
 		func(cur);
 	}
 }
 
-void dlist_init(dlist_t *out_d, int capacity, int eltsz)
+void dlist_for_each_data(dlist_t *d, void (*func)(void *, void *), void *data)
+{
+	char *cur;
+
+	for (int i = 0; i < d->len; ++i) {
+		cur = byte_address(d, i);
+		func(cur, data);
+	}
+}
+
+void dlist_init(dlist_t *out_d, int capacity, size_t eltsz)
 {
 	// Round up to nearest power of 2 that is greater than
 	// or equal to the input capacity, so that the list when
@@ -40,11 +51,52 @@ void dlist_init(dlist_t *out_d, int capacity, int eltsz)
 	out_d->eltsz = eltsz;
 }
 
-void dlist_free(dlist_t *d, void (*free_elem)(void *))
+/*
+ * Concatenate an array of elements to the end of a list.
+ */
+static void cat_array(dlist_t *d, void *elts, int nelts)
+{
+	if (elts) {
+		for (int i = 0; i < nelts; ++i) {
+			dlist_append(d, elts);
+			elts += d->eltsz;
+		}
+	}
+}
+
+void dlist_init_array(dlist_t *d, int capacity, size_t eltsz, void *elts, int nelts)
+{
+	dlist_init(d, capacity, eltsz);
+	cat_array(d, elts, nelts);
+}
+
+static void dlist_free_elements(dlist_t *d, void (*free_elem)(void *))
 {
 	if (free_elem)
-		for_each(d, free_elem);
+		dlist_for_each(d, free_elem);
+}
+
+void dlist_free(dlist_t *d, void (*free_elem)(void *))
+{
+	dlist_free_elements(d, free_elem);
 	free(d->array);
+}
+
+void dlist_get(dlist_t *d, int i, void *out_elem)
+{
+	char *adrs = byte_address(d, i);
+	memcpy(out_elem, adrs, d->eltsz);
+}
+
+void *dlist_get_address(dlist_t *d, int i)
+{
+	return byte_address(d, i);
+}
+
+void dlist_set(dlist_t *d, int i, void *elem)
+{
+	char *adrs = byte_address(d, i);
+	memcpy(adrs, elem, d->eltsz);
 }
 
 static void append(dlist_t *d, void *elem)
@@ -56,10 +108,14 @@ static void append(dlist_t *d, void *elem)
 
 void insert(dlist_t *d, int index, void *elem)
 {
+	int i;
 	char *cur_adrs, *next_adrs;
 
 	// Shift all elements starting at index to the right by 1 index.
-	for (int i = s->len; i > index; --i) {
+	// Can't do all in one call to memcpy unless it's guaranteed to copy
+	// in reverse. The same goes for the copying in delete_ind, except it
+	// needs to copy going forward.
+	for (i = d->len; i > index; --i) {
 		cur_adrs = byte_address(d, i);
 		next_adrs = byte_address(d, i-1);
 		memcpy(cur_adrs, next_adrs, d->eltsz);
@@ -73,23 +129,34 @@ void insert(dlist_t *d, int index, void *elem)
 /*
  * Delete an element at an index.
  */
-void delete_ind(dlist_t *d, int index)
+static void delete_ind(dlist_t *d, int index, void (*free_elem)(void *))
 {
 	char *cur_adrs, *next_adrs;
 
-	--s->len;
+	if (free_elem)
+		free_elem(byte_address(d, index));
+	--d->len;
 
-	for (; index < s->len; ++index) {
-		cur_adrs = byte_address(d, i);
-		next_adrs = byte_address(d, i+1);
+	for (; index < d->len; ++index) {
+		cur_adrs = byte_address(d, index);
+		next_adrs = byte_address(d, index+1);
 		memcpy(cur_adrs, next_adrs, d->eltsz);
 	}
 }
 
 /*
+ * Get whether two elements are equal.
+ */
+static bool eq(dlist_t *d, void *a, void *b)
+{
+	return memcmp(a, b, d->eltsz) == 0;
+}
+
+/*
  * Look up an element in the list.  
  * @target: element looking up
- * @match_func: function which returns true if two elements are the equal
+ * @match_func: function which returns true if two elements are equal.
+ *	If this is NULL then comparison is done on byte values.
  *
  * Return -1 for no match.
  */
@@ -97,20 +164,21 @@ int lookup(dlist_t *d, void *target, bool (*match_func)(void *, void *))
 {
 	char *cur;
 
-	for (int i = 0; i < s->len; ++i) {
+	for (int i = 0; i < d->len; ++i) {
 		cur = byte_address(d, i);
-		if (match_func(target, cur))
+		if (match_func ? match_func(target, cur) : eq(d, target, cur))
 			return i;
 	}
 	return -1;
 }
 
-bool delete_elem(slist_t *s, void *elem, bool (*match_func)(void *, void *))
+static bool delete_elem(dlist_t *d, void *elem, bool (*match_func)(void *, void *), 
+			void (*free_elem)(void *))
 {
-	int i = lookup(s, elem, match_func);
+	int i = lookup(d, elem, match_func);
 
 	if (i != -1) {
-		delete_ind(s, i);
+		delete_ind(d, i, free_elem);
 		return true;
 	}
 	return false;
@@ -123,32 +191,47 @@ bool delete_elem(slist_t *s, void *elem, bool (*match_func)(void *, void *))
 static int resize(dlist_t *d, int new_cap)
 {
 	void *new_array = realloc(d->array, new_cap*d->eltsz);
-
 	d->array = new_array;
 	d->capacity = new_cap;
 	return 0;
 }
 
 /*
- * Double the capacity of the array if the array is full.
- * This should be called by before attempting to add an element to the list.
+ * Raise the capacity of the array if the list is at or over capacity.
  */
-static void dlist_try_grow(dlist_t *d)
+void dlist_try_grow(dlist_t *d)
 {
-	if (d->len == d->capacity) 
-		dlist_resize(d, d->capacity<<1);
+	if (d->len >= d->capacity) {
+		// Add 1 to double capacity when length == capacity, since only gets
+		// rounded up when the number isn't a power of 2, and capacity is 
+		// always a power of 2.
+		int new_cap = round_up_pow2(d->len+1);
+		resize(d, new_cap);
+	}
 }
 
 /*
- * Halve the capacity of the array if the array is less than half used.
- * Should be called after removing an element from the list.
+ * Reduce the capacity of the array to just above what's needed to store
+ * its current elements.
  */
-static void dlist_try_shrink(dlist_t *d)
+void dlist_try_shrink(dlist_t *d)
 {
 	int new_cap = round_up_pow2(d->len);
 
-	if (new_cap >= DLIST_MIN_CAP && new_cap < d->capacity) 
-		dlist_resize(d, new_cap);
+	if (new_cap >= DLIST_MIN_CAP && new_cap <= d->capacity) 
+		resize(d, new_cap);
+}
+
+/*
+ * Remove all the elements in a list. Resets its length to 0.
+ * @free_elem: function to free any existing elements before they get cleared. Pass
+ *	NULL if elements don't need to be freed.
+ */
+static void clear(dlist_t *d, void (*free_elem)(void *))
+{
+	dlist_free_elements(d, free_elem);
+	d->len = 0;
+	dlist_try_shrink(d);
 }
 
 void dlist_append(dlist_t *d, void *elem)
@@ -157,21 +240,121 @@ void dlist_append(dlist_t *d, void *elem)
 	append(d, elem);
 }
 
+void dlist_append_init(dlist_t *d, void (*init_elem_func)(void *))
+{
+	// TODO try and avoid this malloc, which could do if had a buffer
+	// struct member of eltsz in dlist
+	char *elem = malloc(d->eltsz);
+	init_elem_func(elem);
+	dlist_append(d, elem);
+	free(elem);
+}
+
 void dlist_insert(dlist_t *d, int index, void *elem)
 {
 	dlist_try_grow(d);
 	insert(d, index, elem);
 }
 
-void dlist_delete_ind(dlist_t *d, int index)
+void dlist_delete_ind(dlist_t *d, int index, void (*free_elem)(void *))
 {
-	delete_ind(d, index);
+	delete_ind(d, index, free_elem);
 	dlist_try_shrink(d);
 }
 
-bool dlist_delete_elem(dlist_t *d, void *elem, bool (*match_func)(void *, void *))
+bool dlist_delete_elem(dlist_t *d, void *elem, bool (*match_func)(void *, void *), 
+		       void (*free_elem)(void *))
 {
-	delete_elem(d, elem, match_func);
+	delete_elem(d, elem, match_func, free_elem);
 	dlist_try_shrink(d);
 }
 
+void dlist_pop(dlist_t *d, void *out_elem)
+{
+	if (d->len) {
+		if (out_elem)
+			dlist_get(d, d->len-1, out_elem);
+		--d->len;
+		dlist_try_shrink(d);
+	}
+}
+
+/*
+ * Copy the element at index i in the source list to the element at index j
+ * in the destination list.
+ */
+static void dlist_copy_elt(dlist_t *src, int i, dlist_t *dest, int j)
+{
+	char *dest_adrs = byte_address(dest, j);
+	dlist_get(src, i, dest_adrs);
+}
+
+/*
+ * dlist_copy_bounds - Copy a sublist in one list to a sublist in another list
+ * @src: source list to copy from
+ * @sstart: index start (inclusive) of sublist in source list
+ * @send: index end (inclusive) of sublist in source list
+ * @dest: destination list to copy to
+ * @dstart: index start (inclusive) of sublist in destination list
+ * @dend: index end (inclusive) of sublist in destination list
+ */
+static void dlist_copy_bounds(dlist_t *src, int sstart, int send, dlist_t *dest, int dstart, int dend)
+{
+	int i, j;
+	char *dest_adrs;
+
+	i = sstart;
+	j = dstart;
+
+	for (; i <= send && j <= dend; ++i, ++j) 
+		dlist_copy_elt(src, i, dest, j);
+}
+
+void dlist_split(dlist_t *d, int index, dlist_t *out_d)
+{
+	int newlen = d->len-index;
+
+	dlist_init(out_d, newlen, d->eltsz);
+
+	// Copy sublist spanning form index to end of list to
+	// the new list. Know there's enough space so don't need to 
+	// call dlist_try_grow.
+	dlist_copy_bounds(d, index, d->len-1, out_d, 0, newlen-1);
+	out_d->len = newlen;
+
+	// Truncate source list.
+	d->len = index;
+	dlist_try_shrink(d);
+}
+
+void dlist_cat(dlist_t *dest, dlist_t *src)
+{
+	char *dest_adrs;
+	int new_cap, i, j;
+
+	i = 0;
+	j = dest->len;
+	dest->len += src->len;
+	dlist_try_grow(dest);
+
+	for (; i < src->len; ++i, ++j)
+		dlist_copy_elt(src, i, dest, j);
+}
+
+void dlist_copy(dlist_t *dest, dlist_t *src, void (*free_elem)(void *))
+{
+	clear(dest, free_elem);
+	dlist_cat(dest, src);
+}
+
+void dlist_copy_new(dlist_t *d, dlist_t *out_d)
+{
+	dlist_init(out_d, d->capacity, d->eltsz);
+	dlist_cat(out_d, d);
+}
+
+void dlist_copy_array(dlist_t *d, void *elts, int nelts, void (*free_elem)(void *))
+{
+	clear(d, free_elem);
+	cat_array(d, elts, nelts);
+}

@@ -5,31 +5,20 @@
  */
 #include "line.h"
 
-line_t *line_alloc(int capacity)
+void line_alloc(line_t *l)
 {
-	return str_alloc(capacity);
+	str_alloc(l, DLIST_MIN_CAP);
 }
 
-void line_append(line_t *l, char c)
+void line_init(line_t *l, char *s, int n, int tabsz)
 {
-	str_append(l, c);
-}
-
-line_t *line_init(char *str, int len, int tabsz)
-{
-	str_t *s = str_ninit(str, len);
-
-	if (!s)
-		return NULL;
-
-	str_expand_tab_spaces(s, tabsz);
-
-	return s;
+	str_ninit(l, s, n);
+	str_expand_tab_spaces(l, tabsz);
 }
 
 int line_len(line_t *l)
 {
-	if (l->len > 0 && l->buf[l->len-1] == '\n')
+	if (l->len > 0 && l->array[l->len-1] == '\n')
 		return l->len-1;  // Don't include newline.
 	return l->len;
 }
@@ -39,15 +28,13 @@ int line_len_nl(line_t *l)
 	return l->len;
 }
 
-void line_free_sl(void *line)
+void line_split(line_t *l, int col, int tabsz, line_t *newline)
 {
-	str_free((str_t *)line);
-}
-
-line_t *line_split(line_t *l, int col, int tabsz)
-{
-	str_t *s = str_split(l, col);
+	dlist_split(l, col, newline);
 	str_append(l, '\n');
-	return s;
 }
 
+void line_free(line_t *l)
+{
+	dlist_free(l, NULL);
+}

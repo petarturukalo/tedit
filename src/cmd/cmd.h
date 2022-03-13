@@ -24,13 +24,4 @@ struct command {
 
 typedef struct command cmd_t;
 
-
-/**
- * cmd_init - Initialise a command struct
- *
- * See struct command fields for parameter info.
- * Dynamically allocated. Return NULL on error. Must be freed with free.
- */
-cmd_t *cmd_init(char *short_name, char *long_name, void (*handler)(char *, bufs_t *, WINDOW *));
-
 #endif

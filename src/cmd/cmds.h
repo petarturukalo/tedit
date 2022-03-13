@@ -20,21 +20,22 @@ struct commands {
 
 typedef struct commands cmds_t;
 
-/**
+/*
  * cmds_init - Initialise commands data structure for look up of a command
+ * @cs: out-param commands to initialise
  *
  * Dynamically allocated, free with cmds_free. Return NULL on error.
  */
-cmds_t *cmds_init(void);
+void cmds_init(cmds_t *cs);
 
-/**
+/*
  * cmds_search - Look up a command by name (either short or long name)
  *
- * Return NULL on not found.
+ * Return NULL if the command wasn't found.
  */
 cmd_t *cmds_search(cmds_t *cs, char *name);
 
-/**
+/*
  * cmds_free - Free an array of commands initialised with cmds_init
  */
 void cmds_free(cmds_t *c);

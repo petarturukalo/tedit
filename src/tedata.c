@@ -33,7 +33,7 @@ int tedata_init(tedata_t *t, char *fpaths[], int nfpaths)
 
 	setup_curses();
 	bufs_init(&t->bufs, t->win, fpaths, nfpaths);
-	t->cmds = cmds_init();
+	cmds_init(&t->cmds);
 
 	return 0;
 }
@@ -44,6 +44,6 @@ void tedata_free(tedata_t *t)
 	endwin();
 	sem_destroy(&t->sem);
 	bufs_free(&t->bufs);
-	cmds_free(t->cmds);
+	cmds_free(&t->cmds);
 }
 

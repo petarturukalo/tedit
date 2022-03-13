@@ -18,7 +18,7 @@
 struct text_editor_data {
 	WINDOW *win;  // Curses window for displaying file buffers in.
 	bufs_t bufs;
-	cmds_t *cmds;
+	cmds_t cmds;
 	// Lock which must be acquired before accessing other fields
 	// of this data structure.
 	sem_t sem;  

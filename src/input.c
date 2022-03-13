@@ -20,10 +20,10 @@ void input_start(tedata_t *t)
 		f = t->bufs.active_buf;
 		
 		if (f == &t->bufs.elbuf)
-			elinp_handle_char(&t->bufs, c, t->cmds, t->win);
+			elinp_handle_char(&t->bufs, c, &t->cmds, t->win);
 		else 
 			fbinp_handle_char(&t->bufs, c);
-		view_sync_cursor(&f->view, &f->cursor, f->lines);
+		view_sync_cursor(&f->view, &f->cursor, &f->lines);
 
 		sem_post(&t->sem);
 	}

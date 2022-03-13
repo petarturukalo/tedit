@@ -12,11 +12,11 @@ void mv_left(cursor_t *crs, line_t *l)
 
 	if (i > 0) {
 		// Character moving over.
-		c = l->buf[i-1];
+		c = l->array[i-1];
 
 		if (c == TAB_CONT) {
 			// Move all the way to the start of a tab.
-			tab_ind = chrp_find_reverse(l->buf, TAB_START, 0, i-2);
+			tab_ind = chrp_find_reverse(l->array, TAB_START, 0, i-2);
 			cursor_set_col_manual(crs, tab_ind);
 		} else  
 			cursor_add_col_manual(crs, -1);
@@ -45,7 +45,7 @@ void mv_right(cursor_t *crs, line_t *l)
 		// there on the last line (both act as an append point).
 		cursor_add_col_manual(crs, 1);
 	else if (i < line_len(l)-1) {
-		c = l->buf[i];
+		c = l->array[i];
 
 		if (c == TAB_START) {
 			tlen = tablen(l, i);

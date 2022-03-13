@@ -59,12 +59,11 @@ bool lins_backspace(line_t *cur, line_t *prev, cursor_t *c, int tabsz);
 /*
  * lins_split - Split a line at the current cursor position (the new right line includes 
  *	the current character under the cursor)
- *
- * Return the new right line made by the split. Expects the calling function inserts the new line 
- * into the list of lines. 
+ * @newline: out-param the new right line made by the split. Expects the calling function 
+ *	inserts this as a new line.
  *
  * O(n) worst case time complexity where n is the length of the line.
  */
-line_t *lins_split(line_t *l, cursor_t *c, int tabsz);
+void lins_split(line_t *l, cursor_t *c, int tabsz, line_t *newline);
 
 #endif

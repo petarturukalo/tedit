@@ -1,38 +1,28 @@
-/*
- * SPDX-License-Identifier: GPL-2.0
- *
- * Copyright (C) 2021 Petar Turukalo
- */
 #include "fbuf.h"
 
-int fbufs_len(fbufs_t *fs)
-{
-	return fs->len;
-}
-
-fbuf_t *fbufs_get(fbufs_t *fs, int i)
-{
-	return fs->array[i];
-}
-
-int fbufs_append(fbufs_t *fs, fbuf_t *f)
-{
-	dlist_append(fs, (void *)f);
-}
-
-/**
- * fbuf_match - Get whether two file buffer pointers cast to void pointer point to the 
- *	same file buffer
- *
- * For use in dlist_delete_elem.
+/*
+ * Get whether two file buffers are equal.
+ * Only uses unique ID for comparison.
  */
-bool fbuf_match_vdata(void *f1, void *f2)
+static bool fbuf_eq(fbuf_t *f, fbuf_t *g)
 {
-	return (fbuf_t *)f1 == (fbuf_t *)f2;
+	return f->id == g->id;
+}
+
+void fbuf_free(fbuf_t *f)
+{
+	if (f->filepath)
+		free(f->filepath);
+	lines_free(&f->lines);
+}
+
+void fbufs_free(fbufs_t *fs)
+{
+	dlist_free(fs, (void (*)(void *))fbuf_free);
 }
 
 bool fbufs_delete_fbuf(fbufs_t *fs, fbuf_t *f)
 {
-	dlist_delete_elem(fs, (void *)f, fbuf_match_vdata);
+	return dlist_delete_elem(fs, f, (bool (*)(void *, void *))fbuf_eq, 
+				 (void (*)(void *))fbuf_free);
 }
-

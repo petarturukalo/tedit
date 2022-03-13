@@ -14,7 +14,7 @@
 #include "bufs.h"
 #include "../cmd/cparse.h"
 
-/**
+/*
  * elinp_handle_char - Handle having read a character
  * @e: echo line buffer
  * @c: character read

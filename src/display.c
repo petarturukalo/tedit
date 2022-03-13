@@ -6,14 +6,14 @@
 #include "display.h"
 
 // Refresh rates in micro seconds.
-#define REFRESH_RATE_60_HZ_USEC 16667
-#define REFRESH_RATE_120_HZ_USEC 8333 
+const int REFRESH_RATE_60_HZ_USEC = 16667;
+const int REFRESH_RATE_120_HZ_USEC = 8333;
 #define REFRESH_RATE_USE_USEC REFRESH_RATE_60_HZ_USEC  // Refresh rate that gets used.
 
 // Start and end range (both endpoints inclusive) for
 // ASCII characters that can be safely printed.
-#define ASCII_PRINT_START_INCL 32
-#define ASCII_PRINT_END_INCL  127
+const int ASCII_PRINT_START_INCL = 32;
+const int ASCII_PRINT_END_INCL = 127;
 
 /*
  * ascii_printable - Get whether a character is an ASCII printable character
@@ -57,10 +57,8 @@ void display_fbuf_line(line_t *l, int i, int first_col, int view_width,
 		       int view_disp_top_row, int view_disp_first_col, WINDOW *w)
 {
 	int end_col = first_col+view_width-1 > line_len_nl(l)-1 ? line_len_nl(l)-1 : first_col+view_width-1;
-
 	wmove(w, view_disp_top_row+i, view_disp_first_col);
-
-	addtabsubstr(l->buf, first_col, end_col, w);
+	addtabsubstr(l->array, first_col, end_col, w);
 }
 
 /*
@@ -79,8 +77,8 @@ void display_fbuf_lines(fbuf_t *f, WINDOW *w)
 	vheight = view_height(v);
 	vwidth = view_width(v);
 
-	if (top_row+vheight-1 >= fbaux_nlines(f))
-		bot_row = fbaux_nlines(f)-1;
+	if (top_row+vheight-1 >= f->lines.len)
+		bot_row = f->lines.len-1;
 	else
 		bot_row = top_row+vheight-1;
 
@@ -92,9 +90,11 @@ void display_fbuf_lines(fbuf_t *f, WINDOW *w)
 	wmove(w, view_disp_top_row, view_disp_first_col);
 
 	i = 0;
-	for (int lnr = top_row; lnr <= bot_row; ++lnr, ++i) 
-		display_fbuf_line(fbaux_line(f, lnr), i, first_col, vwidth, 
-				  view_disp_top_row, view_disp_first_col, w);
+	for (int lnr = top_row; lnr <= bot_row; ++lnr, ++i)  {
+		l = dlist_get_address(&f->lines, lnr);
+		display_fbuf_line(l, i, first_col, vwidth, view_disp_top_row, 
+				  view_disp_first_col, w);
+	}
 }
 
 /*
@@ -103,9 +103,10 @@ void display_fbuf_lines(fbuf_t *f, WINDOW *w)
 void display_fbuf_cursor(fbuf_t *f, WINDOW *w)
 {
 	view_t *v;
-	cursor_t *c = &f->cursor;
+	cursor_t *c;
 
 	v = &f->view;
+	c = &f->cursor;
 
 	wmove(w, view_cursor_display_row(v, c), view_cursor_display_col(v, c));
 }

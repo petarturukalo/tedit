@@ -16,13 +16,13 @@ void lins_insert_reg(line_t *l, cursor_t *crs, char c, int tabsz)
 	
 	// Can't equal TAB_CONT since cursor can't be over it, so don't worry
 	// about handling it.
-	if (l->buf[i] == TAB_START) {
+	if (i < line_len(l) && l->array[i] == TAB_START) {
 		// Replace tab character with insert character.
-		l->buf[i] = c;
+		l->array[i] = c;
 
 		// Shift start of tab to next index for O(1) insert instead of O(n*tabsz).
-		if (i+1 < line_len(l) && l->buf[i+1] == TAB_CONT)
-			l->buf[i+1] = TAB_START;
+		if (i+1 < line_len(l) && l->array[i+1] == TAB_CONT)
+			l->array[i+1] = TAB_START;
 		else  // Got rid of a whole tab bar, so fill up the whole of the next tab bar.
 			str_insert_tab_spaces(l, i+1, tabsz);  // O(n*tabsz).
 	} else {
@@ -42,7 +42,7 @@ void lins_insert_tab(line_t *l, cursor_t *c, int tabsz)
 {
 	int col_add, offset, i = c->col;
 
-	if (l->buf[i] == TAB_START)   {
+	if (l->array[i] == TAB_START)   {
 		// If inserted a tab before a tab then tab pushing in front of could get misaligned.
 		// Avoid realigning by inserting the tab after the current tab, in the next tab bar, 
 		// taking up its own tab bar.
@@ -74,7 +74,7 @@ void lins_insert_char(line_t *l, cursor_t *crs, char c, int tabsz)
  */
 void lins_delete_reg(line_t *l, cursor_t *c, int tabsz)
 {
-	str_delete(l, c->col);
+	dlist_delete_ind(l, c->col, NULL);
 	str_align_next_tab(l, c->col, tabsz);
 }
 
@@ -91,7 +91,8 @@ void lins_delete_tab(line_t *l, cursor_t *c, int tabsz)
 
 /*
  * lins_linecat - Concatenate two lines together
- * @dest: line to concat src line to end of
+ * @dest: line to concat src line to end of; assumes this has a newline (and so isn't
+ *	the last line)
  * @src: line to concat onto end of dest line
  *
  * O(n+m*tabsz) worst case time complexity where n is the length of the source line
@@ -102,8 +103,8 @@ void lins_linecat(line_t *dest, line_t *src, int tabsz)
 	int n = line_len(dest);
 
 	// Remove newline before concatenating.
-	str_delete(dest, n);
-	str_cat(dest, src);
+	dlist_delete_ind(dest, n, NULL);
+	dlist_cat(dest, src);
 	str_align_next_tab(dest, n, tabsz);
 }
 
@@ -121,7 +122,7 @@ bool lins_delete(line_t *cur, line_t *next, cursor_t *crs, int tabsz)
 	int i = crs->col;
 
 	if (i < line_len(cur)) {
-		c = cur->buf[i];
+		c = cur->array[i];
 
 		if (c == TAB_START)
 			lins_delete_tab(cur, crs, tabsz);
@@ -149,16 +150,16 @@ void lins_backspace_tab(line_t *l, cursor_t *crs, int tabsz)
 	char c;
 	int i = crs->col;
 
-	c = l->buf[i-1];
+	c = l->array[i-1];
 
 	// Tab doesn't have any continuation characters, so deleting its 
 	// start deletes the whole thing.
-	if (c == TAB_START)  {
-		str_delete(l, i-1);
+	if (c == TAB_START) {
+		dlist_delete_ind(l, i-1, NULL);
 		cursor_add_col_manual(crs, -1);
 	} else {
 		// Find start of tab and then delete it.
-		int tab_ind = chrp_find_reverse(l->buf, TAB_START, 0, i-2);
+		int tab_ind = chrp_find_reverse(l->array, TAB_START, 0, i-2);
 
 		str_delete_tab_spaces(l, tab_ind);
 		cursor_set_col_manual(crs, tab_ind);
@@ -202,7 +203,7 @@ bool lins_backspace(line_t *cur, line_t *prev, cursor_t *crs, int tabsz)
 	int i = crs->col;
 
 	if (i > 0) {
-		c = cur->buf[i-1];
+		c = cur->array[i-1];
 
 		if (c == TAB_START || c == TAB_CONT)
 			lins_backspace_tab(cur, crs, tabsz);
@@ -218,15 +219,13 @@ bool lins_backspace(line_t *cur, line_t *prev, cursor_t *crs, int tabsz)
 	return false;
 }
 
-line_t *lins_split(line_t *l, cursor_t *c, int tabsz)
+void lins_split(line_t *l, cursor_t *c, int tabsz, line_t *newline)
 {
-	line_t *nl = line_split(l, c->col, tabsz);  // (The new line.)
+	line_split(l, c->col, tabsz, newline);
 
 	// Put cursor at start of next line, avoiding row entry function since first column
 	// is always valid, even if it's a tab as of it being the start of a tab and not a continuation
 	// of it.
 	c->row += 1;
 	cursor_set_col_manual(c, 0);
-
-	return nl;
 }

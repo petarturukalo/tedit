@@ -23,7 +23,7 @@ int mygetch(void)
 
 	i = 0;
 	// Zero-init in case a garbage character is the same as a target escape sequence.
-	memset((void *)s, 0, ESC_SEQ_BUF_LEN);  
+	bzero(s, ESC_SEQ_BUF_LEN);
 
 	// Hang on to int version of char since might not be ASCII and would lose
 	// its actual value by overflow if only used char version stored in buffer.
