@@ -316,7 +316,7 @@ void dlist_split(dlist_t *d, int index, dlist_t *out_d)
 
 	dlist_init(out_d, newlen, d->eltsz);
 
-	// Copy sublist spanning form index to end of list to
+	// Copy sublist spanning from index to end of list to
 	// the new list. Know there's enough space so don't need to 
 	// call dlist_try_grow.
 	dlist_copy_bounds(d, index, d->len-1, out_d, 0, newlen-1);
