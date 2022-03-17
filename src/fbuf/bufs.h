@@ -14,12 +14,6 @@
 #include "fbio.h"
 #include "elbuf.h"
 
-// Lengths of the command I/O strings.
-// If a string entered into the echo line buffer is longer than 200 bytes
-// then it is truncated. Same goes for an oversized return string.
-#define CMD_ISTR_LEN 256
-#define CMD_OSTR_LEN 512
-
 struct buffers {
 	fbufs_t fbufs;  // List of file buffers.
 	elbuf_t elbuf;  // Echo line buffer at bottom of screen for running commands from.
@@ -31,8 +25,8 @@ struct buffers {
 	fbuf_t *active_fbuf;
 	// Total number of buffers made, still keeping count of those deleted.
 	int nbufs;
-	char cmd_istr[CMD_ISTR_LEN];  // Command input string.
-	char cmd_ostr[CMD_OSTR_LEN];  // Command output string.
+	char cmd_istr[256];  // Command input string.
+	char cmd_ostr[512];  // Command output string.
 };
 
 typedef struct buffers bufs_t;

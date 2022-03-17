@@ -62,7 +62,7 @@ char *lsstr(fbufs_t *fs, fbuf_t *active_fbuf)
 void acmd_list_handler(char *s, bufs_t *b, WINDOW *w)
 {
 	char *t = lsstr(&b->fbufs, b->active_fbuf);
-	snprintf(b->cmd_ostr, CMD_OSTR_LEN, "%s", t);
+	snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "%s", t);
 	free(t);
 }
 
@@ -77,7 +77,7 @@ void acmd_quit_handler(char *s, bufs_t *b, WINDOW *w)
 	for (int i = 0; i < b->fbufs.len; ++i) {
 		f = dlist_get_address(&b->fbufs, i);
 		if (f->unsaved_edit) {
-			snprintf(b->cmd_ostr, CMD_OSTR_LEN, 
+			snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), 
 				 "unsaved edit in buf '%s' [%d]; "
 				 "need to write/save before quit", 
 				 f->filepath ? f->filepath : "unnamed", f->id);

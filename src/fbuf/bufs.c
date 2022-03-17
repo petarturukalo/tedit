@@ -171,10 +171,12 @@ void bufs_close(bufs_t *b, WINDOW *w)
 
 void bufs_reset_cmd_strs(bufs_t *b, char *s, int n)
 {
+	int max_len = sizeof(b->cmd_istr);
+
 	// Echo line string doesn't have tabs to worry about so can use its buf directly.
-	strncpy(b->cmd_istr, s, CMD_ISTR_LEN);
-	if (n >= CMD_ISTR_LEN)
-		b->cmd_istr[CMD_ISTR_LEN-1] = '\0';
+	strncpy(b->cmd_istr, s, max_len);
+	if (n >= max_len)
+		b->cmd_istr[max_len-1] = '\0';
 	else
 		b->cmd_istr[n] = '\0';
 	b->cmd_ostr[0] = '\0';

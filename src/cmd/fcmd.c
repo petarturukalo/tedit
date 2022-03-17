@@ -14,10 +14,10 @@ void fcmd_write_handle(bufs_t *b)
 	int bytes;
 
 	if ((bytes = bufs_write(b)) == -1) 
-		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "can't write to file%s", 
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "can't write to file%s", 
 			 errno == EACCES ? ": permission denied" : "");
 	else
-		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "wrote %d bytes", bytes);
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "wrote %d bytes", bytes);
 }
 
 /*
@@ -28,10 +28,10 @@ void fcmd_write_handle_other(bufs_t *b, char *fpath, WINDOW *w)
 	int bytes, tabsz = b->active_fbuf->tabsz;
 
 	if ((bytes = bufs_write_other(b, fpath, w, tabsz)) == -1)  
-		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "can't write to file '%s'%s", fpath, 
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "can't write to file '%s'%s", fpath, 
 			 errno == EACCES ? ": permission denied" : "");
 	else
-		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "wrote %d bytes to file '%s'", bytes, fpath);
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "wrote %d bytes to file '%s'", bytes, fpath);
 }
 
 void fcmd_write_handle_new(bufs_t *b, char *fpath)
@@ -39,10 +39,10 @@ void fcmd_write_handle_new(bufs_t *b, char *fpath)
 	int bytes = bufs_link_write(b, fpath);
 
 	if (bytes == -1)
-		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "can't write to file '%s'%s", fpath, 
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "can't write to file '%s'%s", fpath, 
 			 errno == EACCES ? ": permission denied" : "");
 	else
-		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "wrote %d bytes to file '%s'", bytes, fpath);
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "wrote %d bytes to file '%s'", bytes, fpath);
 }
 
 /*
@@ -101,7 +101,7 @@ void fcmd_open_handler(char *fpath, bufs_t *b, WINDOW *w)
 	if (!fpath) 
 		bufs_new(b, w, tabsz);
 	else if (bufs_open(b, fpath, w, tabsz) == -1) 
-		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "can't open file '%s'%s", fpath, 
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "can't open file '%s'%s", fpath, 
 			 errno == EACCES ? ": permission denied" : "");
 }
 
@@ -112,7 +112,7 @@ void fcmd_edit_handler(char *fpath, bufs_t *b, WINDOW *w)
 {
 	if (fpath) {
 		if (bufs_edit(b, fpath) == -1)
-			snprintf(b->cmd_ostr, CMD_OSTR_LEN, "file '%s' not open", fpath);
+			snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "file '%s' not open", fpath);
 	} else
 		strcpy(b->cmd_ostr, "no filepath");
 }
@@ -130,9 +130,9 @@ void fcmd_jump_handler(char *sid, bufs_t *b, WINDOW *w)
 
 		if (id > 0 && bufs_jump(b, id) != -1) 
 			return;
-		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "buf id %s not in available bufs", sid);
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "buf id %s not in available bufs", sid);
 	} else
-		snprintf(b->cmd_ostr, CMD_OSTR_LEN, "no buf id given");
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "no buf id given");
 }
 
 cmd_t fcmd_write = { "w", "write", fcmd_write_handler };
