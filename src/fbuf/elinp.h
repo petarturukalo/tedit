@@ -16,7 +16,6 @@
 
 /*
  * elinp_handle_char - Handle having read a character
- * @e: echo line buffer
  * @c: character read
  *
  * This is a restricted wrapper for fbinp_handle_char.
