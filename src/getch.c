@@ -5,10 +5,8 @@
  */
 #include "getch.h"
 
-// Maximum number of characters in an escape sequence that will require
-// fallback handling.
-#define ESC_SEQ_MAX_LEN 4
-#define ESC_SEQ_BUF_LEN 16
+// Maximum number of characters in an escape sequence.
+static const int ESC_SEQ_MAX_LEN = 4;
 
 // VTE (gnome terminal) escape sequences.
 #define VTE_HOME "\33[1~"
@@ -16,15 +14,13 @@
 
 int mygetch(void)
 {
-	char s[ESC_SEQ_BUF_LEN];
+	char s[16];
 	int i, c, d;
 	
 	nodelay(stdscr, false);
 
 	i = 0;
-	// Zero-init in case a garbage character is the same as a target escape sequence.
-	bzero(s, ESC_SEQ_BUF_LEN);
-
+	bzero(s, sizeof(s));
 	// Hang on to int version of char since might not be ASCII and would lose
 	// its actual value by overflow if only used char version stored in buffer.
 	c = getch();  // Block for a character.

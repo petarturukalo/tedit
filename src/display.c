@@ -6,14 +6,14 @@
 #include "display.h"
 
 // Refresh rates in micro seconds.
-const int REFRESH_RATE_60_HZ_USEC = 16667;
-const int REFRESH_RATE_120_HZ_USEC = 8333;
+static const int REFRESH_RATE_60_HZ_USEC = 16667;
+static const int REFRESH_RATE_120_HZ_USEC = 8333;
 #define REFRESH_RATE_USE_USEC REFRESH_RATE_60_HZ_USEC  // Refresh rate that gets used.
 
 // Start and end range (both endpoints inclusive) for
 // ASCII characters that can be safely printed.
-const int ASCII_PRINT_START_INCL = 32;
-const int ASCII_PRINT_END_INCL = 127;
+static const int ASCII_PRINT_START_INCL = 32;
+static const int ASCII_PRINT_END_INCL = 127;
 
 /*
  * ascii_printable - Get whether a character is an ASCII printable character
