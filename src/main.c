@@ -7,6 +7,6 @@
 
 int main(int argc, char *argv[])
 {
-	tedit_start(argc > 1 ? argv+1 : NULL, argc-1);
+	tedit_start(argv+1);
 	return 0;
 }

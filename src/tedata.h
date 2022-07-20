@@ -29,13 +29,12 @@ typedef struct text_editor_data tedata_t;
 
 /*
  * tedata_init - Set default values for text editor data fields.
- * @fpaths: paths to files to initially open
- * @nfpaths: number of file paths
+ * @fpaths: paths to files to initially open. This array is NULL pointer terminated.
  *
  * Meant to be called before having started any threads that use the data.
  * Return 0 on success, -1 on error.
  */
-int tedata_init(tedata_t *t, char *fpaths[], int nfpaths);
+int tedata_init(tedata_t *t, char *fpaths[]);
 
 /*
  * tedata_free - Clean up the text editor data

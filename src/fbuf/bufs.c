@@ -63,8 +63,10 @@ void bufs_new(bufs_t *b, WINDOW *w, int tabsz)
 	append_fbuf_set_active(b, &f);
 }
 
-void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[], int nfpaths)
+void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[])
 {
+	char **s;
+
 	dlist_init(&b->fbufs, DLIST_MIN_CAP, sizeof(fbuf_t));
 	b->active_buf = NULL;
 	elbuf_init(&b->elbuf, w);
@@ -72,10 +74,8 @@ void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[], int nfpaths)
 	b->cmd_istr[0] = '\0';
 	b->cmd_ostr[0] = '\0';
 
-	if (nfpaths > 0) {
-		for (int i = 0; i < nfpaths; ++i)
-			bufs_open(b, fpaths[i], w, TABSZ);
-	} 
+	for (s = fpaths; *s; s++) 
+		bufs_open(b, *s, w, TABSZ);
 	// Handles both cases where there are no filepaths given and 
 	// when there are filepaths but none could be opened.
 	if (b->fbufs.len == 0)

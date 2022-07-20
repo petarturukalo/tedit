@@ -31,7 +31,7 @@ void cleanup(void)
 	tedata_free(&t);
 }
 
-void tedit_start(char *fpaths[], int nfpaths)
+void tedit_start(char *fpaths[])
 {
 	pthread_t tids[2];
 
@@ -40,7 +40,7 @@ void tedit_start(char *fpaths[], int nfpaths)
 	signal(SIGINT, SIG_IGN);
 	signal(SIGTERM, SIG_IGN);
 
-	tedata_init(&t, fpaths, nfpaths);
+	tedata_init(&t, fpaths);
 
 	atexit(cleanup);  // Clean up program on exit.
 	signal(SIGTERM, sig_clean_exit);  // Calls exit to clean up.

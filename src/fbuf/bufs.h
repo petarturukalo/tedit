@@ -34,13 +34,12 @@ typedef struct buffers bufs_t;
 
 /*
  * bufs_init - Initialise a new, empty collection of buffers
- * @fpaths: paths of files to open initially
- * @nfpaths: number of files to open
+ * @fpaths: paths of files to open initially. This array is NULL pointer terminated.
  *
  * Open an empty, unnamed file if no filepaths are given. Some fields are dynamically allocated.
  * Free with bufs_free.
  */
-void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[], int nfpaths);
+void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[]);
 
 /*
  * bufs_free - Free buffers allocated with bufs_init

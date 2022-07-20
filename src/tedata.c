@@ -13,7 +13,7 @@ void setup_curses(void)
 	set_escdelay(20);  // (Milliseconds.)
 }
 
-int tedata_init(tedata_t *t, char *fpaths[], int nfpaths)
+int tedata_init(tedata_t *t, char *fpaths[])
 {
 	if (sem_init(&t->sem, 0, 1))
 		return -1;
@@ -32,7 +32,7 @@ int tedata_init(tedata_t *t, char *fpaths[], int nfpaths)
 	}
 
 	setup_curses();
-	bufs_init(&t->bufs, t->win, fpaths, nfpaths);
+	bufs_init(&t->bufs, t->win, fpaths);
 	cmds_init(&t->cmds);
 
 	return 0;

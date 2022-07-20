@@ -18,11 +18,10 @@
 
 /*
  * tedit_start - Entry point to starting the text editor.
- * @fpaths: paths to files to open
- * @nfpaths: number of files to open
+ * @fpaths: paths to files to open. This array is NULL pointer terminated.
  *
  * If no filepaths are given then an empty, unnamed file buffer is used.
  */
-void tedit_start(char *fpaths[], int nfpaths);
+void tedit_start(char *fpaths[]);
 
 #endif
