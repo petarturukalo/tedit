@@ -5,23 +5,7 @@
  */
 #include "tedit.h"
 
-tedata_t t;  // Global text editor data.
-
-/*
- * thread_input - Wrapper for input_start.
- */
-void *thread_input(void *data)
-{
-	input_start((tedata_t *)data);
-}
-
-/*
- * thread_display - Wrapper for display_start.
- */
-void *thread_display(void *data)
-{
-	display_start((tedata_t *)data);
-}
+tedata_t t = { 0 };  // Global text editor data.
 
 /*
  * cleanup - Free the global text editor data.
@@ -52,8 +36,8 @@ void tedit_start(char *fpaths[])
 
 	// Below is expected to be exited by the user running a quit command or
 	// receiving a kill/termination signal.
-	pthread_create(&tids[0], NULL, thread_input, (void *)&t);
-	pthread_create(&tids[1], NULL, thread_display, (void *)&t);
+	pthread_create(&tids[0], NULL, (void *(*)(void *))input_start, (void *)&t);
+	pthread_create(&tids[1], NULL, (void *(*)(void *))display_start, (void *)&t);
 
 	pthread_join(tids[0], NULL);
 	pthread_join(tids[1], NULL);
