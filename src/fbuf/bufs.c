@@ -50,7 +50,7 @@ int bufs_open(bufs_t *b, char *fpath, WINDOW *w, int tabsz)
 		if (fbuf_open(&f, fpath, w, tabsz, bufs_next_id(b))) {
 			append_fbuf_set_active(b, &f);
 			return 0;
-		}
+		} 
 	}
 	return -1;
 }
@@ -63,9 +63,29 @@ void bufs_new(bufs_t *b, WINDOW *w, int tabsz)
 	append_fbuf_set_active(b, &f);
 }
 
+/*
+ * Build a string to indicate to the user a list of files that failed to be opened
+ * because of permission issues.
+ * @s: string to build on
+ * @len: length of string used for building
+ * @fpath: filepath of file that couldn't be opened
+ * @i: index of filepath in list of filepaths (0-indexed)
+ */
+static void build_files_fail_open_str(char *s, int len, char *fpath, int i)
+{			
+	if (i == 0) 
+		strncat(s, "permission denied: couldn't open files ", len);
+	else
+		strncat(s, ", ", len);
+	strncat(s, "'", len);
+	strncat(s, fpath, len);
+	strncat(s, "'", len);
+}
+
 void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[])
 {
 	char **s;
+	uint nfiles_fail_open = 0;
 
 	dlist_init(&b->fbufs, DLIST_MIN_CAP, sizeof(fbuf_t));
 	b->active_buf = NULL;
@@ -74,8 +94,16 @@ void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[])
 	b->cmd_istr[0] = '\0';
 	b->cmd_ostr[0] = '\0';
 
-	for (s = fpaths; *s; s++) 
-		bufs_open(b, *s, w, TABSZ);
+	for (s = fpaths; *s; s++) {
+		if (bufs_open(b, *s, w, TABSZ) == -1 && errno == EACCES)  
+			build_files_fail_open_str(b->cmd_ostr, sizeof(b->cmd_ostr), *s, nfiles_fail_open++);
+	}
+	// Flush list of files that couldn't be opened to the echo line buffer so that it
+	// can be viewed by the user.
+	if (b->cmd_ostr[0]) {
+		elbuf_set(&b->elbuf, b->cmd_ostr);
+		b->cmd_ostr[0] = '\0';
+	}
 	// Handles both cases where there are no filepaths given and 
 	// when there are filepaths but none could be opened.
 	if (b->fbufs.len == 0)
