@@ -70,7 +70,7 @@ void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[])
 	dlist_init(&b->fbufs, DLIST_MIN_CAP, sizeof(fbuf_t));
 	b->active_buf = NULL;
 	elbuf_init(&b->elbuf, w);
-	b->nbufs = 1;
+	b->nbufs = 1;  // See buf_next_id() for why this starts at 1.
 	b->cmd_istr[0] = '\0';
 	b->cmd_ostr[0] = '\0';
 

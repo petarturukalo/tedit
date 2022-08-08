@@ -24,7 +24,10 @@ void tedit_start(char *fpaths[])
 	signal(SIGINT, SIG_IGN);
 	signal(SIGTERM, SIG_IGN);
 
-	tedata_init(&t, fpaths);
+	if (!tedata_init(&t, fpaths)) {
+		fprintf(stderr, "failed to init text editor data\n");
+		exit(EXIT_FAILURE);
+	}
 
 	atexit(cleanup);  // Clean up program on exit.
 	signal(SIGTERM, sig_clean_exit);  // Calls exit to clean up.
