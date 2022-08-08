@@ -9,9 +9,10 @@
 static const int ESC_SEQ_MAX_LEN = 4;
 
 // VTE (gnome terminal) escape sequences.
-#define VTE_HOME "\33[1~"
-#define VTE_END  "\33[4~"
+static char *VTE_HOME = "\33[1~";
+static char *VTE_END = "\33[4~";
 
+// TODO backspace doesn't work in xterm
 int mygetch(void)
 {
 	char s[16];
@@ -33,6 +34,7 @@ int mygetch(void)
 	while ((d = getch()) != -1) 
 		s[i++] = d;
 	if (i == ESC_SEQ_MAX_LEN) {
+		// This fixed the home and end keys when using a tty terminal (not pseudo terminal).
 		if (strncmp(s, VTE_HOME, i) == 0)
 			return KEY_HOME;
 		if (strncmp(s, VTE_END, i) == 0)
