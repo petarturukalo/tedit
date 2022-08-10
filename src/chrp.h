@@ -68,6 +68,9 @@ int chrp_nmatched(char *s, char c, int start, int end);
 int chrp_nmatched_reverse(char *s, char c, int start, int end);
 
 
+/*
+ * Data for strncat bookkeeping. See strncat_start() and strncat_cont() for more info.
+ */
 typedef struct strncat_data {
 	char *dest;  // Destination string that sources are concatenated to.
 	uint cur_len;  // Current length of string being continously built.
