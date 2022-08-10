@@ -71,20 +71,21 @@ void bufs_new(bufs_t *b, WINDOW *w, int tabsz)
  * @fpath: filepath of file that couldn't be opened
  * @i: index of filepath in list of filepaths (0-indexed)
  */
-static void build_files_fail_open_str(char *s, int len, char *fpath, int i)
+static void build_files_fail_open_str(strncat_data_t *sdata, char *fpath, int i)
 {			
 	if (i == 0) 
-		strncat(s, "permission denied: couldn't open files ", len);
+		strncat_cont("permission denied: couldn't open files ", sdata);
 	else
-		strncat(s, ", ", len);
-	strncat(s, "'", len);
-	strncat(s, fpath, len);
-	strncat(s, "'", len);
+		strncat_cont(", ", sdata);
+	strncat_cont("'", sdata);
+	strncat_cont(fpath, sdata);
+	strncat_cont("'", sdata);
 }
 
 void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[])
 {
 	char **s;
+	strncat_data_t sdata;
 	uint nfiles_fail_open = 0;
 
 	dlist_init(&b->fbufs, DLIST_MIN_CAP, sizeof(fbuf_t));
@@ -93,10 +94,11 @@ void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[])
 	b->nbufs = 1;  // See buf_next_id() for why this starts at 1.
 	b->cmd_istr[0] = '\0';
 	b->cmd_ostr[0] = '\0';
+	strncat_start(b->cmd_ostr, sizeof(b->cmd_ostr), &sdata);
 
 	for (s = fpaths; *s; s++) {
 		if (bufs_open(b, *s, w, TABSZ) == -1 && errno == EACCES)  
-			build_files_fail_open_str(b->cmd_ostr, sizeof(b->cmd_ostr), *s, nfiles_fail_open++);
+			build_files_fail_open_str(&sdata, *s, nfiles_fail_open++);
 	}
 	// Flush list of files that couldn't be opened to the echo line buffer so that it
 	// can be viewed by the user.

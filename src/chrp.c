@@ -136,3 +136,24 @@ int chrp_nmatched_reverse(char *s, char c, int start, int end)
 	return matched;
 }
 
+void strncat_start(char *dest, uint max_len, strncat_data_t *sdata)
+{
+	*dest = '\0';
+	sdata->cur_len = 0;
+	sdata->dest = dest;
+	sdata->max_len = max_len;
+}
+
+void strncat_cont(const char *src, strncat_data_t *sdata)
+{
+	int n = strlen(src);
+	int remaining_bytes = sdata->max_len - sdata->cur_len;
+	
+	// Leave last remaining char as NULL term.
+	if (remaining_bytes > 1 && n) {  
+		if (n >= remaining_bytes) 
+			n = remaining_bytes-1;  // Sub 1 for NULL term.
+		strncat(sdata->dest, src, n);
+		sdata->cur_len += n;
+	}
+}

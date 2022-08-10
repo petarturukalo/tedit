@@ -10,6 +10,7 @@
 
 #include <curses.h>
 #include "../ds/dlist.h"
+#include "../chrp.h"
 #include "fbuf.h"
 #include "fbio.h"
 #include "elbuf.h"
