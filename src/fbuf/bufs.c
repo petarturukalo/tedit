@@ -66,8 +66,6 @@ void bufs_new(bufs_t *b, WINDOW *w, int tabsz)
 /*
  * Build a string to indicate to the user a list of files that failed to be opened
  * because of permission issues.
- * @s: string to build on
- * @len: length of string used for building
  * @fpath: filepath of file that couldn't be opened
  * @i: index of filepath in list of filepaths (0-indexed)
  */
