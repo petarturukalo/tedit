@@ -38,14 +38,6 @@ int chrp_find(char *s, char c, int start, int end);
  */
 int chrp_find_reverse(char *s, char c, int start, int end);
 
-/* 
- * chrpcpy_alloc - Copy a string to a newly dynamically allocated string (null-terminated)
- * @s: null-terminated string
- *
- * Return NULL on error.
- */
-char *chrpcpy_alloc(char *s);
-
 /*
  * chrpprintf - Initialise a new string with printf style formatting and arrangement
  * @len: length >= that of outputted format string (length of returned string; leave room

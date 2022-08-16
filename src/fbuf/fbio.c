@@ -49,7 +49,7 @@ void fbuf_new(fbuf_t *f, WINDOW *w, int tabsz, int id)
 
 bool fbuf_link(fbuf_t *f, char *fpath)
 {
-	f->filepath = chrpcpy_alloc(fpath);
+	f->filepath = strdup(fpath);
 	return f->filepath;
 }
 
@@ -66,11 +66,11 @@ void fbuf_fork(fbuf_t *dest, fbuf_t *src, WINDOW *w, int id)
 
 /*
  * Open the file linked to a file buffer and return a file descriptor for it.
- * Assumes the file buffer has been linked to a file.
+ * Assumes the file buffer has been linked to a file with call to fubf_link().
  */
 int fbuf_openfd(fbuf_t *f)
 {
-	return open(f->filepath, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH);
+	return open(f->filepath, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
 }
 
 bool fbuf_open(fbuf_t *f, char *fpath, WINDOW *w, int tabsz, int id)

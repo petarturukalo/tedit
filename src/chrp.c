@@ -23,22 +23,6 @@ int chrp_find_reverse(char *s, char c, int start, int end)
 	return -1;
 }
 
-char *chrpcpy_alloc(char *s)
-{
-	char *t;
-	int n = strlen(s);
-
-	t = malloc((n+1)*sizeof(char));
-
-	if (!t)
-		return NULL;
-
-	strncpy(t, s, n);
-	t[n] = '\0';
-
-	return t;
-}
-
 /*
  * strcount - Get a count of characters in a null-terminated string
  */
