@@ -6,8 +6,8 @@
 #include "../../src/tab.h"
 
 /*
- * test_tab_entry - Entry point to testing tab handling functionality
+ * test_tab - Entry point to testing tab handling functionality
  */
-void test_tab_entry(void);
+void test_tab(void);
 
 #endif

@@ -2,7 +2,7 @@
 # like gcc -M
 #
 # Test assert object files.
-AOBJS=build/test-assert.o build/test-ds.o build/test-tab.o
+AOBJS=build/test-assert.o build/test-ds.o build/test-tab.o build/test-chrp.o
 # Objects from text editor for assert object files.
 TEAOBJS=../build/ds/dlist.o ../build/math.o ../build/tab.o \
 	../build/ds/str.o ../build/chrp.o

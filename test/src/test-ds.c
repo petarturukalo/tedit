@@ -284,7 +284,7 @@ static void test_dlist(void)
 	test_dlist_copy_array();
 }
 
-void test_ds_entry(void)
+void test_ds(void)
 {
 	test_dlist();
 }

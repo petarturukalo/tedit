@@ -23,7 +23,7 @@ void test_tab_dist(void)
 	assert_tab_dist(121, 3);
 }
 
-void test_tab_entry(void)
+void test_tab(void)
 {
 	test_tab_dist();
 }

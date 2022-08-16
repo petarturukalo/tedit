@@ -1,10 +1,11 @@
 #include "test-ds.h"
 #include "test-tab.h"
+#include "test-chrp.h"
 
 int main(void)
 {
-	test_ds_entry();
-	test_tab_entry();
-	
+	test_ds();
+	test_tab();
+	test_chrp();
 	return 0;
 }

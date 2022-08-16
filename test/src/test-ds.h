@@ -4,9 +4,6 @@
 #include <assert.h>
 #include "../../src/ds/dlist.h"
 
-/*
- * test_ds_entry - Entry point to testing data structures
- */
-void test_ds_entry(void);
+void test_ds(void);
 
 #endif
