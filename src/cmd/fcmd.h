@@ -31,8 +31,7 @@ extern cmd_t fcmd_close;
 extern cmd_t fcmd_fclose;
 
 /*
- * Command for force opening a file.
- * Either open a new file on disk or a file already in the file buffer.
+ * Command for opening a new file. 
  */
 extern cmd_t fcmd_open;
 
