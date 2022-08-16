@@ -139,7 +139,6 @@ int lines_write(lines_t *ls, int tabsz, int fd)
 
 void lines_delete(lines_t *ls, int nr)
 {
-	line_t *l = dlist_get_address(ls, nr);
 	dlist_delete_ind(ls, nr, (void (*)(void *))line_free);
 }
 
