@@ -97,4 +97,22 @@ void strncat_start(char *dest, uint max_len, strncat_data_t *scdata);
  */
 void strncat_cont(const char *src, strncat_data_t *sdata);
 
+/*
+ * Like strchr() but return a pointer to the first occurrence in the string
+ * s that isn't the character c. Return NULL for no occurrence.
+ */
+char *strnchr(char *s, int c);
+/*
+ * Same as strnchr() but find the first occurence starting at the end of the string
+ * and moving backwards.
+ */
+char *strnchr_reverse(char *s, int c);
+
+/*
+ * Remove a contiguous sequence of the same character c at the end of a string s.
+ * Removing all trailing hyphen '-' from string "foo---", for example, would get the string
+ * "foo".
+ */
+void strip_trailchar(char *s, int c);
+
 #endif

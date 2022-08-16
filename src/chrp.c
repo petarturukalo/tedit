@@ -157,3 +157,31 @@ void strncat_cont(const char *src, strncat_data_t *sdata)
 		sdata->cur_len += n;
 	}
 }
+
+char *strnchr(char *s, int c)
+{
+	for (; *s == c; ++s)
+		;
+	return *s ? s : NULL;
+}
+
+char *strnchr_reverse(char *s, int c)
+{
+	int i = strlen(s)-1;
+	for (; i >= 0; --i) {
+		if (s[i] != c)
+			return s+i;
+	}
+	return NULL;
+}
+
+void strip_trailchar(char *s, int c)
+{
+	char *t = strnchr_reverse(s, c);
+	if (t)
+		*(t+1) = '\0';
+	else
+		// No different char found means the whole string is the character
+		// that should be removed.
+		*s = '\0';
+}
