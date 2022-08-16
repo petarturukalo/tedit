@@ -29,7 +29,7 @@ void elinp_enter(bufs_t *b, cmds_t *cs, WINDOW *w)
 	elbuf_set(e, b->cmd_ostr);
 
 	// Jump back to file buffer if no string is echoed back.
-	if ((b->cmd_ostr && strlen(b->cmd_ostr) == 0) || !b->cmd_ostr)
+	if (strlen(b->cmd_ostr) == 0)
 		elinp_esc(b);
 }
 
