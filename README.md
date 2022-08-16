@@ -14,7 +14,7 @@ buffer, where commands are entered, using the escape key.
 
 ## Starting Up
 
-Start up by running `tedit [filepath]...` where any number of files can be opened at start up by
+Start up by running `tedit [filepath ...]` where any number of files can be opened at start up by
 providing their filepaths as command line arguments, or none to start editing an empty file, which can
 be linked to a new file later on with the write command.
 
