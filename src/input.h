@@ -13,7 +13,8 @@
 #include "getch.h"
 
 /*
- * input_start - Start waiting and reading input for use by the text editor
+ * Start the user input main loop. Each loop a key is read from the user
+ * and that key handled by having it affect the current file buffer.
  */
 void input_start(tedata_t *t);
 

@@ -4,24 +4,44 @@
  * Copyright (C) 2021 Petar Turukalo
  */
 #include "getch.h"
+/*
+ * TODO backspace doesn't work in the xterm terminal emulator,
+ * but home and end do when using xterm terminal emulator with
+ * a xterm TERM env
+ */
 
-// Maximum number of characters in an escape sequence.
+// Maximum number of characters in the escape sequences currently
+// being handled.
 static const int ESC_SEQ_MAX_LEN = 4;
 
-// VTE (gnome terminal) escape sequences.
-static char *VTE_HOME = "\33[1~";
-static char *VTE_END = "\33[4~";
+// Escape sequences produced instead of a single char under some terminals
+// that have the TERM environment variable set to xterm[-256color].
+static char *XTERM_HOME = "\33[1~";
+static char *XTERM_END = "\33[4~";
 
-// TODO backspace doesn't work in xterm
-int mygetch(void)
+/*
+ * Get whether the TERM environment variable is xterm[-256color].
+ */
+static bool term_is_xterm(void)
+{
+	char *term = getenv("TERM");
+	return term && strncmp(term, "xterm", 5) == 0;
+}
+
+/*
+ * Fallback handle the user pressing a key which produced an escape sequence (multiple characters)
+ * by converting it into a single char. Return a single char.
+ */
+static int mygetch_fallback(void)
 {
 	char s[16];
-	int i, c, d;
+	int i, n, c, d;
 	
 	nodelay(stdscr, false);
 
 	i = 0;
-	bzero(s, sizeof(s));
+	n = sizeof(s);
+	bzero(s, n);
 	// Hang on to int version of char since might not be ASCII and would lose
 	// its actual value by overflow if only used char version stored in buffer.
 	c = getch();  // Block for a character.
@@ -31,14 +51,24 @@ int mygetch(void)
 
 	// Nonblockingly get characters to fallback handle escape
 	// sequenced characters that curses doesn't handle properly.
-	while ((d = getch()) != -1) 
+	while (i < n && (d = getch()) != -1) 
 		s[i++] = d;
 	if (i == ESC_SEQ_MAX_LEN) {
-		// This fixed the home and end keys when using a tty terminal (not pseudo terminal).
-		if (strncmp(s, VTE_HOME, i) == 0)
+		if (strncmp(s, XTERM_HOME, i) == 0)
 			return KEY_HOME;
-		if (strncmp(s, VTE_END, i) == 0)
+		if (strncmp(s, XTERM_END, i) == 0)
 			return KEY_END;
 	}
 	return c;
+}
+
+int mygetch(void)
+{
+	static int fallback = -1;
+	
+	if (fallback == -1)
+		fallback = term_is_xterm();
+	if (fallback)
+		return mygetch_fallback();
+	return getch();
 }

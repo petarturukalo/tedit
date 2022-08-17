@@ -10,6 +10,7 @@
 
 #include <curses.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define ASCII_ENTER 10
 #define ASCII_ESC 27	// Escape.
@@ -19,9 +20,7 @@
  * mygetch - Read a single character from stdin with the stdscr window
  *
  * Also returns escape sequence produced keys as a single character.
- * Use this over getch since some special keys under gnome-terminal (VTE
- * escape sequencing) such as home and end still produce a sequence of keys,
- * and need to be converted to a single key.
+ * Use this over getch().
  */
 int mygetch(void);
 

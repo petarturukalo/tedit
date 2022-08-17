@@ -15,8 +15,6 @@ void input_start(tedata_t *t)
 
 		sem_wait(&t->sem);
 
-		// Have the character affect the buffer and then synchronise the view of the buffer
-		// before handing back over to the display to show the current view of the buffer.
 		f = t->bufs.active_buf;
 		if (f == &t->bufs.elbuf)
 			elinp_handle_char(&t->bufs, c, &t->cmds, t->win);
