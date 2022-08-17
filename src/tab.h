@@ -13,14 +13,16 @@
 // tab character takes up).
 #define TABSZ 8
 
-// Identifier for the start of a tab and continuing characters.
-// When a tab is inserted it is replaced with pseudo space characters,
-// first a TAB_START and the rest TAB_CONT, so that two consecutive
-// tabs can be distinguished as separate and not one tab. 
-// This also makes displaying of tab characters easier when shifting the view 
-// of a file horizontally (see view.h), and only requires that there is one
-// cursor tracking the file buffer (what is seen on screen is how it appears in the
-// underlying buffer).
+/*
+ * Identifier for the start of a tab and continuing characters.
+ * When a tab is inserted it is replaced with pseudo space characters,
+ * first a TAB_START and the rest TAB_CONT, so that two consecutive
+ * tabs can be distinguished as separate and not one tab. 
+ * This also makes displaying of tab characters easier when shifting the view 
+ * of a file horizontally (see view.h), and only requires that there is one
+ * cursor tracking the file buffer (what is seen on screen is how it appears in the
+ * underlying buffer).
+ */
 #define TAB_START -2
 #define TAB_CONT  -1
 

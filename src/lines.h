@@ -29,7 +29,6 @@ void lines_free(lines_t *ls);
 bool lines_from_fd(lines_t *ls, int fd, int tabsz);
 /*
  * See lines_from_fd for more info.
- * @ls: out-param lines to store read file into
  */
 bool lines_from_file(lines_t *ls, char *filepath, int tabsz);
 
@@ -44,7 +43,7 @@ void lines_for_each(lines_t *l, void (*line_func)(line_t *, void *), void *data)
 /*
  * lines_write - Write lines to a file
  *
- * Assumes tabs are replaced with spaces, so temporarily reverts back to regular tabs
+ * Assumes tabs are replaced with pseudo spaces, so temporarily reverts back to regular tabs
  * before writing. Return the total number of bytes written.
  */
 int lines_write(lines_t *ls, int tabsz, int fd);

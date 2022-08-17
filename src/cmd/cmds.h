@@ -15,7 +15,8 @@
 #include "acmd.h"
 
 struct commands {
-	struct hsearch_data *htbl;  // Hash table for O(1) lookup of a command.
+	// Hash table of cmd_t for O(1) lookup of a command.
+	struct hsearch_data *htbl;  
 };
 
 typedef struct commands cmds_t;

@@ -45,7 +45,7 @@ void dlist_init(dlist_t *out_d, int capacity, size_t eltsz);
 void dlist_init_array(dlist_t *d, int capacity, size_t eltsz, void *elts, int nelts);
 /*
  * Free the members of a dynamic list initialised with dlist_init.
- * free_elem: function to free an element in the list. If NULL it's
+ * @free_elem: function to free an element in the list. If NULL it's
  *	assumed elements don't need freeing.
  */
 void dlist_free(dlist_t *s, void (*free_elem)(void *));

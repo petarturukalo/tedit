@@ -24,7 +24,7 @@ int chrp_find_reverse(char *s, char c, int start, int end)
 }
 
 /*
- * strcount - Get a count of characters in a null-terminated string
+ * Get the number of times a character c appears in a string s.
  */
 static int strcount(char *s, int c)
 {
@@ -43,7 +43,8 @@ static int strcount(char *s, int c)
 /*
  * strlenf - Get the length of a formatted string after substitution
  * 
- * Only handles string and int, and breaks on % characters substituted in.
+ * Only handles formatters %s (string) and %d (int), and would break on %%, a %
+ * character characters substituted in.
  */
 static int strlenf(char *fmt, va_list args)
 {

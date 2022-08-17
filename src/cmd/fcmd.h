@@ -13,8 +13,8 @@
 #include "../chrp.h"
 
 /*
- * Command for writing to a file
- * Either write the currently active file buffer to its currently associated file on
+ * Command for writing to a file.
+ * Either write the currently active file buffer to its currently linked file on
  * disk or to a new file on disk.
  */
 extern cmd_t fcmd_write;

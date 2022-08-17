@@ -22,7 +22,7 @@ void cursor_set_row(cursor_t *c, int row, lines_t *ls)
 	// moved to column position so that the previous column position can be returned
 	// to if another row is immediately moved to.
 	if (line_len(l) < c->col)
-		c->col = line_len(l);  // (Don't move automatically.)
+		c->col = line_len(l);
 	// Don't let the cursor sit on the space-filled (imaginary) part of a tab.
 	while (l->array[c->col] == TAB_CONT)
 		++c->col;

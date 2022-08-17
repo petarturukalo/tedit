@@ -12,7 +12,6 @@
  */
 void elbuf_init_lines(elbuf_t *e)
 {
-	// TODO same code as in fbuf, make an aux?
 	lines_alloc(&e->lines);
 	dlist_append_init(&e->lines, (void (*)(void *))line_alloc);
 }

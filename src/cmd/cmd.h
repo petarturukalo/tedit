@@ -2,8 +2,6 @@
  * SPDX-License-Identifier: GPL-2.0
  *
  * Template for commands that can be ran by users.
- * Implement a command by making a function which returns a dynamically
- * allocated command struct.
  *
  * Copyright (C) 2021 Petar Turukalo
  */

@@ -83,8 +83,6 @@ int view_display_first_col(view_t *v)
 /*
  * view_lines_bot_row - Get the last row on the lines underlying a file which the
  *	view covers (inclusive)
- *
- * This is aligned with the cursor on the lines.
  */
 int view_lines_bot_row(view_t *v)
 {
@@ -94,8 +92,6 @@ int view_lines_bot_row(view_t *v)
 /*
  * view_lines_last_col - Get the last column on the lines underlying a file which the
  *	view covers (inclusive)
- *
- * This is aligned with the cursor on the lines.
  */
 int view_lines_last_col(view_t *v)
 {

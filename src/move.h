@@ -63,7 +63,6 @@ void mv_end(cursor_t *c, line_t *l);
 /*
  * mv_pgup - Move the cursor up by a view page
  * @ls: lines cursor is over
- * @view_height: height of current view of the lines
  *
  * O(tabsz) worst case time complexity. Sets view pgmv flag for the 
  * view to be synchronised with the cursor later on.
@@ -73,7 +72,6 @@ void mv_view_pgup(cursor_t *c, lines_t *ls, view_t *v);
 /*
  * mv_pgdn - Move the cursor down by a view page
  * @ls: lines cursor is over
- * @view_height: height of current view of the lines`
  *
  * O(tabsz) worst case time complexity. Sets view pgmv flag for the 
  * view to be synchronised with the cursor later on.

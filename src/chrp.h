@@ -39,9 +39,7 @@ int chrp_find(char *s, char c, int start, int end);
 int chrp_find_reverse(char *s, char c, int start, int end);
 
 /*
- * chrpprintf - Initialise a new string with printf style formatting and arrangement
- * @len: length >= that of outputted format string (length of returned string; leave room
- *	for null termination character)
+ * chrpprintf - Initialise a new string with printf style formatting 
  * @format: format string to pass to sprintf
  *
  * Return dynamically allocated string. Must be freed with free.
@@ -50,12 +48,16 @@ char *chrpprintf(char *format, ...);
 
 /*
  * chrp_nmatched - Get the number of consecutive matches of a character along a substring
+ * @start: start index (inclusive) of the substring
+ * @end: end index (inclusive) of the substring
  */
 int chrp_nmatched(char *s, char c, int start, int end);
 
 /*
  * chrp_nmatched_reverse - Get the number of consecutive matches of a character along a 
  *	substring in reverse
+ * @start: start index (inclusive) of the substring
+ * @end: end index (inclusive) of the substring
  */
 int chrp_nmatched_reverse(char *s, char c, int start, int end);
 
@@ -101,7 +103,7 @@ char *strnchr(char *s, int c);
 char *strnchr_reverse(char *s, int c);
 
 /*
- * Remove a contiguous sequence of the same character c at the end of a string s.
+ * Remove a consecutive sequence of the same character c at the end of a string s.
  * Removing all trailing hyphen '-' from string "foo---", for example, would get the string
  * "foo".
  */

@@ -12,6 +12,7 @@
 
 /*
  * A row, column position over a list of lines.
+ * Both row and column are 0-indexed.
  */
 struct cursor {
 	int row;
@@ -26,7 +27,7 @@ typedef struct cursor cursor_t;
 
 /*
  * cursor_set_row - Set the row position of a cursor
- * @ls: lines of file buffer to move to
+ * @ls: lines of file buffer cursor is on
  *
  * O(tabsz) worst case time complexity.
  */
