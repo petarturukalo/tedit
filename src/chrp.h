@@ -78,7 +78,7 @@ typedef struct strncat_data {
  * @dest: destination string that will be built
  * @max_len: max length of the destination string
  */
-void strncat_start(char *dest, uint max_len, strncat_data_t *scdata);
+void strncat_start(char *dest, uint max_len, strncat_data_t *sdata);
 
 /*
  * Continue safely building a string by concatenating source onto destination.
