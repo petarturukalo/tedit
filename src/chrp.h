@@ -72,10 +72,8 @@ typedef struct strncat_data {
 } strncat_data_t;
 
 /*
- * Prepare for building a string with multiple calls to strncat on one string, but only
- * providing the max length of the string once before the first call to strncat_cont(), so that
- * you don't have to recalculate the number of bytes to concat on each subsequent call like you would
- * with strncat().
+ * Set up a sdata for safely building a string with multiple calls to strncat() without having to worry
+ * about recalculating the number of bytes to concat at each subsequent call, or overrunning the buffer.
  *
  * @dest: destination string that will be built
  * @max_len: max length of the destination string
@@ -83,9 +81,8 @@ typedef struct strncat_data {
 void strncat_start(char *dest, uint max_len, strncat_data_t *scdata);
 
 /*
- * Continue building a string by concatenating source safely onto the destination, without worrying
- * about the destination's remaining length and overrunning its buffer. Requires that strncat_start() have
- * been called on sdata at least once.
+ * Continue safely building a string by concatenating source onto destination.
+ * Requires that sdata has been initialised with strncat_start().
  *
  * The wrapping dest string will always become null terminated.
  */
