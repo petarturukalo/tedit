@@ -73,9 +73,9 @@ typedef struct strncat_data {
 
 /*
  * Prepare for building a string with multiple calls to strncat on one string, but only
- * providing the max length of the string once before the first call to strncat_cont() so that
- * you don't have to recalculate the number of bytes to concat on each subsequent call to strncat_cont()
- * (which wraps strncat()).
+ * providing the max length of the string once before the first call to strncat_cont(), so that
+ * you don't have to recalculate the number of bytes to concat on each subsequent call like you would
+ * with strncat().
  *
  * @dest: destination string that will be built
  * @max_len: max length of the destination string
