@@ -25,7 +25,10 @@ static bool id_eq_fbuf_id(int *id, fbuf_t *f)
 	return *id == f->id;
 }
 
-fbuf_t *bufs_prev_fbuf(bufs_t *b)
+/*
+ * Get the previous file buffer accessed.
+ */
+static fbuf_t *bufs_prev_fbuf(bufs_t *b)
 {
 	int id = 0;
 	fbuf_t *f = NULL;

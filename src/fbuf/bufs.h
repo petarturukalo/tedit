@@ -60,11 +60,6 @@ void bufs_free(bufs_t *b);
 void bufs_active_buf_set_elbuf(bufs_t *b);
 
 /*
- * Get the previous file buffer accessed.
- */
-fbuf_t *bufs_prev_fbuf(bufs_t *b);
-
-/*
  * bufs_active_buf_set_fbuf - Set the active buffer to the most recently active file buffer
  *	so its text can be edited
  */
