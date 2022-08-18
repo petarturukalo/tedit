@@ -153,29 +153,40 @@ static bool eq(dlist_t *d, void *a, void *b)
 }
 
 /*
- * Look up an element in the list.  
- * @target: element looking up
- * @match_func: function which returns true if two elements are equal.
- *	If this is NULL then comparison is done on byte values.
+ * Get the index of an element in the list. Return -1 for no match.
  *
- * Return -1 for no match.
+ * @data: if match_func is NULL then this is the element being looked up and
+ *	elements are compared by byte values. Else this is the first parameter
+ *	passed to match_func.
+ * @match_func: function which takes data as first parameter and current element as 
+ *	second paramter. Returns true if the second element is the element being looked for.
  */
-int lookup(dlist_t *d, void *target, bool (*match_func)(void *, void *))
+static int dlist_lookup(dlist_t *d, void *data, bool (*match_func)(void *, void *))
 {
 	char *cur;
 
 	for (int i = 0; i < d->len; ++i) {
 		cur = byte_address(d, i);
-		if (match_func ? match_func(target, cur) : eq(d, target, cur))
+		if (match_func ? match_func(data, cur) : eq(d, data, cur))
 			return i;
 	}
 	return -1;
 }
 
+/*
+ * Same as lookup() but return the address of the element instead of its index.
+ * Return NULL for no match.
+ */
+void *dlist_lookup_address(dlist_t *d, void *data, bool (*match_func)(void *, void *))
+{
+	int i = dlist_lookup(d, data, match_func);
+	return i == -1 ? NULL : dlist_get_address(d, i);
+}
+
 static bool delete_elem(dlist_t *d, void *elem, bool (*match_func)(void *, void *), 
 			void (*free_elem)(void *))
 {
-	int i = lookup(d, elem, match_func);
+	int i = dlist_lookup(d, elem, match_func);
 
 	if (i != -1) {
 		delete_ind(d, i, free_elem);
@@ -269,14 +280,16 @@ bool dlist_delete_elem(dlist_t *d, void *elem, bool (*match_func)(void *, void *
 	dlist_try_shrink(d);
 }
 
-void dlist_pop(dlist_t *d, void *out_elem)
+bool dlist_pop(dlist_t *d, void *out_elem)
 {
 	if (d->len) {
 		if (out_elem)
 			dlist_get(d, d->len-1, out_elem);
 		--d->len;
 		dlist_try_shrink(d);
+		return true;
 	}
+	return false;
 }
 
 /*

@@ -74,9 +74,9 @@ void dlist_insert(dlist_t *d, int index, void *elem);
 
 /*
  * Remove the last element in the list and optionally store it in out_elem
- * if out_elem isn't NULL.
+ * if out_elem isn't NULL. Return whether an element was popped.
  */
-void dlist_pop(dlist_t *d, void *out_elem);
+bool dlist_pop(dlist_t *d, void *out_elem);
 void dlist_delete_ind(dlist_t *d, int index, void (*free_elem)(void *));
 /*
  * @elem: element to delete
@@ -92,6 +92,7 @@ bool dlist_delete_elem(dlist_t *d, void *elem, bool (*match_func)(void *, void *
  * @func: function to run on each element in the list
  */
 void dlist_for_each(dlist_t *d, void (*func)(void *));
+void *dlist_lookup_address(dlist_t *d, void *data, bool (*match_func)(void *, void *));
 /*
  * @func: function to run on each element in list. First param is element and second
  *	is void data passed into this.

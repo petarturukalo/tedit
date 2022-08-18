@@ -10,6 +10,7 @@
 
 #include <curses.h>
 #include "../ds/dlist.h"
+#include "../ds/stack.h"
 #include "../chrp.h"
 #include "fbuf.h"
 #include "fbio.h"
@@ -17,6 +18,10 @@
 
 struct buffers {
 	fbufs_t fbufs;  // List of file buffers.
+	// A stack containing the int IDs of the most recently accessed file buffers. This is to keep 
+	// track of which file buffers were swapped to or opened, and in which order.
+	// ID is used instead of address because the addresses shift as buffers are created and deleted.
+	mystack_t recent_fbufs;
 	elbuf_t elbuf;  // Echo line buffer at bottom of screen for running commands from.
 	// Currently active buffer which keys will be sent to (which could be
 	// an echo line buffer rather than a standard file buffer).
@@ -55,9 +60,9 @@ void bufs_free(bufs_t *b);
 void bufs_active_buf_set_elbuf(bufs_t *b);
 
 /*
- * bufs_last_fbuf - Get the last file buffer used
+ * Get the previous file buffer accessed.
  */
-fbuf_t *bufs_last_fbuf(bufs_t *b);
+fbuf_t *bufs_prev_fbuf(bufs_t *b);
 
 /*
  * bufs_active_buf_set_fbuf - Set the active buffer to the most recently active file buffer
