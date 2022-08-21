@@ -8,9 +8,6 @@
 // Number of bytes to read per read operation.
 #define READSZ 4096
 
-static char readbuf[READSZ];
-
-
 void lines_alloc(lines_t *ls)
 {
 	dlist_init(ls, 64, sizeof(line_t));
@@ -30,6 +27,7 @@ int lines_from_file_aux(int fd, lines_t *ls, int tabsz)
 {
 	int i, bread;  // Bytes read.
 	line_t l;
+	static char readbuf[READSZ];
 
 	line_alloc(&l);
 
@@ -126,8 +124,10 @@ int lines_write(lines_t *ls, int tabsz, int fd)
 		
 		bytes = write(fd, l->array, l->len);
 		
-		if (bytes == -1)
-			return -1;
+		if (bytes == -1) {
+			ttl_bytes = -1;
+			break;
+		}
 		ttl_bytes += bytes;
 	}
 	fsync(fd);
