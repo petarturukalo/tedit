@@ -71,7 +71,7 @@ bool lines_from_fd(lines_t *ls, int fd, int tabsz)
 bool lines_from_file(lines_t *ls, char *filepath, int tabsz)
 {
 	bool ret;
-	nt fd = open(filepath, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+	int fd = open(filepath, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
 	
 	if (fd == -1)
 		return false;
