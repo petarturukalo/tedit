@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	atexit(cleanup);  // Clean up program on exit.
-	signal(SIGTERM, sig_clean_exit);  // Calls exit to clean up.
+	atexit(cleanup);
+	signal(SIGTERM, sig_clean_exit);
 	// Use own sigcont and sigtstp handlers for job control as the default curses
 	// implementations jumble the screen on returning to the foreground by its use of
 	// the doupdate function.
