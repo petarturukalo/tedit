@@ -5,6 +5,9 @@
  */
 #include "tab.h"
 
+char TAB_START = -2;
+char TAB_CONT = -1;
+
 int dist_to_next_tabstop(int i, int tabsz)
 {
 	return tabsz-i%tabsz;

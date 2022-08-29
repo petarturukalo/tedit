@@ -23,8 +23,8 @@
  * cursor tracking the file buffer (what is seen on screen is how it appears in the
  * underlying buffer).
  */
-#define TAB_START -2
-#define TAB_CONT  -1
+extern char TAB_START;
+extern char TAB_CONT;
 
 /*
  * dist_to_next_tabstop - Get the distance in spaces to fill string length to the
