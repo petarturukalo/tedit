@@ -1,9 +1,12 @@
 /*
  * SPDX-License-Identifier: GPL-2.0
  *
+ * File buffer commands. Commands which operate on file buffers
+ * (writing, opening, closing, etc.).
+ *
  * Copyright (C) 2021 Petar Turukalo
  */
-#include "fcmd.h"
+#include "cmd.h"
 
 /*
  * fcmd_write_handle - Handle writing to the currently active file buffer to its

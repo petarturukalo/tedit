@@ -13,7 +13,7 @@
 #include <semaphore.h>
 #include "fbuf/elbuf.h"
 #include "fbuf/bufs.h"
-#include "cmd/cmds.h"
+#include "cmd/cmd.h"
 
 struct text_editor_data {
 	WINDOW *win;  // Curses window for displaying file buffers in.

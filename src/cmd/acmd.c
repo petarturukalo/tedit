@@ -1,9 +1,11 @@
 /*
  * SPDX-License-Identifier: GPL-2.0
  *
+ * Auxiliary commands.
+ *
  * Copyright (C) 2021 Petar Turukalo
  */
-#include "acmd.h"
+#include "cmd.h"
 
 /*
  *lslen - Get the length of the result of a ls command over a list of file buffers

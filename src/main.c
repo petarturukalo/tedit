@@ -13,7 +13,7 @@
 #include "fbuf/fbuf.h"
 #include "fbuf/fbio.h"
 
-tedata_t t = { 0 };  // Global text editor data.
+static tedata_t t = { 0 };  // Global text editor data.
 
 /*
  * cleanup - Free the global text editor data.

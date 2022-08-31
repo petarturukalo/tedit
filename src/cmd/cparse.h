@@ -12,7 +12,6 @@
 #include <search.h>
 #include <string.h>
 #include "cmd.h"
-#include "cmds.h"
 #include "../chrp.h"
 
 /*
