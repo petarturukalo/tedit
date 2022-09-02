@@ -143,6 +143,17 @@ void strncat_cont(const char *src, strncat_data_t *sdata)
 	}
 }
 
+void strncat_printf_cont(strncat_data_t *sdata, const char *fmt, ...)
+{
+	static char printbuf[128];
+	va_list ap;
+
+	va_start(ap, fmt);
+	vsnprintf(printbuf, sizeof(printbuf), fmt, ap);
+	strncat_cont(printbuf, sdata);
+	va_end(ap);
+}
+
 char *strnchr(char *s, int c)
 {
 	for (; *s == c; ++s)

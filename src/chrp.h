@@ -89,6 +89,12 @@ void strncat_start(char *dest, uint max_len, strncat_data_t *sdata);
 void strncat_cont(const char *src, strncat_data_t *sdata);
 
 /*
+ * Same as strncat_cont() bat concatenate the output of printf(). Truncates the output
+ * string if it's too long.
+ */
+void strncat_printf_cont(strncat_data_t *sdata, const char *fmt, ...);
+
+/*
  * Like strchr() but return a pointer to the first occurrence in the string
  * s that isn't the character c. Return NULL for no occurrence.
  */
