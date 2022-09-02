@@ -40,61 +40,6 @@ static int strcount(char *s, int c)
 	return cnt;
 }
 
-/*
- * strlenf - Get the length of a formatted string after substitution
- * 
- * Only handles formatters %s (string) and %d (int), and would break on %%, a %
- * character characters substituted in.
- */
-static int strlenf(char *fmt, va_list args)
-{
-	char *s;
-	int i, n, nr, len = 0;
-
-	// Remove length of chars that get substituted.
-	len = strlen(fmt)-2*strcount(fmt, '%');
-	n = strlen(fmt);
-
-	// Go through and find all format substitutions, which start
-	// at a % character.
-	i = 0;
-	while (i < n) {
-		i = chrp_find(fmt, '%', i, n-1);
-
-		if (i == -1)
-			break;
-		if (fmt[i+1] == 's') {
-			s = va_arg(args, char *);
-			len += strlen(s);
-		} else if (fmt[i+1] == 'd') {
-			nr = va_arg(args, int);
-			len += ndigits(nr);
-		}
-		// Move passed formatter.
-		i += 2;
-	}
-	return len;
-}
-
-char *chrpprintf(char *format, ...)
-{
-	va_list args;
-	char *s;
-	int len;
-
-	va_start(args, format);
-	len = strlenf(format, args);
-	va_end(args);
-
-	s = malloc((len+1)*sizeof(char));
-
-	va_start(args, format);
-	vsprintf(s, format, args);
-	va_end(args);
-
-	return s;
-}
-
 int chrp_nmatched(char *s, char c, int start, int end)
 {
 	int matched = 0;

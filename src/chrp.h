@@ -39,14 +39,6 @@ int chrp_find(char *s, char c, int start, int end);
 int chrp_find_reverse(char *s, char c, int start, int end);
 
 /*
- * chrpprintf - Initialise a new string with printf style formatting 
- * @format: format string to pass to sprintf
- *
- * Return dynamically allocated string. Must be freed with free.
- */
-char *chrpprintf(char *format, ...);
-
-/*
  * chrp_nmatched - Get the number of consecutive matches of a character along a substring
  * @start: start index (inclusive) of the substring
  * @end: end index (inclusive) of the substring
