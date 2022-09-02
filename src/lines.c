@@ -31,7 +31,8 @@ int lines_from_file_aux(int fd, lines_t *ls, int tabsz)
 
 	line_alloc(&l);
 
-	flock(fd, LOCK_EX);
+	if (flock(fd, LOCK_EX|LOCK_NB) == -1)
+		return -1;
 
 	while ((bread = read(fd, readbuf, READSZ)) > 0) {
 		for (i = 0; i < bread;) {
