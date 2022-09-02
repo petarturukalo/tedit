@@ -31,13 +31,6 @@
  * with it by call to fbuf_link. Free with fbuf_free.
  */
 void fbuf_new(fbuf_t *f, WINDOW *w, int tabsz, int id);
-/*
- * fbuf_link - Link a file buffer to a new filepath
- *
- * Dynamically allocates and copies the filepath, which is freed in fbuf_free.
- * Return whether the allocation was successful.
- */
-bool fbuf_link(fbuf_t *f, char *fpath);
 
 /*
  * fbuf_fork - Copy an entire file buffer to a new file buffer

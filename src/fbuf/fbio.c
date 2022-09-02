@@ -5,52 +5,12 @@
  */
 #include "fbio.h"
 
-/*
- * fbuf_reset - Reset all of a file buffer's struct members to default values except for
- *	its view (and leaves tab size unchanged)
- */
-static void fbuf_reset_most(fbuf_t *f)
-{
-	f->filepath = NULL;
-	cursor_reset(&f->cursor);
-	f->unsaved_edit = false;
-}
-
-/*
- * fbuf_reset - Reset all of a file buffer's struct members to default values
- */
-static void fbuf_reset(fbuf_t *f)
-{
-	fbuf_reset_most(f);
-	view_reset(&f->view);
-}
-
-/*
- * fbuf_init_most - Initialise the values of a file buffer except for its lines
- * @f: out-param file buffer to initialise
- * @w: curses window file buffer is displayed to
- * @id: see fbuf struct
- */
-static void fbuf_init_most(fbuf_t *f, WINDOW *w, int tabsz, int id)
-{
-	fbuf_reset_most(f);
-	view_init(&f->view, w, 0, 1, 0, 0);
-	f->tabsz = tabsz;
-	f->id = id;
-}
-
 void fbuf_new(fbuf_t *f, WINDOW *w, int tabsz, int id)
 {
 	fbuf_init_most(f, w, tabsz, id);
 	lines_alloc(&f->lines);
 	// Add a single empty line which the user will start on.
 	dlist_append_init(&f->lines, (void (*)(void *))line_alloc);
-}
-
-bool fbuf_link(fbuf_t *f, char *fpath)
-{
-	f->filepath = strdup(fpath);
-	return f->filepath;
 }
 
 void fbuf_fork(fbuf_t *dest, fbuf_t *src, WINDOW *w, int id)

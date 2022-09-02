@@ -30,6 +30,35 @@ struct file_buffer {
 typedef struct file_buffer fbuf_t;
 typedef dlist_t fbufs_t;
 
+/*
+ * fbuf_reset - Reset all of a file buffer's struct members to default values except for
+ *	its view (and leaves tab size unchanged)
+ */
+void fbuf_reset_most(fbuf_t *f);
+/*
+ * fbuf_reset - Reset all of a file buffer's struct members to default values
+ */
+void fbuf_reset(fbuf_t *f);
+/*
+ * fbuf_init_most - Initialise the values of a file buffer except for its lines
+ * @f: out-param file buffer to initialise
+ * @w: curses window file buffer is displayed to
+ * @id: see fbuf struct
+ */
+void fbuf_init_most(fbuf_t *f, WINDOW *w, int tabsz, int id);
+
+/*
+ * fbuf_link - Link a file buffer to a new filepath
+ *
+ * Dynamically allocates and copies the filepath, which is freed in fbuf_free.
+ * Return whether the allocation was successful.
+ */
+bool fbuf_link(fbuf_t *f, char *fpath);
+/*
+ * Unlink a file buffer from its current filepath.
+ */
+void fbuf_unlink(fbuf_t *f);
+
 void fbuf_free(fbuf_t *f);
 void fbufs_free(fbufs_t *fs);
 bool fbufs_delete_fbuf(fbufs_t *fs, fbuf_t *f);
