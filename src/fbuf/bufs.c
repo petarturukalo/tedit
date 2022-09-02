@@ -97,20 +97,18 @@ void bufs_new(bufs_t *b, WINDOW *w, int tabsz)
 }
 
 /*
- * Build a string to indicate to the user a list of files that failed to be opened
- * because of permission issues.
+ * Build a string to indicate to the user a list of files that failed to be opened.
+ *
  * @fpath: filepath of file that couldn't be opened
  * @i: index of filepath in list of filepaths (0-indexed)
  */
 static void build_files_fail_open_str(strncat_data_t *sdata, char *fpath, int i)
 {			
 	if (i == 0) 
-		strncat_cont("permission denied: couldn't open files ", sdata);
+		strncat_cont("couldn't open files ", sdata);
 	else
 		strncat_cont(", ", sdata);
-	strncat_cont("'", sdata);
-	strncat_cont(fpath, sdata);
-	strncat_cont("'", sdata);
+	strncat_printf_cont(sdata, "'%s' (%s)", fpath, strerror(errno));
 }
 
 void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[])
@@ -129,7 +127,7 @@ void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[])
 	stack_init(&b->recent_fbufs, sizeof(int));
 
 	for (s = fpaths; *s; s++) {
-		if (bufs_open(b, *s, w, TABSZ) == -1 && errno == EACCES)  
+		if (bufs_open(b, *s, w, TABSZ) == -1)  
 			build_files_fail_open_str(&sdata, *s, nfiles_fail_open++);
 	}
 	// Flush list of files that couldn't be opened to the echo line buffer so that it
