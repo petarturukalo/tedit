@@ -69,19 +69,6 @@ bool lines_from_fd(lines_t *ls, int fd, int tabsz)
 	return true;
 }
 
-bool lines_from_file(lines_t *ls, char *filepath, int tabsz)
-{
-	bool ret;
-	int fd = open(filepath, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
-	
-	if (fd == -1)
-		return false;
-
-	ret = lines_from_fd(ls, fd, tabsz);
-	close(fd);
-	return ret;
-}
-
 static void line_expand_tab_spaces(line_t *l, int *tabsz)
 {
 	str_expand_tab_spaces(l, *tabsz);
@@ -113,9 +100,10 @@ int lines_write(lines_t *ls, int tabsz, int fd)
 	line_t *l;
 	int bytes, ttl_bytes = 0;
 
-	lines_contract_tab_spaces(ls, tabsz);
+	if (flock(fd, LOCK_EX|LOCK_NB) == -1)
+		return -1;
 
-	flock(fd, LOCK_EX);
+	lines_contract_tab_spaces(ls, tabsz);
 
 	ftruncate(fd, 0);
 	lseek(fd, 0, SEEK_SET);

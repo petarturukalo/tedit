@@ -27,10 +27,6 @@ void lines_free(lines_t *ls);
  * Return whether could successfully read lines.
  */
 bool lines_from_fd(lines_t *ls, int fd, int tabsz);
-/*
- * See lines_from_fd for more info.
- */
-bool lines_from_file(lines_t *ls, char *filepath, int tabsz);
 
 
 /*
