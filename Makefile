@@ -5,7 +5,7 @@ CFLAGS=-c -g
 LFLAGS=-lm -lcurses -lpthread
 
 tedit: $(objs)
-	$(CC) $(LFLAGS) $^ -o $@
+	$(CC) $^ $(LFLAGS) -o $@
 
 # All header files reside in the same directory as its corresponding
 # .c file, but might not exist for some files, so use wildcard since it 
