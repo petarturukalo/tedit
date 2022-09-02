@@ -7,6 +7,12 @@
 // TODO some copy functions in here can be improved with a single call to memcpy
 
 /*
+ * Maximum size of an element in bytes. If an element is greater in size than this
+ * then some functions here may not work as expected.
+ */
+#define MAX_ELTSZ 1024
+
+/*
  * Get the byte address of element at index i.
  */
 static char *byte_address(dlist_t *d, int i)
@@ -253,12 +259,10 @@ void dlist_append(dlist_t *d, void *elem)
 
 void dlist_append_init(dlist_t *d, void (*init_elem_func)(void *))
 {
-	// TODO try and avoid this malloc, which could do if had a buffer
-	// struct member of eltsz in dlist
-	char *elem = malloc(d->eltsz);
-	init_elem_func(elem);
-	dlist_append(d, elem);
-	free(elem);
+	static char elembuf[MAX_ELTSZ];
+	bzero(elembuf, d->eltsz);
+	init_elem_func(elembuf);
+	dlist_append(d, elembuf);
 }
 
 void dlist_insert(dlist_t *d, int index, void *elem)
