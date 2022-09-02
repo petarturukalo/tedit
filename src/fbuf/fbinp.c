@@ -86,6 +86,8 @@ static void fbinp_delete(fbuf_t *f)
  */
 static void fbinp_backspace(fbuf_t *f)
 {
+	f->unsaved_edit = true;
+
 	if (lins_backspace(fbaux_cur_line(f), fbaux_prev_line(f), &f->cursor, f->tabsz))
 		// Delete current line since merged with previous (cursor moved up so +1 for "current").
 		lines_delete(&f->lines, f->cursor.row+1);  
