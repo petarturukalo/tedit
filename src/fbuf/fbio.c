@@ -42,9 +42,10 @@ bool fbuf_open(fbuf_t *f, char *fpath, WINDOW *w, int tabsz, int id)
 	fbuf_link(f, fpath);
 	fd = fbuf_openfd(f);
 
-	if (fd == -1)
+	if (fd == -1) {
+		fbuf_unlink(f);
 		return false;
-
+	}
 	read_success = lines_from_fd(&f->lines, fd, tabsz);
 	close(fd);
 
