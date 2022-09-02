@@ -193,10 +193,15 @@ int bufs_write(bufs_t *b)
 
 int bufs_link_write(bufs_t *b, char *fpath)
 {
+	int bytes;
 	fbuf_t *f = b->active_fbuf;
 
 	fbuf_link(f, fpath);
-	return fbuf_write(f);
+	bytes = fbuf_write(f);
+
+	if (bytes == -1)
+		fbuf_unlink(f);
+	return bytes;
 }
 
 int bufs_write_other(bufs_t *b, char *fpath, WINDOW *w, int tabsz)
