@@ -104,8 +104,8 @@ void fcmd_open_handler(char *fpath, bufs_t *b, WINDOW *w)
 	if (!fpath) 
 		bufs_new(b, w, tabsz);
 	else if (bufs_open(b, fpath, w, tabsz) == -1) 
-		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "can't open file '%s'%s", fpath, 
-			 errno == EACCES ? ": permission denied" : "");
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "%s: can't open file '%s'", 
+			 strerror(errno), fpath);
 }
 
 /*
