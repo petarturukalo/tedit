@@ -9,7 +9,7 @@
 #include "cmd.h"
 
 /*
- * fcmd_write_handle - Handle writing to the currently active file buffer to its
+ * fcmd_write_handle - Handle writing the currently active file buffer to its
  *	linked file
  */
 void fcmd_write_handle(bufs_t *b)
@@ -17,8 +17,8 @@ void fcmd_write_handle(bufs_t *b)
 	int bytes;
 
 	if ((bytes = bufs_write(b)) == -1) 
-		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "can't write to file%s", 
-			 errno == EACCES ? ": permission denied" : "");
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "%s: can't write to file", 
+			 strerror(errno));
 	else
 		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "wrote %d bytes", bytes);
 }
@@ -31,8 +31,8 @@ void fcmd_write_handle_other(bufs_t *b, char *fpath, WINDOW *w)
 	int bytes, tabsz = b->active_fbuf->tabsz;
 
 	if ((bytes = bufs_write_other(b, fpath, w, tabsz)) == -1)  
-		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "can't write to file '%s'%s", fpath, 
-			 errno == EACCES ? ": permission denied" : "");
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "%s: can't write to file '%s'", 
+			 strerror(errno), fpath);
 	else
 		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "wrote %d bytes to file '%s'", bytes, fpath);
 }
@@ -42,8 +42,8 @@ void fcmd_write_handle_new(bufs_t *b, char *fpath)
 	int bytes = bufs_link_write(b, fpath);
 
 	if (bytes == -1)
-		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "can't write to file '%s'%s", fpath, 
-			 errno == EACCES ? ": permission denied" : "");
+		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "%s: can't write to file '%s'", 
+			 strerror(errno), fpath);
 	else
 		snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "wrote %d bytes to file '%s'", bytes, fpath);
 }
