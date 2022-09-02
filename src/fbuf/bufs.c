@@ -208,7 +208,9 @@ int bufs_write_other(bufs_t *b, char *fpath, WINDOW *w, int tabsz)
 	fbuf_link(&f, fpath);
 	bytes = fbuf_write(&f);
 
-	if (bytes != -1) 
+	if (bytes == -1)
+		fbuf_free(&f);
+	else
 		append_fbuf_set_active(b, &f);
 	return bytes;
 }
