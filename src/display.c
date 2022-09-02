@@ -112,10 +112,13 @@ void display_fbuf_cursor(fbuf_t *f, WINDOW *w)
 }
 
 /*
- * display_buffers - Display all file buffers to the curses standard screen
+ * display_text_editor - Display the text editor to the curses standard screen
  */
-void display_buffers(bufs_t *b, WINDOW *w)
+void display_text_editor(tedata_t *t)
 {
+	bufs_t *b = &t->bufs;
+	WINDOW *w = t->win;
+
 	// TODO tty display gets fixed when using clear instead of erase,
 	// but it introduces flicker which is why it was avoided
 	werase(w);
@@ -125,14 +128,7 @@ void display_buffers(bufs_t *b, WINDOW *w)
 	// Active buffer might be the echo line buffer and only want to display one cursor.
 	display_fbuf_cursor(b->active_buf, w);
 	wrefresh(w);
-}
 
-/*
- * display_text_editor - Display the text editor to the curses standard screen
- */
-void display_text_editor(tedata_t *t)
-{
-	display_buffers(&t->bufs, t->win);
 }
 
 void display_start(tedata_t *t)
