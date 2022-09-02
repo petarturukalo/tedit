@@ -11,7 +11,6 @@
 #define _GNU_SOURCE
 #include <search.h>
 #include <curses.h>
-#include "cmd.h"
 #include "../fbuf/bufs.h"
 
 typedef struct command {
