@@ -84,8 +84,11 @@ static void dlist_free_elements(dlist_t *d, void (*free_elem)(void *))
 
 void dlist_free(dlist_t *d, void (*free_elem)(void *))
 {
-	dlist_free_elements(d, free_elem);
-	free(d->array);
+	if (d->array) {
+		dlist_free_elements(d, free_elem);
+		free(d->array);
+		d->array = NULL;
+	}
 }
 
 void dlist_get(dlist_t *d, int i, void *out_elem)
