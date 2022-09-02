@@ -26,9 +26,9 @@ typedef struct command {
 // Commands. 
 /* List all open file buffers. */
 extern cmd_t acmd_list;
-/* Quit the program. Requires that the current file be saved/written to before quitting. */
+/* Quit the program. Requires that no files have unsaved edits. */
 extern cmd_t acmd_quit;
-/* Force quit. The current file buffer doesn't need to be saved before quitting. */
+/* Force quit the program. Discards any unsaved edits. */
 extern cmd_t acmd_fquit;
 /* Write active file buffer to its linked file or a new file. */
 extern cmd_t fcmd_write;
