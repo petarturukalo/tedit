@@ -181,3 +181,16 @@ void strip_trailchar(char *s, int c)
 		// that should be removed.
 		*s = '\0';
 }
+
+void freep(void **ptr)
+{
+	if (*ptr) {
+		free(*ptr);
+		*ptr = NULL;
+	}
+}
+
+void freecp(char **ptr)
+{
+	return freep((void **)ptr);
+}

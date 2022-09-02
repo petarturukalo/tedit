@@ -112,4 +112,12 @@ char *strnchr_reverse(char *s, int c);
  */
 void strip_trailchar(char *s, int c);
 
+/*
+ * Free pointer and set it to NULL if it's not NULL.
+ * @ptr: address of pointer
+ */
+void freep(void **ptr);
+/* Char pointer version of freep(). */
+void freecp(char **ptr);
+
 #endif
