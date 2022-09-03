@@ -26,7 +26,7 @@ void fbuf_fork(fbuf_t *dest, fbuf_t *src, WINDOW *w, int id)
 
 /*
  * Open the file linked to a file buffer and return a file descriptor for it.
- * Assumes the file buffer has been linked to a file with call to fubf_link().
+ * Assumes the file buffer has been linked to a file with call to fbuf_link().
  *
  * @flags: flags passed to open()
  */
