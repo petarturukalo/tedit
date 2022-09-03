@@ -12,7 +12,7 @@ void cmds_free(cmds_t *c)
 }
 
 /*
- * The current minimum and maximum lengths of a short name in the cmd_t struct. 
+ * The current minimum and maximum lengths (inclusive) of a short name in the cmd_t struct. 
  * The max is subject to change if a command with a longer short name is added.
  */
 #define MIN_SHORT_NAME_LEN 1
