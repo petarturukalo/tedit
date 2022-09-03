@@ -27,10 +27,12 @@ void fbuf_fork(fbuf_t *dest, fbuf_t *src, WINDOW *w, int id)
 /*
  * Open the file linked to a file buffer and return a file descriptor for it.
  * Assumes the file buffer has been linked to a file with call to fubf_link().
+ *
+ * @flags: flags passed to open()
  */
-int fbuf_openfd(fbuf_t *f)
+int fbuf_openfd(fbuf_t *f, int flags)
 {
-	return open(f->filepath, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+	return open(f->filepath, flags, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
 }
 
 bool fbuf_open(fbuf_t *f, char *fpath, WINDOW *w, int tabsz, int id)
@@ -40,9 +42,15 @@ bool fbuf_open(fbuf_t *f, char *fpath, WINDOW *w, int tabsz, int id)
 
 	fbuf_init_most(f, w, tabsz, id);
 	fbuf_link(f, fpath);
-	fd = fbuf_openfd(f);
+	fd = fbuf_openfd(f, O_RDONLY);
 
 	if (fd == -1) {
+		// When there's no file on disk start an empty file buffer with it linked to
+		// the filepath for the next write to create the underlying file.
+		if (errno == ENOENT) {
+			lines_alloc_empty(&f->lines);
+			return true;
+		}
 		fbuf_unlink(f);
 		return false;
 	}
@@ -59,7 +67,7 @@ int fbuf_write(fbuf_t *f)
 	int fd, bytes;
 
 	if (f->filepath) {
-		fd = fbuf_openfd(f);
+		fd = fbuf_openfd(f, O_WRONLY|O_CREAT);
 		
 		if (fd != -1) {
 			bytes = lines_write(&f->lines, f->tabsz, fd);
