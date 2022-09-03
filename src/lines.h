@@ -34,13 +34,6 @@ bool lines_from_fd(lines_t *ls, int fd, int tabsz);
 
 
 /*
- * lines_for_each - Run a function on each line of a lines data structure
- * @line_func: function to run on each line
- * @data: data to pass to function
- */
-void lines_for_each(lines_t *l, void (*line_func)(line_t *, void *), void *data);
-
-/*
  * lines_write - Write lines to a file
  *
  * Assumes tabs are replaced with pseudo spaces, so temporarily reverts back to regular tabs
