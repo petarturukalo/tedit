@@ -34,7 +34,7 @@ void cmds_free(cmds_t *c)
  * first check for a prefix of length 1 "f", and resolve to command "foo", when it should have instead
  * resolved to "fclose". Searching in descending order of prefix length fixes this.
  */
-cmd_t *cmds_search_approx(cmds_t *c, char *name)
+static cmd_t *cmds_search_approx(cmds_t *c, char *name)
 {
 	if (strlen(name) > MIN_SHORT_NAME_LEN) {
 		ENTRY e, *ep;
