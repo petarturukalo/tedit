@@ -21,14 +21,12 @@
 // TODO could move element free function from dlist_free to struct member
 // so doesn't have to be param and can also be used in delete functions
 // without a param
-struct dynamic_list {
+typedef struct dynamic_list {
 	char *array;  // Bytes where elements are stored.
 	int len;  // Current number of elements in the array.
 	int capacity;  // Current number of elements that can fit in the array.
 	size_t eltsz;  // Size of an element in the array.
-};
-
-typedef struct dynamic_list dlist_t;
+} dlist_t;
 
 /*
  * Initialise the members of a dynamic list.
