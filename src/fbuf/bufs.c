@@ -5,7 +5,7 @@
  */
 #include "bufs.h"
 
-static int FBUF_ID_START = 1;
+static const int FBUF_ID_START = 1;
 
 void bufs_active_buf_set_elbuf(bufs_t *b)
 {

@@ -16,8 +16,8 @@ static const int ESC_SEQ_MAX_LEN = 4;
 
 // Escape sequences produced instead of a single char under some terminals
 // that have the TERM environment variable set to xterm[-256color].
-static char *XTERM_HOME = "\33[1~";
-static char *XTERM_END = "\33[4~";
+static const char *XTERM_HOME = "\33[1~";
+static const char *XTERM_END = "\33[4~";
 
 /*
  * Get whether the TERM environment variable is xterm[-256color].
