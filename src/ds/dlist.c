@@ -174,7 +174,7 @@ static int dlist_lookup(dlist_t *d, void *data, dlist_match_fn fn)
 
 	for (int i = 0; i < d->len; ++i) {
 		cur = byte_address(d, i);
-		if (fn ? fn(data, cur) : eq(d, data, cur))
+		if (fn ? fn(cur, data) : eq(d, cur, data))
 			return i;
 	}
 	return -1;

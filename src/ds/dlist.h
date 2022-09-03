@@ -36,8 +36,8 @@ typedef void (*dlist_elem_fn)(void *);
  */
 typedef void (*dlist_elem_data_fn)(void *, void *);
 /*
- * Function which takes data as first parameter and dlist element as second paramter. 
- * Uses the data to determine whether the element is one being looked for.
+ * Function which takes dlist element as first parameter and either another element or arbitrary
+ * data as second. Return whether the first param element is one being looked for.
  */
 typedef bool (*dlist_match_fn)(void *, void *);
 
