@@ -151,14 +151,14 @@ void bufs_free(bufs_t *b)
 	dlist_free(&b->recent_fbufs, NULL);
 }
 
-static bool fpath_fbuf_eq_fpath(fbuf_t *f, char *fpath)
+static bool fbuf_fpath_eq_fpath(fbuf_t *f, char *fpath)
 {
 	return f->filepath && strcmp(fpath, f->filepath) == 0;
 }
 
 int bufs_edit(bufs_t *b, char *fpath)
 {
-	fbuf_t *f = dlist_lookup_address(&b->fbufs, fpath, (dlist_match_fn)fpath_fbuf_eq_fpath);
+	fbuf_t *f = dlist_lookup_address(&b->fbufs, fpath, (dlist_match_fn)fbuf_fpath_eq_fpath);
 
 	if (f) {
 		set_active_fbuf(b, f);
