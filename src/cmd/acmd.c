@@ -8,64 +8,32 @@
 #include "cmd.h"
 
 /*
- *lslen - Get the length of the result of a ls command over a list of file buffers
- */
-int lslen(fbufs_t *fs)
-{
-	fbuf_t *f;
-	int len = 0;
-
-	for (int i = 0; i < fs->len; ++i) {
-		f = dlist_get_address(fs, i);
-
-		if (f->filepath)
-			len += strlen(f->filepath);
-		else
-			len += strlen("unnamed");
-
-		// 2 for single quotes wrapping filepath, 1 for intermediary space, 
-		// 2 for square brackets around file buffer id, and 2 for trailing spaces.
-		len += 7;  
-		len += ndigits(f->id);
-	}
-	// Remove last 2 spaces, add 1 for asterisk identifier of active buf.
-	len -= 1;
-	return len;
-}
-
-/*
  * lsstr - Get a string of a list of the open files in the file buffers
+ * @sdata: out-param string to build list of files in
  */
-char *lsstr(fbufs_t *fs, fbuf_t *active_fbuf)
+void lsstr(fbufs_t *fs, fbuf_t *active_fbuf, strncat_data_t *sdata)
 {
 	fbuf_t *f;
-	char *start, *s;
-	int n = lslen(fs);
-
-	start = malloc((n+1)*sizeof(char));
-	s = start;
 
 	for (int i = 0; i < fs->len; ++i) {
 		f = dlist_get_address(fs, i);
 
-		s += sprintf(s, "'%s' [%d", f->filepath ? f->filepath : "unnamed", f->id);
+		strncat_printf_cont(sdata, "'%s' [%d", f->filepath ? f->filepath : "unnamed", f->id);
 
 		if (active_fbuf == f)
-			s += sprintf(s, "*");
-		s += sprintf(s, "]");
+			strncat_cont("*", sdata);
+		strncat_cont("]", sdata);
 
 		if (i < fs->len-1)
-			s += sprintf(s, ", ");
+			strncat_cont(", ", sdata);
 	}
-	start[n] = '\0';
-	return start;
 }
 
 void acmd_list_handler(char *s, bufs_t *b, WINDOW *w)
 {
-	char *t = lsstr(&b->fbufs, b->active_fbuf);
-	snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), "%s", t);
-	free(t);
+	strncat_data_t sdata;
+	strncat_start(b->cmd_ostr, sizeof(b->cmd_ostr), &sdata);
+	lsstr(&b->fbufs, b->active_fbuf, &sdata);
 }
 
 /*
