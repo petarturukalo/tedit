@@ -54,19 +54,25 @@ int lines_from_file_aux(int fd, lines_t *ls, int tabsz)
 		dlist_append(ls, &l);
 		lines_expand_tab_spaces(ls, tabsz);
 		return 0;
-	} else
-		return -1;
+	} 
+	return -1;
+}
+
+void lines_alloc_empty(lines_t *ls)
+{
+	lines_alloc(ls);
+	dlist_append_init(ls, (void (*)(void *))line_alloc);
 }
 
 bool lines_from_fd(lines_t *ls, int fd, int tabsz)
 {
 	lines_alloc(ls);
 
-	if (lines_from_file_aux(fd, ls, tabsz) == -1) {
-		lines_free(ls);
-		return false;
+	if (lines_from_file_aux(fd, ls, tabsz) != -1) {
+		return true;
 	}
-	return true;
+	lines_free(ls);
+	return false;
 }
 
 static void line_expand_tab_spaces(line_t *l, int *tabsz)

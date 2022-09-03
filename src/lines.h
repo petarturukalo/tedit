@@ -19,12 +19,16 @@ void lines_alloc(lines_t *ls);
 void lines_free(lines_t *ls);
 
 /*
+ * Allocate an empty set of lines. The lines will have 1 empty line.
+ */
+void lines_alloc_empty(lines_t *ls);
+/*
  * lines_from_fd - Read a file into lines from a file descriptor
  * @ls: out-param lines to store read file into
  * @fd: file descriptor of opened file
  * @tabsz: see tab.h
  *
- * Return whether could successfully read lines.
+ * Return whether could successfully read lines. 
  */
 bool lines_from_fd(lines_t *ls, int fd, int tabsz);
 
