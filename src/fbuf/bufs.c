@@ -34,7 +34,7 @@ static fbuf_t *bufs_prev_fbuf(bufs_t *b)
 	fbuf_t *f = NULL;
 
 	while (stack_pop(&b->recent_fbufs, &id)) {
-		f = dlist_lookup_address(&b->fbufs, &id, (bool (*)(void *, void *))id_eq_fbuf_id);
+		f = dlist_lookup_address(&b->fbufs, &id, (dlist_match_fn)id_eq_fbuf_id);
 		// Lookup will return NULL if the file has been closed. This check skips closed files, e.g.
 		// you open A, B, C, then edit B: the stack will be [A,B,C,B] *B. Close current file B you get 
 		// [A,B,C] *C, with C now the current file. B is already closed so when you close C, B gets skipped 
@@ -158,7 +158,7 @@ static bool fpath_eq_fbuf_fpath(char *fpath, fbuf_t *f)
 
 int bufs_edit(bufs_t *b, char *fpath)
 {
-	fbuf_t *f = dlist_lookup_address(&b->fbufs, fpath, (bool (*)(void *, void*))fpath_eq_fbuf_fpath);
+	fbuf_t *f = dlist_lookup_address(&b->fbufs, fpath, (dlist_match_fn)fpath_eq_fbuf_fpath);
 
 	if (f) {
 		set_active_fbuf(b, f);
@@ -169,7 +169,7 @@ int bufs_edit(bufs_t *b, char *fpath)
 
 int bufs_jump(bufs_t *b, int id)
 {
-	fbuf_t *f = dlist_lookup_address(&b->fbufs, &id, (bool (*)(void *, void *))id_eq_fbuf_id);
+	fbuf_t *f = dlist_lookup_address(&b->fbufs, &id, (dlist_match_fn)id_eq_fbuf_id);
 
 	if (f) {
 		set_active_fbuf(b, f);

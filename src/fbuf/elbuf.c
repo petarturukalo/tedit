@@ -13,7 +13,7 @@
 void elbuf_init_lines(elbuf_t *e)
 {
 	lines_alloc(&e->lines);
-	dlist_append_init(&e->lines, (void (*)(void *))line_alloc);
+	dlist_append_init(&e->lines, (dlist_elem_fn)line_alloc);
 }
 
 void elbuf_init(elbuf_t *e, WINDOW *w)

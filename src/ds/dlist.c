@@ -20,23 +20,23 @@ static char *byte_address(dlist_t *d, int i)
 	return d->array + i*d->eltsz;
 }
 
-void dlist_for_each(dlist_t *d, void (*func)(void *))
+void dlist_for_each(dlist_t *d, dlist_elem_fn fn)
 {
 	char *cur;
 
 	for (int i = 0; i < d->len; ++i) {
 		cur = byte_address(d, i);
-		func(cur);
+		fn(cur);
 	}
 }
 
-void dlist_for_each_data(dlist_t *d, void (*func)(void *, void *), void *data)
+void dlist_for_each_data(dlist_t *d, dlist_elem_data_fn fn, void *data)
 {
 	char *cur;
 
 	for (int i = 0; i < d->len; ++i) {
 		cur = byte_address(d, i);
-		func(cur, data);
+		fn(cur, data);
 	}
 }
 
@@ -76,13 +76,13 @@ void dlist_init_array(dlist_t *d, int capacity, size_t eltsz, void *elts, int ne
 	cat_array(d, elts, nelts);
 }
 
-static void dlist_free_elements(dlist_t *d, void (*free_elem)(void *))
+static void dlist_free_elements(dlist_t *d, dlist_elem_fn free_elem)
 {
 	if (free_elem)
 		dlist_for_each(d, free_elem);
 }
 
-void dlist_free(dlist_t *d, void (*free_elem)(void *))
+void dlist_free(dlist_t *d, dlist_elem_fn free_elem)
 {
 	if (d->array) {
 		dlist_free_elements(d, free_elem);
@@ -138,7 +138,7 @@ void insert(dlist_t *d, int index, void *elem)
 /*
  * Delete an element at an index.
  */
-static void delete_ind(dlist_t *d, int index, void (*free_elem)(void *))
+static void delete_ind(dlist_t *d, int index, dlist_elem_fn free_elem)
 {
 	char *cur_adrs, *next_adrs;
 
@@ -164,38 +164,36 @@ static bool eq(dlist_t *d, void *a, void *b)
 /*
  * Get the index of an element in the list. Return -1 for no match.
  *
- * @data: if match_func is NULL then this is the element being looked up and
+ * @data: if fn is NULL then this is the element being looked up and
  *	elements are compared by byte values. Else this is the first parameter
- *	passed to match_func.
- * @match_func: function which takes data as first parameter and current element as 
- *	second paramter. Returns true if the second element is the element being looked for.
+ *		passed to fn.
  */
-static int dlist_lookup(dlist_t *d, void *data, bool (*match_func)(void *, void *))
+static int dlist_lookup(dlist_t *d, void *data, dlist_match_fn fn)
 {
 	char *cur;
 
 	for (int i = 0; i < d->len; ++i) {
 		cur = byte_address(d, i);
-		if (match_func ? match_func(data, cur) : eq(d, data, cur))
+		if (fn ? fn(data, cur) : eq(d, data, cur))
 			return i;
 	}
 	return -1;
 }
 
 /*
- * Same as lookup() but return the address of the element instead of its index.
+ * Same as dlist_lookup() but return the address of the element instead of its index.
  * Return NULL for no match.
  */
-void *dlist_lookup_address(dlist_t *d, void *data, bool (*match_func)(void *, void *))
+void *dlist_lookup_address(dlist_t *d, void *data, dlist_match_fn fn)
 {
-	int i = dlist_lookup(d, data, match_func);
+	int i = dlist_lookup(d, data, fn);
 	return i == -1 ? NULL : dlist_get_address(d, i);
 }
 
-static bool delete_elem(dlist_t *d, void *elem, bool (*match_func)(void *, void *), 
-			void (*free_elem)(void *))
+static bool delete_elem(dlist_t *d, void *elem, dlist_match_fn mfn, 
+			dlist_elem_fn free_elem)
 {
-	int i = dlist_lookup(d, elem, match_func);
+	int i = dlist_lookup(d, elem, mfn);
 
 	if (i != -1) {
 		delete_ind(d, i, free_elem);
@@ -247,7 +245,7 @@ void dlist_try_shrink(dlist_t *d)
  * @free_elem: function to free any existing elements before they get cleared. Pass
  *	NULL if elements don't need to be freed.
  */
-static void clear(dlist_t *d, void (*free_elem)(void *))
+static void clear(dlist_t *d, dlist_elem_fn free_elem)
 {
 	dlist_free_elements(d, free_elem);
 	d->len = 0;
@@ -260,11 +258,11 @@ void dlist_append(dlist_t *d, void *elem)
 	append(d, elem);
 }
 
-void dlist_append_init(dlist_t *d, void (*init_elem_func)(void *))
+void dlist_append_init(dlist_t *d, dlist_elem_fn init_elem)
 {
 	static char elembuf[MAX_ELTSZ];
 	bzero(elembuf, d->eltsz);
-	init_elem_func(elembuf);
+	init_elem(elembuf);
 	dlist_append(d, elembuf);
 }
 
@@ -274,16 +272,16 @@ void dlist_insert(dlist_t *d, int index, void *elem)
 	insert(d, index, elem);
 }
 
-void dlist_delete_ind(dlist_t *d, int index, void (*free_elem)(void *))
+void dlist_delete_ind(dlist_t *d, int index, dlist_elem_fn free_elem)
 {
 	delete_ind(d, index, free_elem);
 	dlist_try_shrink(d);
 }
 
-bool dlist_delete_elem(dlist_t *d, void *elem, bool (*match_func)(void *, void *), 
-		       void (*free_elem)(void *))
+bool dlist_delete_elem(dlist_t *d, void *elem, dlist_match_fn mfn, 
+		       dlist_elem_fn free_elem)
 {
-	delete_elem(d, elem, match_func, free_elem);
+	delete_elem(d, elem, mfn, free_elem);
 	dlist_try_shrink(d);
 }
 
@@ -361,7 +359,7 @@ void dlist_cat(dlist_t *dest, dlist_t *src)
 		dlist_copy_elt(src, i, dest, j);
 }
 
-void dlist_copy(dlist_t *dest, dlist_t *src, void (*free_elem)(void *))
+void dlist_copy(dlist_t *dest, dlist_t *src, dlist_elem_fn free_elem)
 {
 	clear(dest, free_elem);
 	dlist_cat(dest, src);
@@ -373,7 +371,7 @@ void dlist_copy_new(dlist_t *d, dlist_t *out_d)
 	dlist_cat(out_d, d);
 }
 
-void dlist_copy_array(dlist_t *d, void *elts, int nelts, void (*free_elem)(void *))
+void dlist_copy_array(dlist_t *d, void *elts, int nelts, dlist_elem_fn free_elem)
 {
 	clear(d, free_elem);
 	cat_array(d, elts, nelts);

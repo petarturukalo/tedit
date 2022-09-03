@@ -18,7 +18,7 @@
 
 #define DLIST_MIN_CAP 16
 
-// TODO could move element free function from dlist_free to struct member
+// TODO could move element free function from dlist_free() to struct member
 // so doesn't have to be param and can also be used in delete functions
 // without a param
 typedef struct dynamic_list {
@@ -27,6 +27,19 @@ typedef struct dynamic_list {
 	int capacity;  // Current number of elements that can fit in the array.
 	size_t eltsz;  // Size of an element in the array.
 } dlist_t;
+
+/* Function to run on an element of a dlist. */
+typedef void (*dlist_elem_fn)(void *);
+/* 
+ * Function to run on an element of a dlist with some arbitrary data.
+ * First param is the element, second is the data.
+ */
+typedef void (*dlist_elem_data_fn)(void *, void *);
+/*
+ * Function which takes data as first parameter and dlist element as second paramter. 
+ * Uses the data to determine whether the element is one being looked for.
+ */
+typedef bool (*dlist_match_fn)(void *, void *);
 
 /*
  * Initialise the members of a dynamic list.
@@ -46,7 +59,7 @@ void dlist_init_array(dlist_t *d, int capacity, size_t eltsz, void *elts, int ne
  * @free_elem: function to free an element in the list. If NULL it's
  *	assumed elements don't need freeing.
  */
-void dlist_free(dlist_t *s, void (*free_elem)(void *));
+void dlist_free(dlist_t *s, dlist_elem_fn free_elem);
 
 void dlist_try_grow(dlist_t *d);
 void dlist_try_shrink(dlist_t *d);
@@ -67,7 +80,7 @@ void dlist_append(dlist_t *d, void *elem);
 /*
  * Append a new element only providing a function to initialise	it.
  */
-void dlist_append_init(dlist_t *d, void (*init_elem_func)(void *));
+void dlist_append_init(dlist_t *d, dlist_elem_fn init_elem);
 void dlist_insert(dlist_t *d, int index, void *elem);
 
 /*
@@ -75,27 +88,24 @@ void dlist_insert(dlist_t *d, int index, void *elem);
  * if out_elem isn't NULL. Return whether an element was popped.
  */
 bool dlist_pop(dlist_t *d, void *out_elem);
-void dlist_delete_ind(dlist_t *d, int index, void (*free_elem)(void *));
+void dlist_delete_ind(dlist_t *d, int index, dlist_elem_fn free_elem);
 /*
  * @elem: element to delete
- * @match_func: function which returns true if two elements are equal.
- *	If this is NULL then comparison is done on byte values.
  *
  * Return whether the element was found and deleted.
  */
-bool dlist_delete_elem(dlist_t *d, void *elem, bool (*match_func)(void *, void *),
-		       void (*free_elem)(void *));
+bool dlist_delete_elem(dlist_t *d, void *elem, dlist_match_fn mfn, dlist_elem_fn free_elem);
 
 /*
- * @func: function to run on each element in the list
+ * @fn: function to run on each element in the list
  */
-void dlist_for_each(dlist_t *d, void (*func)(void *));
-void *dlist_lookup_address(dlist_t *d, void *data, bool (*match_func)(void *, void *));
+void dlist_for_each(dlist_t *d, dlist_elem_fn fn);
 /*
- * @func: function to run on each element in list. First param is element and second
- *	is void data passed into this.
+ * @fn: function to run on each element in the list. 
+ * @data: 2nd param passed to fn
  */
-void dlist_for_each_data(dlist_t *d, void (*func)(void *, void *), void *data);
+void *dlist_lookup_address(dlist_t *d, void *data, dlist_match_fn fn);
+void dlist_for_each_data(dlist_t *d, dlist_elem_data_fn fn, void *data);
 			 
 
 /*
@@ -117,7 +127,7 @@ void dlist_cat(dlist_t *dest, dlist_t *src);
  * @free_elem: function to free any existing elements before they get cleared. Pass
  *	NULL if elements don't need to be freed.
  */
-void dlist_copy(dlist_t *dest, dlist_t *src, void (*free_elem)(void *));
+void dlist_copy(dlist_t *dest, dlist_t *src, dlist_elem_fn free_elem);
 /*
  * Create a new list from an existing list. Allocates the new list and
  * copies elements to it.
@@ -126,8 +136,8 @@ void dlist_copy_new(dlist_t *d, dlist_t *out_d);
 /*
  * Make a list a copy of an array of elements. Clears any existing elements.
  * @nelts: number of elements in the source array
- * @free_elem: see dlist_copy
+ * @free_elem: see dlist_copy()
  */
-void dlist_copy_array(dlist_t *d, void *elts, int nelts, void (*free_elem)(void *));
+void dlist_copy_array(dlist_t *d, void *elts, int nelts, dlist_elem_fn free_elem);
 
 #endif

@@ -49,11 +49,10 @@ void fbuf_free(fbuf_t *f)
 
 void fbufs_free(fbufs_t *fs)
 {
-	dlist_free(fs, (void (*)(void *))fbuf_free);
+	dlist_free(fs, (dlist_elem_fn)fbuf_free);
 }
 
 bool fbufs_delete_fbuf(fbufs_t *fs, fbuf_t *f)
 {
-	return dlist_delete_elem(fs, f, (bool (*)(void *, void *))fbuf_eq, 
-				 (void (*)(void *))fbuf_free);
+	return dlist_delete_elem(fs, f, (dlist_match_fn)fbuf_eq, (dlist_elem_fn)fbuf_free);
 }

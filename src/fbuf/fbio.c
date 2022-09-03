@@ -10,7 +10,7 @@ void fbuf_new(fbuf_t *f, WINDOW *w, int tabsz, int id)
 	fbuf_init_most(f, w, tabsz, id);
 	lines_alloc(&f->lines);
 	// Add a single empty line which the user will start on.
-	dlist_append_init(&f->lines, (void (*)(void *))line_alloc);
+	dlist_append_init(&f->lines, (dlist_elem_fn)line_alloc);
 }
 
 void fbuf_fork(fbuf_t *dest, fbuf_t *src, WINDOW *w, int id)

@@ -15,7 +15,7 @@ void lines_alloc(lines_t *ls)
 
 void lines_free(lines_t *ls)
 {
-	dlist_free(ls, (void (*)(void *))line_free);
+	dlist_free(ls, (dlist_elem_fn)line_free);
 }
 
 static void lines_expand_tab_spaces(lines_t *ls, int tabsz);
@@ -61,7 +61,7 @@ int lines_from_file_aux(int fd, lines_t *ls, int tabsz)
 void lines_alloc_empty(lines_t *ls)
 {
 	lines_alloc(ls);
-	dlist_append_init(ls, (void (*)(void *))line_alloc);
+	dlist_append_init(ls, (dlist_elem_fn)line_alloc);
 }
 
 bool lines_from_fd(lines_t *ls, int fd, int tabsz)
@@ -85,7 +85,7 @@ static void line_expand_tab_spaces(line_t *l, int *tabsz)
  */
 static void lines_expand_tab_spaces(lines_t *ls, int tabsz)
 {
-	dlist_for_each_data(ls, (void (*)(void *, void *))line_expand_tab_spaces, (void *)&tabsz);
+	dlist_for_each_data(ls, (dlist_elem_data_fn)line_expand_tab_spaces, (void *)&tabsz);
 }
 
 static void line_contract_tab_spaces(line_t *l, int *tabsz)
@@ -98,7 +98,7 @@ static void line_contract_tab_spaces(line_t *l, int *tabsz)
  */
 static void lines_contract_tab_spaces(lines_t *ls, int tabsz)
 {
-	dlist_for_each_data(ls, (void (*)(void *, void *))line_contract_tab_spaces, (void *)&tabsz);
+	dlist_for_each_data(ls, (dlist_elem_data_fn)line_contract_tab_spaces, (void *)&tabsz);
 }
 
 int lines_write(lines_t *ls, int tabsz, int fd)
@@ -134,7 +134,7 @@ int lines_write(lines_t *ls, int tabsz, int fd)
 
 void lines_delete(lines_t *ls, int nr)
 {
-	dlist_delete_ind(ls, nr, (void (*)(void *))line_free);
+	dlist_delete_ind(ls, nr, (dlist_elem_fn)line_free);
 }
 
 static void lines_append_forked_line(line_t *line, lines_t *out_lines)
@@ -147,5 +147,5 @@ static void lines_append_forked_line(line_t *line, lines_t *out_lines)
 void lines_fork(lines_t *src, lines_t *dest)
 {
 	lines_alloc(dest);
-	dlist_for_each_data(src, (void (*)(void *, void *))lines_append_forked_line, (void *)dest);
+	dlist_for_each_data(src, (dlist_elem_data_fn)lines_append_forked_line, (void *)dest);
 }
