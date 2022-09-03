@@ -71,7 +71,7 @@ void mv_view_pgup(cursor_t *c, lines_t *ls, view_t *v)
 
 	prev_row = c->row;
 
-	// Prevent cursor going passed top of file.
+	// Prevent cursor going past top of file.
 	if (target_row < 0)
 		target_row = 0;
 	if (target_row != prev_row) {

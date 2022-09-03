@@ -17,7 +17,7 @@ typedef struct command {
 	char *short_name;  // Unique few character identifier for the command.
 	char *long_name;  // Unique longer string identifier for command.
 	// Function to run command. First parameter is remaining part of the command string that user
-	// entered (passed the command name). An output parameter is the cmd_ostr field in bufs_t
+	// entered (past the command name). An output parameter is the cmd_ostr field in bufs_t
 	// and is used to set the echo message.
 	void (*handler)(char *, bufs_t *, WINDOW *);
 } cmd_t;
