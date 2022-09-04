@@ -320,7 +320,6 @@ static void dlist_copy_elt(dlist_t *src, int i, dlist_t *dest, int j)
 static void dlist_copy_bounds(dlist_t *src, int sstart, int send, dlist_t *dest, int dstart, int dend)
 {
 	int i, j;
-	char *dest_adrs;
 
 	i = sstart;
 	j = dstart;
@@ -348,8 +347,7 @@ void dlist_split(dlist_t *d, int index, dlist_t *out_d)
 
 void dlist_cat(dlist_t *dest, dlist_t *src)
 {
-	char *dest_adrs;
-	int new_cap, i, j;
+	int i, j;
 
 	i = 0;
 	j = dest->len;
