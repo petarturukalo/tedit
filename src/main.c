@@ -27,8 +27,7 @@ int main(int argc, char *argv[])
 {
 	pthread_t tids[2];
 
-	// Interrupt is ignored entirely and termination ignored while initialising
-	// data to pedantically avoid memory leaks in this one spot.
+	// Interrupt is ignored entirely and termination ignored while initialising data.
 	signal(SIGINT, SIG_IGN);
 	signal(SIGTERM, SIG_IGN);
 
