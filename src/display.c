@@ -67,7 +67,7 @@ void display_fbuf_line(line_t *l, int i, int first_col, int view_width,
 void display_fbuf_lines(fbuf_t *f, WINDOW *w)
 {
 	// Row and column positions over the file buffer's lines (all inclusive).
-	int top_row, bot_row, first_col, end_col;
+	int top_row, bot_row, first_col;
 	int i, vheight, vwidth, view_disp_top_row, view_disp_first_col;
 	line_t *l;
 	view_t *v = &f->view;
