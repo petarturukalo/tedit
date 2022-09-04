@@ -31,7 +31,7 @@ and `[args]` are arguments (optionally) used by the command.
 | o | open | Open a file into a new file buffer. Requires a filepath argument of the file to open, otherwise a new unlinked, empty file buffer is opened. If the file doesn't exist then it is created on next write. |
 | e | edit | Swap to an already opened file buffer for editing with its name as argument. |
 | j | jump | Swap to an already opened file buffer for editing with its ID as argument. |
-| ls | list | List all the open file buffers. Listed for each file buffer is "regex" "\<filepath\> [\*?\<id\>u?e?]" where \<filepath\> is the filepath linked to the file buffer, or unlinked if it is unlinked, \<id\> is the ID of the file buffer, * is optionally before the ID to identify the current file buffer in view, u and e are optionally after the ID to identify that the file buffer is u[nlinked] or has been e[dited]. |
+| ls | list | List all the open file buffers. Listed for each file buffer is "\<filepath\> [\*\<id\>ue]" where \<filepath\> is the filepath linked to the file buffer, or unlinked if it is unlinked, \<id\> is the ID of the file buffer, * is optionally before the ID to identify the current file buffer in view, u and e are optionally after the ID to identify that the file buffer is u[nlinked] or has been e[dited]. |
 | q | quit | Quit the text editor. Requires that all open file buffers be saved/written before exiting. |
 | fq | fquit | Force quit the text editor. Discards any unsaved edits. |
 
