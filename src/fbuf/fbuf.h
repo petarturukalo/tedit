@@ -58,6 +58,15 @@ bool fbuf_link(fbuf_t *f, char *fpath);
  * Unlink a file buffer from its current filepath.
  */
 void fbuf_unlink(fbuf_t *f);
+/* 
+ * Get whether a file buffer has been linked to a filepath. 
+ */
+bool fbuf_linked(fbuf_t *f);
+/*
+ * Get the name of the filepath that the file buffer is linked to, or "unlinked" 
+ * if it is unlinked.
+ */
+char *fbuf_link_name(fbuf_t *f);
 
 void fbuf_free(fbuf_t *f);
 void fbufs_free(fbufs_t *fs);

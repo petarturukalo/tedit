@@ -25,7 +25,7 @@
  * @f: out-param file buffer to make a new, empty file out of
  * @w: curses window file buffer will be displayed in
  * @tabsz: see tab.h
- * @id: unique identifier for buffer in case there are multiple empty unnamed buffers
+ * @id: unique identifier for buffer in case there are multiple empty unlinked buffers
  *
  * Has no file associated with it, and so can't be written. Associate/link a file
  * with it by call to fbuf_link. Free with fbuf_free.

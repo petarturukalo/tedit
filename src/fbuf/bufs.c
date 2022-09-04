@@ -185,7 +185,7 @@ int bufs_write(bufs_t *b)
 	if (b->active_fbuf) {
 		f = b->active_fbuf;
 
-		if (f->filepath)
+		if (fbuf_linked(f))
 			return fbuf_write(f);
 	}
 	return -1;

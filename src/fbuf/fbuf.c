@@ -36,9 +36,21 @@ bool fbuf_link(fbuf_t *f, char *fpath)
 	return f->filepath;
 }
 
+bool fbuf_linked(fbuf_t *f)
+{
+	return f->filepath;
+}
+
 void fbuf_unlink(fbuf_t *f)
 {
 	freecp(&f->filepath);
+}
+
+char *fbuf_link_name(fbuf_t *f)
+{
+	if (fbuf_linked(f))
+		return f->filepath;
+	return "unlinked";
 }
 
 void fbuf_free(fbuf_t *f)

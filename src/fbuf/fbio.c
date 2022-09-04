@@ -66,7 +66,7 @@ int fbuf_write(fbuf_t *f)
 {
 	int fd, bytes;
 
-	if (f->filepath) {
+	if (fbuf_linked(f)) {
 		fd = fbuf_openfd(f, O_WRONLY|O_CREAT);
 		
 		if (fd != -1) {

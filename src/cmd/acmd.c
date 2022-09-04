@@ -17,15 +17,13 @@ void lsstr(fbufs_t *fs, fbuf_t *active_fbuf, strncat_data_t *sdata)
 
 	for (int i = 0; i < fs->len; ++i) {
 		f = dlist_get_address(fs, i);
-
-		strncat_printf_cont(sdata, "'%s' [%d", f->filepath ? f->filepath : "unnamed", f->id);
-
-		if (active_fbuf == f)
-			strncat_cont("*", sdata);
-		strncat_cont("]", sdata);
-
-		if (i < fs->len-1)
-			strncat_cont(", ", sdata);
+		strncat_printf_cont(sdata, "'%s' [%s%d%s%s]%s",
+				    fbuf_link_name(f),
+				    active_fbuf == f ? "*" : "",
+				    f->id,
+				    !fbuf_linked(f) ? "u" : "",
+				    f->unsaved_edit ? "e" : "",
+				    i < fs->len-1 ? ", " : "");
 	}
 }
 
@@ -50,7 +48,7 @@ void acmd_quit_handler(char *s, bufs_t *b, WINDOW *w)
 			snprintf(b->cmd_ostr, sizeof(b->cmd_ostr), 
 				 "unsaved edit in buf '%s' [%d]; "
 				 "need to write/save before quit", 
-				 f->filepath ? f->filepath : "unnamed", f->id);
+				 fbuf_link_name(f), f->id);
 			return;
 		}
 	}

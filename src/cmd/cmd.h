@@ -39,7 +39,7 @@ extern cmd_t fcmd_fclose;
 extern cmd_t fcmd_open;
 /* Edit an existing file buffer by name. */
 extern cmd_t fcmd_edit;
-/* Jump to a file buffer by ID. Helpful to edit unnamed file buffers. */
+/* Jump to a file buffer by ID. Helpful to edit unlinked file buffers. */
 extern cmd_t fcmd_jump;
 
 typedef struct commands {

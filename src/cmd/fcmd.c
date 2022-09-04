@@ -53,13 +53,13 @@ void fcmd_write_handle_new(bufs_t *b, char *fpath)
  */
 void fcmd_write_handler(char *fpath, bufs_t *b, WINDOW *w)
 {
-	if (b->active_fbuf->filepath) {
+	if (fbuf_linked(b->active_fbuf)) {
 		if (fpath) 
 			fcmd_write_handle_other(b, fpath, w);
 		else
 			fcmd_write_handle(b);
 	} else {
-		// Buffer is unnamed, so it must have a name to continue.
+		// Buffer is unlinked, so it must have a name to continue.
 		if (fpath)
 			fcmd_write_handle_new(b, fpath);
 		else
