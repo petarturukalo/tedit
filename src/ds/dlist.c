@@ -281,8 +281,9 @@ void dlist_delete_ind(dlist_t *d, int index, dlist_elem_fn free_elem)
 bool dlist_delete_elem(dlist_t *d, void *elem, dlist_match_fn mfn, 
 		       dlist_elem_fn free_elem)
 {
-	delete_elem(d, elem, mfn, free_elem);
+	bool deleted = delete_elem(d, elem, mfn, free_elem);
 	dlist_try_shrink(d);
+	return deleted;
 }
 
 bool dlist_pop(dlist_t *d, void *out_elem)
