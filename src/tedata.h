@@ -14,11 +14,13 @@
 #include "fbuf/elbuf.h"
 #include "fbuf/bufs.h"
 #include "cmd/cmd.h"
+#include "synhl/clrmap.h"
 
 struct text_editor_data {
 	WINDOW *win;  // Curses window for displaying file buffers in.
 	bufs_t bufs;
 	cmds_t cmds;
+	clrmap_t clrmap;
 	// Lock which must be acquired before accessing other fields
 	// of this data structure.
 	sem_t sem;  

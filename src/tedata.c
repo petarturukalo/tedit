@@ -4,6 +4,7 @@
  * Copyright (C) 2021 Petar Turukalo
  */
 #include "tedata.h"
+#include "log.h"
 
 void setup_curses(void)
 {
@@ -13,10 +14,22 @@ void setup_curses(void)
 	set_escdelay(20);  // (Milliseconds.)
 }
 
+static void init_syntax_highlighting(tedata_t *t)
+{
+	if (!has_colors()) {
+		tlog("curses has_colors() failed: syntax highlighting disabled");
+		return;
+	}
+	start_color();
+	init_pairs();
+	compile_syntax_rules();
+	clrmap_init(&t->clrmap, t->win);
+}
+
 bool tedata_init(tedata_t *t, char *fpaths[])
 {
 	if (sem_init(&t->sem, 0, 1) == -1) {
-		fprintf(stderr, "failed to init semaphore\n");
+		tlog("failed to init semaphore");
 		return false;
 	}
 
@@ -25,7 +38,7 @@ bool tedata_init(tedata_t *t, char *fpaths[])
 	// refreshes the stdscr window (the window from initscr), which makes the display glitch
 	// out if the display window is the same as the get character input window.
 	if (!initscr()) {
-		fprintf(stderr, "failed to init curses\n");
+		tlog("failed to init curses");
 		sem_destroy(&t->sem);
 		return false;
 	}
@@ -33,17 +46,25 @@ bool tedata_init(tedata_t *t, char *fpaths[])
 	t->win = newwin(0, 0, 0, 0);  // Display window (separate to get character stdscr window).
 
 	if (!t->win) {
-		fprintf(stderr, "failed to create new curses window\n");
+		tlog("failed to create new curses window");
 		sem_destroy(&t->sem);
 		endwin();
 		return false;
 	}
-
+	init_syntax_highlighting(t);
 	setup_curses();
 	bufs_init(&t->bufs, t->win, fpaths);
 	cmds_init(&t->cmds);
 
 	return true;
+}
+
+static void free_syntax_highlighting(tedata_t *t)
+{
+	if (has_colors()) {
+		free_syntax_rules();
+		clrmap_free(&t->clrmap);
+	}
 }
 
 void tedata_free(tedata_t *t)
@@ -53,5 +74,6 @@ void tedata_free(tedata_t *t)
 	sem_destroy(&t->sem);
 	bufs_free(&t->bufs);
 	cmds_free(&t->cmds);
+	free_syntax_highlighting(t);
 }
 
