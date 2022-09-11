@@ -1,4 +1,5 @@
 #include "fbuf.h"
+#include "../misc.h"
 
 /*
  * Get whether two file buffers are equal.
