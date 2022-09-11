@@ -137,4 +137,8 @@ void str_align_next_tab(str_t *s, int start_ind, int tabsz)
 		str_align_tab(s, tab_ind, tabsz);
 }
 
-
+void str_replace_pspaces(str_t *s)
+{
+	strreplace(s->array, TAB_START, ' ');
+	strreplace(s->array, TAB_CONT, ' ');
+}

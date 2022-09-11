@@ -84,4 +84,9 @@ void str_expand_tab_spaces(str_t *s, int tabsz);
  */
 void str_align_next_tab(str_t *s, int start_ind, int tabsz);
 
+/*
+ * Replace all pseudo spaces in a string with actual spaces.
+ */
+void str_replace_pspaces(str_t *s);
+
 #endif
