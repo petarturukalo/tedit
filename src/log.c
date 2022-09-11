@@ -22,7 +22,7 @@
  */
 static int log_open(const char *dirname)
 {
-	char fpath[64];
+	char fpath[128];
 	snprintf(fpath, sizeof(fpath), "%s/%d", dirname, getpid());
 	return open(fpath, O_CREAT|O_WRONLY|O_APPEND, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
 }
@@ -69,6 +69,8 @@ void tlog(char *fmt, ...)
 
 	if (fd == -1) {
 		getlogdir(logdir, sizeof(logdir));
+		if (!logdir[0])
+			return;
 		// Create log directory if it doesn't already exist.
 		if (!file_exists(logdir)) {
 			if (mkdir(logdir, 0777) == -1) {
