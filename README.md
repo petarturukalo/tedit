@@ -1,8 +1,8 @@
 # Description
 
 A simple ncurses terminal text editor with tab handling, editing multiple files (although only one in view
-at a time), and some basic commands. Access commands by swapping between the current file buffer and echo line
-buffer, where commands are entered, using the escape key.
+at a time), syntax highlighting, and some basic commands. Access commands by swapping between the current 
+file buffer and echo line buffer, where commands are entered, using the escape key.
 
 
 # Dependent Libraries
@@ -35,3 +35,9 @@ and `[args]` are arguments (optionally) used by the command.
 | q | quit | Quit the text editor. Requires that all open file buffers be saved/written before exiting. |
 | fq | fquit | Force quit the text editor. Discards any unsaved edits. |
 
+
+## Syntax Highlighting
+
+Syntax highlighting is enabled for certain file types by checking a file's extension. 
+Supported file types can be determined by looking at the structures in `src/synhl/rule.c`;
+the supported types can be easily extended by adding new regex rules and structures here.
