@@ -26,7 +26,7 @@ static syntax_rule_t c_syntax_rules[] = {
 							     "ifdef|ifndef|include|pragma|undef)\\b" },
 	{ "singleline comment", COLOUR_BLUE, REG_NEWLINE, "//.*$" },
 	{ "multiline comment", COLOUR_BLUE, 0, "/\\*(\\*[^/]|[^\\*]/|[^\\*/])*\\*/" },
-	{ "string", COLOUR_RED, REG_NEWLINE, "\"(\\\\.|[^\"$])*\"" },
+	{ "string", COLOUR_RED, REG_NEWLINE, "\"(\\\\.|[^\"])*\"" },
 	{ "char", COLOUR_RED, 0, "'[[:print:]]'" },
 	{ "number", COLOUR_RED, 0, "\\b(" INT_PAT "|" FLT_PAT "|" BOOL_PAT ")\\b" },
 	{ 0 }
