@@ -114,8 +114,7 @@ static void display_clrmap(clrmap_t *c, WINDOW *w)
 static void display_syntax_highlighting(clrmap_t *c, fbuf_t *f, WINDOW *w)
 {
 	if (has_colors()) {
-		clrmap_syntax_highlight(c, f);
-		if (c->enabled)
+		if (clrmap_syntax_highlight(c, f))
 			display_clrmap(c, w);
 	}
 }

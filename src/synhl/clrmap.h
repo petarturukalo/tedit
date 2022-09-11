@@ -20,8 +20,6 @@ typedef struct colour_map {
 	// the curses window matching the row, column indices of the cell.
 	matrix_t clrmap;
 	WINDOW *win;
-	// Whether the colour map should be used for colouring the screen.
-	bool enabled;
 } clrmap_t;
 
 /*
@@ -32,8 +30,11 @@ void clrmap_init(clrmap_t *c, WINDOW *w);
 /*
  * Repaint the colour map with syntax highlighting for a file buffer.
  * Language is chosen from the file type identified by the file's extension.
+ *
+ * Return whether syntax highlighting is enabled for the file and whether
+ * the clrmap was painted.
  */
-void clrmap_syntax_highlight(clrmap_t *c, fbuf_t *f);
+bool clrmap_syntax_highlight(clrmap_t *c, fbuf_t *f);
 
 /*
  * Free a colour map initialised with clrmap_init().

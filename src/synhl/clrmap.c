@@ -12,7 +12,6 @@ void clrmap_init(clrmap_t *c, WINDOW *w)
 {
 	matrix_init(&c->clrmap, getmaxy(w), getmaxx(w), sizeof(clrpair_t));
 	c->win = w;
-	c->enabled = false;
 }
 
 /*
@@ -131,12 +130,10 @@ static void clrmap_paint(matrix_t *clrmap, char *flat_lines_snapshot, dlist_t *m
 	}
 }
 
-void clrmap_syntax_highlight(clrmap_t *c, fbuf_t *f)
+bool clrmap_syntax_highlight(clrmap_t *c, fbuf_t *f)
 {
 	syntax_rule_t *rules = find_syntax_rules(fbuf_link_name(f));
 
-	c->enabled = rules;
-	
 	if (rules) {
 		dlist_t matches;
 		str_t flat_lines_snapshot;
@@ -154,6 +151,7 @@ void clrmap_syntax_highlight(clrmap_t *c, fbuf_t *f)
 		dlist_free(&matches, NULL);
 		dlist_free(&flat_lines_snapshot, NULL);
 	} 
+	return rules;
 }
 
 void clrmap_free(clrmap_t *c)
