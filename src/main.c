@@ -12,6 +12,7 @@
 #include "tab.h"
 #include "fbuf/fbuf.h"
 #include "fbuf/fbio.h"
+#include "log.h"
 
 static tedata_t t = { 0 };  // Global text editor data.
 
@@ -32,7 +33,7 @@ int main(int argc, char *argv[])
 	signal(SIGTERM, SIG_IGN);
 
 	if (!tedata_init(&t, argv+1)) {
-		fprintf(stderr, "failed to init text editor data\n");
+		tlog("failed to init text editor data");
 		exit(EXIT_FAILURE);
 	}
 
