@@ -18,6 +18,12 @@ Start up by running `tedit [filepath ...]` where any number of files can be open
 providing their filepaths as command line arguments, or none to start editing an empty file, which can
 be linked to a new file later on with the write command.
 
+## Syntax Highlighting
+
+Syntax highlighting is enabled for certain file types by checking a file's extension. 
+Supported file types can be determined by looking at the structures in `src/synhl/rule.c`;
+the supported types can be easily extended by adding new regex rules and structures here.
+
 ## Commands
 
 Enter a command in the echo line buffer with format `cmd [args]` where `cmd` is the name of the command
@@ -35,9 +41,3 @@ and `[args]` are arguments (optionally) used by the command.
 | q | quit | Quit the text editor. Requires that all open file buffers be saved/written before exiting. |
 | fq | fquit | Force quit the text editor. Discards any unsaved edits. |
 
-
-## Syntax Highlighting
-
-Syntax highlighting is enabled for certain file types by checking a file's extension. 
-Supported file types can be determined by looking at the structures in `src/synhl/rule.c`;
-the supported types can be easily extended by adding new regex rules and structures here.
