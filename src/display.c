@@ -3,7 +3,9 @@
  *
  * Copyright (C) 2021 Petar Turukalo
  */
+#include <unistd.h>
 #include "display.h"
+#include "log.h"
 
 // Refresh rates in micro seconds.
 static const int REFRESH_RATE_60_HZ_USEC = 16667;
@@ -45,42 +47,18 @@ void addtabsubstr(char *s, int start, int end, WINDOW *w)
 }
 
 /*
- * display_fbuf_line - Display the view of a line in the file buffer
- * @l: line to display
- * @i: index row in view (first displayed line has this 0, second has 1, etc., by 0-indexing)
- * @first_col: first column in the line to display
- * @view_width: width of the view
- * @view_disp_top_row: row of top left anchor point of view on window
- * @view_disp_top_col: column of top left anchor point of view on window
- */
-void display_fbuf_line(line_t *l, int i, int first_col, int view_width, 
-		       int view_disp_top_row, int view_disp_first_col, WINDOW *w)
-{
-	int end_col = first_col+view_width-1 > line_len_nl(l)-1 ? line_len_nl(l)-1 : first_col+view_width-1;
-	wmove(w, view_disp_top_row+i, view_disp_first_col);
-	addtabsubstr(l->array, first_col, end_col, w);
-}
-
-/*
  * display_fbuf_lines - Display the view of a file buffer's lines
  */
 void display_fbuf_lines(fbuf_t *f, WINDOW *w)
 {
-	// Row and column positions over the file buffer's lines (all inclusive).
-	int top_row, bot_row, first_col;
-	int i, vheight, vwidth, view_disp_top_row, view_disp_first_col;
+	int top_row, bot_row, first_col, end_col;
+	int i, view_disp_top_row, view_disp_first_col;
 	line_t *l;
 	view_t *v = &f->view;
 
 	top_row = v->lines_top_row;
 	first_col = v->lines_first_col;
-	vheight = view_height(v);
-	vwidth = view_width(v);
-
-	if (top_row+vheight-1 >= f->lines.len)
-		bot_row = f->lines.len-1;
-	else
-		bot_row = top_row+vheight-1;
+	bot_row = view_lines_bot_row(v, &f->lines);
 
 	view_disp_top_row = view_display_top_row(v);
 	view_disp_first_col = view_display_first_col(v);
@@ -92,8 +70,9 @@ void display_fbuf_lines(fbuf_t *f, WINDOW *w)
 	i = 0;
 	for (int lnr = top_row; lnr <= bot_row; ++lnr, ++i)  {
 		l = dlist_get_address(&f->lines, lnr);
-		display_fbuf_line(l, i, first_col, vwidth, view_disp_top_row, 
-				  view_disp_first_col, w);
+		end_col = view_line_last_col(v, l);
+		wmove(w, view_disp_top_row+i, view_disp_first_col);  // Move to start of line.
+		addtabsubstr(l->array, first_col, end_col, w);  // Display whole line.
 	}
 }
 
@@ -112,6 +91,36 @@ void display_fbuf_cursor(fbuf_t *f, WINDOW *w)
 }
 
 /*
+ * Set the colours in a window to the colours in a colour map.
+ */
+static void display_clrmap(clrmap_t *c, WINDOW *w)
+{
+	int nrows = c->clrmap.nrows;
+	int ncols = c->clrmap.ncols;
+	clrpair_t *clrpair;
+
+	for (int i = 0; i < nrows; ++i) {
+		for (int j = 0; j < ncols; ++j) {
+			clrpair = matrix_get_address(&c->clrmap, i, j);
+			mvwchgat(w, i, j, 1, 0, *clrpair, NULL);
+		}
+	}
+}
+
+/*
+ * Display syntax highlighting for a file buffer to the curses standard screen.
+ * Assumes the file buffer has already been displayed to the screen.
+ */
+static void display_syntax_highlighting(clrmap_t *c, fbuf_t *f, WINDOW *w)
+{
+	if (has_colors()) {
+		clrmap_syntax_highlight(c, f);
+		if (c->enabled)
+			display_clrmap(c, w);
+	}
+}
+
+/*
  * display_text_editor - Display the text editor to the curses standard screen
  */
 void display_text_editor(tedata_t *t)
@@ -125,6 +134,7 @@ void display_text_editor(tedata_t *t)
 	// Show current file buffer being edited along with echo line buffer where user enters commands.
 	display_fbuf_lines(b->active_fbuf, w);
 	display_fbuf_lines(&b->elbuf, w);
+	display_syntax_highlighting(&t->clrmap, b->active_fbuf, w);
 	// Active buffer might be the echo line buffer and only want to display one cursor.
 	display_fbuf_cursor(b->active_buf, w);
 	wrefresh(w);
