@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright (C) 2022 Petar Turukalo
+ */
 #include <stdlib.h>
 #include "clrmap.h"
 #include "colour.h"
