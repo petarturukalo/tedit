@@ -18,8 +18,7 @@ bool matrix_init(matrix_t *m, int nrows, int ncols, size_t eltsz)
 		dlist_init(&m->rows, nrows, sizeof(dlist_t));
 		for (int i = 0; i < nrows; ++i) {
 			dlist_init(&row, ncols, eltsz);
-			for (int j = 0; j < ncols; ++j)
-				dlist_append(&row, NULL);
+			dlist_resize_len(&row, ncols);
 			dlist_append(&m->rows, &row);
 		}
 		return true;
@@ -45,6 +44,7 @@ bool matrix_resz(matrix_t *m, int new_nrows, int new_ncols)
 		m->nrows = new_nrows;
 		m->ncols = new_ncols;
 
+		// Resize rows and initialise new rows if new rows were added.
 		dlist_resize_len_init_data(&m->rows, new_nrows, (dlist_elem_data_fn)matrix_init_row, m);
 		for (int i = 0; i < new_nrows; ++i) {
 			row = dlist_get_address(&m->rows, i);
