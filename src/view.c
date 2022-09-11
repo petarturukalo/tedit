@@ -28,7 +28,7 @@ void view_init(view_t *v, WINDOW *w, int top_row_offset, int bot_row_offset,
  *
  * See struct view struct members for descriptions of offset params.
  */
-int len_start_ind(int len, int start_offset)
+static int len_start_ind(int len, int start_offset)
 {
 	return start_offset >= 0 ? start_offset : len+start_offset;
 }
@@ -38,7 +38,7 @@ int len_start_ind(int len, int start_offset)
  *
  * See struct view struct members for descriptions of offset params.
  */
-int len_end_ind(int len, int end_offset)
+static int len_end_ind(int len, int end_offset)
 {
 	return end_offset >= 0 ? len-1-end_offset : -1-end_offset;
 }
@@ -48,7 +48,7 @@ int len_end_ind(int len, int end_offset)
  *
  * See struct view struct member for descriptions of offset params.
  */
-int len_shrink(int len, int start_offset, int end_offset)
+static int len_shrink(int len, int start_offset, int end_offset)
 {
 	// Start and end of range over len that makes new len (both ends inclusive).
 	int start, end;
@@ -80,60 +80,53 @@ int view_display_first_col(view_t *v)
 	return len_start_ind(getmaxx(v->win), v->win_first_col_off);
 }
 
-/*
- * view_lines_bot_row - Get the last row on the lines underlying a file which the
- *	view covers (inclusive)
- */
-int view_lines_bot_row(view_t *v)
+int view_lines_bot_row(view_t *v, lines_t *ls)
 {
-	return v->lines_top_row+view_height(v)-1;
+	int bot_row = v->lines_top_row+view_height(v)-1;
+
+	if (bot_row >= ls->len)
+		bot_row = ls->len-1;
+	return bot_row;
 }
 
 /*
  * view_lines_last_col - Get the last column on the lines underlying a file which the
  *	view covers (inclusive)
  */
-int view_lines_last_col(view_t *v)
+static int view_lines_last_col(view_t *v)
 {
 	return v->lines_first_col+view_width(v)-1;
+}
+
+int view_line_last_col(view_t *v, line_t *l)
+{	
+	int last_col = view_lines_last_col(v);
+
+	if (last_col >= line_len_nl(l))
+		last_col = line_len_nl(l)-1;
+	return last_col;
 }
 
 /*
  * view_crs_above - Get whether the cursor is above and out of the view
  */
-bool view_crs_above(view_t *v, cursor_t *c)
+static bool view_crs_above(view_t *v, cursor_t *c)
 {
 	return c->row < v->lines_top_row;
 }
 
 /*
- * view_crs_above_dist - Get the distance in lines the cursor is above the top of the view
- */
-int view_crs_above_dist(view_t *v, cursor_t *c)
-{
-	return v->lines_top_row - c->row;
-}
-
-/*
  * view_crs_below - Get whether the cursor is below and out of the view
  */
-bool view_crs_below(view_t *v, cursor_t *c)
+static bool view_crs_below(view_t *v, cursor_t *c, lines_t *ls)
 {
-	return c->row > view_lines_bot_row(v);
-}
-
-/*
- * view_crs_below_dist - Get the distance in lines the cursor is below the bottom of the view
- */
-int view_crs_below_dist(view_t *v, cursor_t *c)
-{
-	return c->row - view_lines_bot_row(v);
+	return c->row > view_lines_bot_row(v, ls);;
 }
 
 /*
  * view_crs_leftward - Get whether the cursor is left and out of the view
  */
-bool view_crs_leftward(view_t *v, cursor_t *c)
+static bool view_crs_leftward(view_t *v, cursor_t *c)
 {
 	return c->col < v->lines_first_col;
 }
@@ -141,7 +134,7 @@ bool view_crs_leftward(view_t *v, cursor_t *c)
 /*
  * view_crs_leftward_dist - Get the distance in columns the cursor is left and out of the view
  */
-int view_crs_leftward_dist(view_t *v, cursor_t *c)
+static int view_crs_leftward_dist(view_t *v, cursor_t *c)
 {
 	return v->lines_first_col - c->col;
 }
@@ -149,7 +142,7 @@ int view_crs_leftward_dist(view_t *v, cursor_t *c)
 /*
  * view_crs_rightward - Get whether the cursor is right and out of the view
  */
-bool view_crs_rightward(view_t *v, cursor_t *c)
+static bool view_crs_rightward(view_t *v, cursor_t *c)
 {
 	return c->col > view_lines_last_col(v);
 }
@@ -157,7 +150,7 @@ bool view_crs_rightward(view_t *v, cursor_t *c)
 /*
  * view_crs_rightward_dist - Get the distance in columns the cursor is right and out of the view
  */
-int view_crs_rightward_dist(view_t *v, cursor_t *c)
+static int view_crs_rightward_dist(view_t *v, cursor_t *c)
 {
 	return c->col - view_lines_last_col(v);
 }
@@ -165,7 +158,7 @@ int view_crs_rightward_dist(view_t *v, cursor_t *c)
 /*
  * view_sync_crs_row_above - Synchronise the view with the cursor being above the view
  */
-void view_sync_crs_row_above(view_t *v, cursor_t *c, int nlines)
+static void view_sync_crs_row_above(view_t *v, cursor_t *c, int nlines)
 {
 	if (v->pgmv) {
 		v->lines_top_row -= view_height(v);
@@ -179,7 +172,7 @@ void view_sync_crs_row_above(view_t *v, cursor_t *c, int nlines)
 /*
  * view_sync_crs_row_below - Synchronise the view with the cursor being below the view
  */
-void view_sync_crs_row_below(view_t *v, cursor_t *c, int nlines)
+static void view_sync_crs_row_below(view_t *v, cursor_t *c, int nlines)
 {
 	if (v->pgmv) 
 		v->lines_top_row += view_height(v);
@@ -191,19 +184,19 @@ void view_sync_crs_row_below(view_t *v, cursor_t *c, int nlines)
  * view_sync_crs_row - Sync the view with the cursor in case the cursor row is out of view by
  *	being outside the top or bottom of the view
  */
-void view_sync_crs_row(view_t *v, cursor_t *c, int nlines)
+static void view_sync_crs_row(view_t *v, cursor_t *c, lines_t *ls)
 {
 	if (view_crs_above(v, c)) 
-		view_sync_crs_row_above(v, c, nlines);
-	else if (view_crs_below(v, c)) 
-		view_sync_crs_row_below(v, c, nlines);
+		view_sync_crs_row_above(v, c, ls->len);
+	else if (view_crs_below(v, c, ls)) 
+		view_sync_crs_row_below(v, c, ls->len);
 	v->pgmv = false;  // Always force off in case tried to pgup/dn when in view.
 }
 
 /*
  * view_sync_crs_col_leftward - Put the cursor back in view if it's outside and leftward of the view
  */
-void view_sync_crs_col_leftward(view_t *v, cursor_t *c, int linelen)
+static void view_sync_crs_col_leftward(view_t *v, cursor_t *c, int linelen)
 {
 	int dist = view_crs_leftward_dist(v, c);
 	// Fit cursor by make leftmost part of view include the column cursor is at.
@@ -213,7 +206,7 @@ void view_sync_crs_col_leftward(view_t *v, cursor_t *c, int linelen)
 /*
  * view_sync_crs_col_rightward - Put the cursor back in view if it's outside and rightward of the view
  */
-void view_sync_crs_col_rightward(view_t *v, cursor_t *c, int linelen)
+static void view_sync_crs_col_rightward(view_t *v, cursor_t *c)
 {
 	int dist = view_crs_rightward_dist(v, c);
 	// Fit cursor by make rightmost part of view include the column cursor is at.
@@ -223,21 +216,20 @@ void view_sync_crs_col_rightward(view_t *v, cursor_t *c, int linelen)
 /*
  * view_sync_crs_col - Sync the view with the cursor in case the cursor column is out of view by
  *	being outside the left or right of the view
- * @linelen: length of the current line the cursor is on
  */
-void view_sync_crs_col(view_t *v, cursor_t *c, int linelen)
+static void view_sync_crs_col(view_t *v, cursor_t *c, int linelen)
 {
 	if (view_crs_leftward(v, c)) 
 		view_sync_crs_col_leftward(v, c, linelen);
 	else if (view_crs_rightward(v, c)) 
-		view_sync_crs_col_rightward(v, c, linelen);
+		view_sync_crs_col_rightward(v, c);
 }
 
 void view_sync_cursor(view_t *v, cursor_t *c, lines_t *ls)
 {
 	line_t *cur = dlist_get_address(ls, c->row);
 
-	view_sync_crs_row(v, c, ls->len);
+	view_sync_crs_row(v, c, ls);
 	view_sync_crs_col(v, c, line_len(cur));
 }
 
@@ -250,3 +242,4 @@ int view_cursor_display_col(view_t *v, cursor_t *c)
 {
 	return view_display_first_col(v)+(c->col-v->lines_first_col);
 }
+

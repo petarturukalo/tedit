@@ -12,8 +12,9 @@
 #include "cursor.h"
 #include "lines.h"
 
-struct view {
+typedef struct view {
 	// First row and column displayed on the screen (inclusive), or in "view".
+	// See also view_lines_bot_row() and view_lines_end_col().
 	int lines_top_row;
 	int lines_first_col;
 	// Offsets from borders of curses windows. An offset is the distance from a border of the curses
@@ -28,9 +29,7 @@ struct view {
 	int win_last_col_off;
 	WINDOW *win;
 	bool pgmv;  // Whether moved by a pgup/dn rather than arrow key.
-};
-
-typedef struct view view_t;
+} view_t;
 
 /*
  * view_init - Set default values for a view and set up the structure with fields
@@ -66,10 +65,21 @@ int view_width(view_t *v);
 int view_display_top_row(view_t *v);
 
 /*
- * view_display_first_col - Get the index of the column on the screen to starts displaying the
+ * view_display_first_col - Get the index of the column on the screen to start displaying the
  *	file at (inclusive)
  */
 int view_display_first_col(view_t *v);
+
+/*
+ * view_lines_bot_row - Get the last row on the lines underlying a file which the
+ *	view covers (inclusive)
+ */
+int view_lines_bot_row(view_t *v, lines_t *ls);
+
+/*
+ * Get the last column of a line that is in view (inclusive).
+ */
+int view_line_last_col(view_t *v, line_t *l);
 
 /*
  * view_sync_cursor - Sync the view with the cursor in case the cursor is out of view
