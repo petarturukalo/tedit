@@ -22,7 +22,7 @@ be linked to a new file later on with the write command.
 
 Syntax highlighting is enabled for certain file types dependent on file extension. 
 Supported file types can be determined by looking at the structures in `src/synhl/rule.c`;
-the supported types can be easily extended by adding new regex rules and structures here.
+the set of supported types can be easily extended by adding new regex rules and structures here.
 
 ## Commands
 
