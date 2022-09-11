@@ -10,9 +10,10 @@
 #define CHRP_H
 
 #include <string.h>
-#include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <sys/types.h>
 #include "math.h"
 
 /*
@@ -105,11 +106,13 @@ char *strnchr_reverse(char *s, int c);
 void strip_trailchar(char *s, int c);
 
 /*
- * Free pointer and set it to NULL if it's not NULL.
- * @ptr: address of pointer
+ * Get whether a string s has a suffix.
  */
-void freep(void **ptr);
-/* Char pointer version of freep(). */
-void freecp(char **ptr);
+bool strcmp_suffix(char *s, char *suffix);
+
+/*
+ * Replace all occurrences of char c with d.
+ */
+void strreplace(char *s, char c, char d);
 
 #endif

@@ -127,15 +127,30 @@ void strip_trailchar(char *s, int c)
 		*s = '\0';
 }
 
-void freep(void **ptr)
+bool strcmp_suffix(char *s, char *suffix)
 {
-	if (*ptr) {
-		free(*ptr);
-		*ptr = NULL;
+	int i, j, n, m;
+
+	n = strlen(s);
+	m = strlen(suffix);
+	
+	if (m > n)
+		return false;
+	i = n-m;
+	j = 0;
+	for (; i < n && j < m; ++i, ++j) {
+		if (s[i] != suffix[j])
+			return false;
 	}
+	return j == m;
 }
 
-void freecp(char **ptr)
+void strreplace(char *s, char c, char d)
 {
-	return freep((void **)ptr);
+	int n = strlen(s);
+
+	for (int i = 0; i < n; ++i) {
+		if (s[i] == c)
+			s[i] = d;
+	}
 }
