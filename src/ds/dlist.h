@@ -76,6 +76,16 @@ void *dlist_get_address(dlist_t *d, int i);
  * Copy elem to the element at index i.
  */
 void dlist_set(dlist_t *d, int i, void *elem);
+/*
+ * Remove all the elements in a list. Resets its length to 0.
+ * @free_elem: function to free any existing elements before they get cleared. Pass
+ *	NULL if elements don't need to be freed.
+ */
+void dlist_clear(dlist_t *d, dlist_elem_fn free_elem);
+/*
+ * Append an element to the end of the list. If elem is NULL then
+ * still increases the size of the list.
+ */
 void dlist_append(dlist_t *d, void *elem);
 /*
  * Append a new element only providing a function to initialise	it.
@@ -139,5 +149,22 @@ void dlist_copy_new(dlist_t *d, dlist_t *out_d);
  * @free_elem: see dlist_copy()
  */
 void dlist_copy_array(dlist_t *d, void *elts, int nelts, dlist_elem_fn free_elem);
+
+/*
+ * Resize the number of elements in a list (its length) to new_len.
+ * If new_len is < the current length of the list then elements are lost.
+ */
+void dlist_resize_len(dlist_t *l, int new_len);
+/*
+ * Same as dlist_resize_len() but initialise new elements with the init_elem function
+ * as they are added.
+ * @data: data pased to init_elem function as second parameter
+ */
+void dlist_resize_len_init_data(dlist_t *l, int new_len, dlist_elem_data_fn init_elem, void *data);
+
+/*
+ * Fill the allocated memory area of a list with a constant byte c. 
+ */
+void dlist_memset(dlist_t *l, unsigned char c);
 
 #endif

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2021 Petar Turukalo
  */
+#include <strings.h>
 #include "dlist.h"
 // TODO some copy functions in here can be improved with a single call to memcpy
 
@@ -11,6 +12,8 @@
  * then some functions here may not work as expected.
  */
 #define MAX_ELTSZ 1024
+/* Memory area shared by functions so that each doesn't have to allocate its own. */
+static char elembuf[MAX_ELTSZ];
 
 /*
  * Get the byte address of element at index i.
@@ -110,8 +113,10 @@ void dlist_set(dlist_t *d, int i, void *elem)
 
 static void append(dlist_t *d, void *elem)
 {
-	char *end = byte_address(d, d->len);
-	memcpy(end, elem, d->eltsz);
+	if (elem) {
+		char *end = byte_address(d, d->len);
+		memcpy(end, elem, d->eltsz);
+	}
 	++d->len;
 }
 
@@ -240,12 +245,7 @@ void dlist_try_shrink(dlist_t *d)
 		resize(d, new_cap);
 }
 
-/*
- * Remove all the elements in a list. Resets its length to 0.
- * @free_elem: function to free any existing elements before they get cleared. Pass
- *	NULL if elements don't need to be freed.
- */
-static void clear(dlist_t *d, dlist_elem_fn free_elem)
+void dlist_clear(dlist_t *d, dlist_elem_fn free_elem)
 {
 	dlist_free_elements(d, free_elem);
 	d->len = 0;
@@ -258,11 +258,30 @@ void dlist_append(dlist_t *d, void *elem)
 	append(d, elem);
 }
 
+/*
+ * Safely zero the first eltsz bytes of the shared elembuf without overruning it. 
+ */
+static void bzero_elembuf(size_t eltsz)
+{
+	if (eltsz > sizeof(elembuf))
+		eltsz = sizeof(elembuf);
+	bzero(elembuf, eltsz);
+}
+
 void dlist_append_init(dlist_t *d, dlist_elem_fn init_elem)
 {
-	static char elembuf[MAX_ELTSZ];
-	bzero(elembuf, d->eltsz);
+	bzero_elembuf(d->eltsz);
 	init_elem(elembuf);
+	dlist_append(d, elembuf);
+}
+
+/*
+ * Same as dlist_append_init() but the function also takes data as second param.
+ */
+static void dlist_append_init_data(dlist_t *d, dlist_elem_data_fn init_elem, void *data)
+{
+	bzero_elembuf(d->eltsz);
+	init_elem(elembuf, data);
 	dlist_append(d, elembuf);
 }
 
@@ -360,7 +379,7 @@ void dlist_cat(dlist_t *dest, dlist_t *src)
 
 void dlist_copy(dlist_t *dest, dlist_t *src, dlist_elem_fn free_elem)
 {
-	clear(dest, free_elem);
+	dlist_clear(dest, free_elem);
 	dlist_cat(dest, src);
 }
 
@@ -372,6 +391,38 @@ void dlist_copy_new(dlist_t *d, dlist_t *out_d)
 
 void dlist_copy_array(dlist_t *d, void *elts, int nelts, dlist_elem_fn free_elem)
 {
-	clear(d, free_elem);
+	dlist_clear(d, free_elem);
 	cat_array(d, elts, nelts);
+}
+
+/*
+ * Shrink the length of a list to meet a new length.
+ */
+static void dlist_shrink_len(dlist_t *l, int new_len)
+{
+	while (l->len > new_len)
+		dlist_pop(l, NULL);
+}
+
+void dlist_resize_len(dlist_t *l, int new_len)
+{
+	if (new_len >= 0) {
+		while (l->len < new_len)
+			dlist_append(l, NULL);
+		dlist_shrink_len(l, new_len);
+	}
+}
+
+void dlist_resize_len_init_data(dlist_t *l, int new_len, dlist_elem_data_fn init_elem, void *data)
+{
+	if (new_len >= 0) {
+		while (l->len < new_len)
+			dlist_append_init_data(l, init_elem, data);
+		dlist_shrink_len(l, new_len);
+	}
+}
+
+void dlist_memset(dlist_t *l, unsigned char c)
+{
+	 memset(l->array, c, l->len);
 }
