@@ -44,4 +44,11 @@ void str_insert(str_t *s, char c, int i);
  */
 void str_copy(str_t *s, char *t);
 
+/*
+ * Concatenate a substring in t to s.
+ * @start: index start of the substring (inclusive)
+ * @end: index end of the substring (inclusive)
+ */
+void str_cat_substr(str_t *s, char *t, int start, int end);
+
 #endif

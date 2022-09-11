@@ -36,3 +36,9 @@ void str_copy(str_t *s, char *t)
 {
 	dlist_copy_array(s, t, strlen(t), NULL);
 }
+
+void str_cat_substr(str_t *s, char *t, int start, int end)
+{
+	for (int i = start; i <= end; ++i)
+		str_append(s, t[i]);
+}
