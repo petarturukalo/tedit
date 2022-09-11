@@ -26,7 +26,7 @@ the set of supported types can be easily extended by adding new syntax/regex rul
   
 A limitation of this syntax highlighting (which I'll get around to fixing eventually) is that 
 a substring must be entirely in view for it to be matched and coloured, e.g. if you have a string with 
-opening quote in view, and closing quote right and out of view, the part of it that can be seen won't 
+opening quote in view and closing quote right and out of view, the part of it that can be seen won't 
 be coloured.
 
 ## Commands
