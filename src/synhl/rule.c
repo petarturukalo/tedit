@@ -10,8 +10,9 @@
 
 // Unsigned and long integer suffixes.
 #define INT_SUF_PAT "([uU][lL]{0,2}|[lL]{0,2}[uU]?)"
+#define HEX_PAT "[0-9A-Fa-f]"
 // Decimal, binary, octal, and hex integers.
-#define INT_PAT "(0|[1-9][0-9]*|0[bB][01]+|0[0-7]+|0[xX][0-9A-Fa-f]+)" INT_SUF_PAT
+#define INT_PAT "(0|[1-9][0-9]*|0[bB][01]+|0[0-7]+|0[xX]" HEX_PAT "+)" INT_SUF_PAT
 #define FLT_PAT "([0-9]+\\.[0-9]+|[0-9]+\\.[0-9]*|[0-9]*\\.[0-9]+)[fF]?"
 #define BOOL_PAT "(true|false)"
 
@@ -27,8 +28,8 @@ static syntax_rule_t c_syntax_rules[] = {
 	{ "singleline comment", COLOUR_BLUE, REG_NEWLINE, "//.*$" },
 	{ "multiline comment", COLOUR_BLUE, 0, "/\\*(\\*[^/]|[^\\*]/|[^\\*/])*\\*/" },
 	{ "string", COLOUR_RED, REG_NEWLINE, "\"(\\\\.|[^\"])*\"" },
-	{ "char", COLOUR_RED, 0, "'[[:print:]]'" },
-	{ "number", COLOUR_RED, 0, "\\b(" INT_PAT "|" FLT_PAT "|" BOOL_PAT ")\\b" },
+	{ "char", COLOUR_RED, 0, "'([^'?\\]|\\\\([abfnrtv\\'?0]|[0-3]?[0-7]{0,2}|x" HEX_PAT "{1,2}))'" },
+	{ "number", COLOUR_RED, 0, "\\b(" INT_PAT "|" FLT_PAT "|" BOOL_PAT "|NULL)\\b" },
 	{ 0 }
 };
 
