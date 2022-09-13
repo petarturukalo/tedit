@@ -7,11 +7,6 @@
 #include "display.h"
 #include "log.h"
 
-// Refresh rates in micro seconds.
-static const int REFRESH_RATE_60_HZ_USEC = 16667;
-static const int REFRESH_RATE_120_HZ_USEC = 8333;
-#define REFRESH_RATE_USE_USEC REFRESH_RATE_60_HZ_USEC  // Refresh rate that gets used.
-
 // Start and end range (both endpoints inclusive) for
 // ASCII characters that can be safely printed.
 static const int ASCII_PRINT_START_INCL = 32;
@@ -119,9 +114,6 @@ static void display_syntax_highlighting(clrmap_t *c, fbuf_t *f, WINDOW *w)
 	}
 }
 
-/*
- * display_text_editor - Display the text editor to the curses standard screen
- */
 void display_text_editor(tedata_t *t)
 {
 	bufs_t *b = &t->bufs;
@@ -137,17 +129,4 @@ void display_text_editor(tedata_t *t)
 	// Active buffer might be the echo line buffer and only want to display one cursor.
 	display_fbuf_cursor(b->active_buf, w);
 	wrefresh(w);
-
 }
-
-void display_start(tedata_t *t)
-{
-	for (;;) {
-		sem_wait(&t->sem);
-		display_text_editor(t);
-		sem_post(&t->sem);
-
-		usleep(REFRESH_RATE_USE_USEC);
-	}
-}
-

@@ -8,13 +8,48 @@
 #include "tedata.h"
 #include "sig.h"
 #include "display.h"
-#include "input.h"
-#include "tab.h"
-#include "fbuf/fbuf.h"
-#include "fbuf/fbio.h"
+#include "getch.h"
+#include "fbuf/fbinp.h"
+#include "fbuf/elinp.h"
 #include "log.h"
 
 static tedata_t t = { 0 };  // Global text editor data.
+
+/*
+ * Start the user input main loop. Each loop a key is read from the user
+ * and that key handled by having it affect the current file buffer.
+ */
+static void input_start(tedata_t *t)
+{
+	int c;
+	fbuf_t *f;
+
+	for (;;) {
+		c = mygetch();
+
+		sem_wait(&t->sem);
+
+		f = t->bufs.active_buf;
+		if (f == t->bufs.active_fbuf)
+			fbinp_handle_char(&t->bufs, c);
+		else 
+			elinp_handle_char(&t->bufs, c, &t->cmds, t->win);
+		view_sync_cursor(&f->view, &f->cursor, &f->lines);
+
+		sem_post(&t->sem);
+	}
+}
+
+static void display_start(tedata_t *t)
+{
+	for (;;) {
+		sem_wait(&t->sem);
+		display_text_editor(t);
+		sem_post(&t->sem);
+
+		usleep(REFRESH_RATE_USE_USEC);
+	}
+}
 
 /*
  * cleanup - Free the global text editor data.

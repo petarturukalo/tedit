@@ -11,6 +11,14 @@
 #include "tedata.h"
 #include "fbuf/fbaux.h"
 
-void display_start(tedata_t *t);
+// Refresh rates in micro seconds.
+#define REFRESH_RATE_60_HZ_USEC 16667
+#define REFRESH_RATE_120_HZ_USEC 8333
+#define REFRESH_RATE_USE_USEC REFRESH_RATE_60_HZ_USEC  // Refresh rate that gets used.
+
+/*
+ * Display the text editor to the curses standard screen.
+ */
+void display_text_editor(tedata_t *t);
 
 #endif
