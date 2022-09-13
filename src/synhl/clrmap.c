@@ -105,14 +105,22 @@ struct paint_data {
 };
 
 /*
+ * Get whether the current cursor position tracking the string is within the view vertically.
+ * If true it could still be out of view horizontally.
+ */
+static bool spos_in_vertical_view(struct paint_data *p)
+{
+	int row = p->spos.row;
+	return row >= p->extra_lines_above && row < p->extra_lines_above+view_height(p->v);
+}
+
+/*
  * Get whether the current cursor position tracking the string is in view and
  * over the colour map. 
  */
 static bool spos_in_view(struct paint_data *p)
 {
-	int row = p->spos.row;
-	return (row >= p->extra_lines_above && row < p->extra_lines_above+view_height(p->v)) &&
-	       col_in_view(p->v, p->spos.col);
+	return spos_in_vertical_view(p) && col_in_view(p->v, p->spos.col);
 }
 
 /*
@@ -136,7 +144,7 @@ static void paint(struct paint_data *p, clrpair_t clrpair, char c)
 		// colour map cursor onto the next line.
 		next_row(&p->cpos);
 		p->nconsec_cols_in_view = 0;
-	} else if (p->spos.col < p->v->lines_first_col && c == '\n')
+	} else if (spos_in_vertical_view(p) && p->spos.col < p->v->lines_first_col && c == '\n')
 		// Found a newline left of the view: force colour map cursor onto next line.
 		next_row(&p->cpos);
 	next_cell(&p->spos, c);
