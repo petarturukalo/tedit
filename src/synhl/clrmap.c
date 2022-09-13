@@ -124,8 +124,8 @@ static bool spos_in_view(struct paint_data *p)
 }
 
 /*
- * Set the colour at the colour map cursor position if the cursor is in view. Update
- * all cursors to their next cell position.
+ * Set the colour at the colour map cursor position if the string cursor is in view. 
+ * Update all cursors to their next cell position.
  */
 static void paint(struct paint_data *p, clrpair_t clrpair, char c)
 {
