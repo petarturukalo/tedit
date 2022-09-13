@@ -98,4 +98,9 @@ int view_cursor_display_row(view_t *v, cursor_t *c);
  */
 int view_cursor_display_col(view_t *v, cursor_t *c);
 
+/*
+ * Get whether an column index is horizontally within the bounds of a view.
+ */
+bool col_in_view(view_t *v, int col);
+
 #endif

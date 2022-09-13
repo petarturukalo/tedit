@@ -149,3 +149,14 @@ void lines_fork(lines_t *src, lines_t *dest)
 	lines_alloc(dest);
 	dlist_for_each_data(src, (dlist_elem_data_fn)lines_append_forked_line, (void *)dest);
 }
+
+int lines_add_row(lines_t *ls, int row, off_t off)
+{
+	int new_row = row+off;
+
+	if (new_row < 0)
+		new_row = 0;
+	else if (new_row >= ls->len)
+		new_row = ls->len-1;
+	return new_row;
+}

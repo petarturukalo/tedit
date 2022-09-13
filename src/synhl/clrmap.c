@@ -8,6 +8,15 @@
 #include "colour.h"
 #include "../log.h"
 
+/*
+ * Number of extra lines above the view to include when syntax highlighting so that 
+ * a syntax element such as a multiline comment can be coloured in case its start is
+ * above the view, or its end is below the view.
+ *
+ * If a very long (in height) multiline comment still isn't being coloured then increase this.
+ */
+static const int EXTRA_LINES = 63;
+
 void clrmap_init(clrmap_t *c, WINDOW *w)
 {
 	matrix_init(&c->clrmap, getmaxy(w), getmaxx(w), sizeof(clrpair_t));
@@ -15,36 +24,24 @@ void clrmap_init(clrmap_t *c, WINDOW *w)
 }
 
 /*
- * Take a snapshot of the current lines in a file buffer that are in view, storing
- * a merged copy of the lines into a single flattened string. Lines in the flat string
+ * Take a snapshot of the current lines in a file buffer centered around the file buffer's view. 
+ * A merged copy of the lines is stored into a single flattened string. Lines in the flat string
  * are delimited by a newline.
  *
  * @s: string to store flattened lines in
+ * @extra_lines: number of extra lines above the view to include in the snapshot. And the same for
+ *	below the view.
  */
-static void take_flat_lines_snapshot(fbuf_t *f, str_t *s)
+static void take_flat_lines_snapshot(fbuf_t *f, str_t *s, int extra_lines)
 {
-	int top_row = f->view.lines_top_row;
-	int last_col, first_col = f->view.lines_first_col;
-	int bot_row = view_lines_bot_row(&f->view, &f->lines);
+	lines_t *ls = &f->lines;
+	int top_row = lines_add_row(ls, f->view.lines_top_row, -extra_lines);
+	int bot_row = lines_add_row(ls, view_lines_bot_row(&f->view, ls), extra_lines);
 	line_t *l;
 
 	for (int i = top_row; i <= bot_row; ++i) {
 		l = dlist_get_address(&f->lines, i);
-		last_col = view_line_last_col(&f->view, l);
-		if (last_col < first_col)
-			// The end of the line is left of the start of the view. Need to
-			// add a newline so that a next line is moved to when applying regex
-			// matches to the colour map.
-			str_append(s, '\n');
-		else  {
-			str_cat_substr(s, l->array, first_col, last_col);
-			// If the cut off point of the line didn't have a newline then tag one on
-			// so that clrmap_paint() knows to move to a next line. Note that this newline
-			// will be out of view: because the colour map dimensions are similar to the view,
-			// the call to matrix_set() on this newline character will fail and be skipped.
-			if (s->array[s->len-1] != '\n') 
-				str_append(s, '\n');
-		}
+		dlist_cat(s, l);
 	}
 	str_append(s, '\0');
 }
@@ -69,21 +66,80 @@ static int regmatch_data_cmp(regmatch_data_t *r1, regmatch_data_t *r2)
 }
 
 /*
- * Update a row and column position to the next cell in a colour map.
- * @row: out-param row to update
- * @col: out-param column to update
- * @c: current char in flat lines snapshot
+ * Update a cursor's position to the start of the next line/row.
  */
-static void clrmap_next_cell(int *row, int *col, char c)
+static void next_row(cursor_t *c)
 {
-	if (c == '\n') {
-		// Move to start of next line.
-		(*row)++;
-		*col = 0;
-	} else {
-		// Move to next column.
-		(*col)++;
-	}
+	++c->row;
+	c->col = 0;
+}
+
+/*
+ * Update a cursor position to a next cell position dependent on the
+ * current character that it is over.
+ */
+static void next_cell(cursor_t *crs, char c)
+{
+	if (c == '\n') 
+		next_row(crs);
+	else 
+		++crs->col;
+}
+
+/* Bookkeeping data used by clrmap_paint(). */
+struct paint_data {
+	// The cursor positions are kept separate because the set of lines that the colour 
+	// map covers will be a subset of the lines in the flat lines snapshot string, since
+	// the snapshot includes extra lines.
+	cursor_t cpos;  // Current cell position in the colour map.
+	cursor_t spos;  // Current cell position in the lines snapshot string if it weren't flat.
+	matrix_t *clrmap;
+	view_t *v;
+	// The actual amount of extra lines above the view. This can be less than the extra lines passed
+	// to take_flat_lines_snapshot() when the top of the view is close to the top of the lines as
+	// there aren't enough actual extra lines to include.
+	int extra_lines_above;  
+	// Current number of consecutive in-view columns found. Gets reset to 0 whenever an
+	// out-of-view column is found.
+	int nconsec_cols_in_view;  
+};
+
+/*
+ * Get whether the current cursor position tracking the string is in view and
+ * over the colour map. 
+ */
+static bool spos_in_view(struct paint_data *p)
+{
+	int row = p->spos.row;
+	return (row >= p->extra_lines_above && row < p->extra_lines_above+view_height(p->v)) &&
+	       col_in_view(p->v, p->spos.col);
+}
+
+/*
+ * Set the colour at the colour map cursor position if the cursor is in view. Update
+ * all cursors to their next cell position.
+ */
+static void paint(struct paint_data *p, clrpair_t clrpair, char c)
+{
+	if (spos_in_view(p)) {
+		if (clrpair != COLOUR_DEFAULT)
+			matrix_set(p->clrmap, p->cpos.row, p->cpos.col, &clrpair);
+		next_cell(&p->cpos, c);
+		if (c == '\n')
+			// Moved to a next line because found a newline character, so
+			// make sure don't move to a next next line when get out of view.
+			p->nconsec_cols_in_view = 0;
+		else
+			++p->nconsec_cols_in_view;
+	} else if (p->nconsec_cols_in_view) {  
+		// If reached here then got out of view but hadn't found a newline: force
+		// colour map cursor onto the next line.
+		next_row(&p->cpos);
+		p->nconsec_cols_in_view = 0;
+	} else if (p->spos.col < p->v->lines_first_col && c == '\n')
+		// Found a newline left of the view: force colour map cursor onto next line.
+		next_row(&p->cpos);
+	next_cell(&p->spos, c);
 }
 
 /*
@@ -91,13 +147,20 @@ static void clrmap_next_cell(int *row, int *col, char c)
  * @flat_lines_snapshot: string the matches substrings are in
  * @matches: list of regmatch_data_t
  * @v: view used to take flat lines snapshot
+ * @extra_lines: see take_flat_lines_snapshot()
  */
-static void clrmap_paint(matrix_t *clrmap, char *flat_lines_snapshot, dlist_t *matches, view_t *v)
+static void clrmap_paint(matrix_t *clrmap, char *flat_lines_snapshot, dlist_t *matches, view_t *v,
+			 int extra_lines)
 {
 	regmatch_data_t rdummy, *r, *rnext;
-	// Current row, column cell position in the colour map.
-	int row = view_display_top_row(v);
-	int col = view_display_first_col(v) ;
+	struct paint_data p = {
+		.cpos = { view_display_top_row(v), view_display_first_col(v) },
+		.spos = { 0, 0 },
+		.clrmap = clrmap,
+		.v = v,
+		.extra_lines_above = v->lines_top_row < extra_lines ? v->lines_top_row : extra_lines,
+		.nconsec_cols_in_view = 0
+	};
 	int i = 0;  // Current index in the string.
 	int j = 0;  // Current index in matches.
 	int n = strlen(flat_lines_snapshot);
@@ -121,12 +184,11 @@ static void clrmap_paint(matrix_t *clrmap, char *flat_lines_snapshot, dlist_t *m
 		r = rnext;
 		// Move past gap before substring.
 		for (; i < n && i < r->start; ++i)
-			clrmap_next_cell(&row, &col, flat_lines_snapshot[i]);
+			paint(&p, COLOUR_DEFAULT, flat_lines_snapshot[i]);
 		// Fill substring with its colour.
-		for (; i < n && i < r->end; ++i)  {
-			matrix_set(clrmap, row, col, &r->clrpair);
-			clrmap_next_cell(&row, &col, flat_lines_snapshot[i]);
-		}
+		for (; i < n && i < r->end; ++i)  
+			paint(&p, r->clrpair, flat_lines_snapshot[i]);
+		
 	}
 }
 
@@ -142,11 +204,11 @@ bool clrmap_syntax_highlight(clrmap_t *c, fbuf_t *f)
 		str_alloc(&flat_lines_snapshot, DLIST_MIN_CAP);
 
 		clrmap_resz(c);
-		take_flat_lines_snapshot(f, &flat_lines_snapshot);
+		take_flat_lines_snapshot(f, &flat_lines_snapshot, EXTRA_LINES);
 		// Get rid of pseudo spaces so don't have to worry about handling them in regex.
 		str_replace_pspaces(&flat_lines_snapshot);
 		exec_syntax_rules(flat_lines_snapshot.array, rules, &matches);
-		clrmap_paint(&c->clrmap, flat_lines_snapshot.array, &matches, &f->view);
+		clrmap_paint(&c->clrmap, flat_lines_snapshot.array, &matches, &f->view, EXTRA_LINES);
 
 		dlist_free(&matches, NULL);
 		dlist_free(&flat_lines_snapshot, NULL);

@@ -52,4 +52,10 @@ void lines_delete(lines_t *l, int nr);
  */
 void lines_fork(lines_t *src, lines_t *dest);
 
+/*
+ * Add an offset to a row index to get a new row index. The new row index is aligned within
+ * the bounds of the lines if it were to become out of bounds.
+ */
+int lines_add_row(lines_t *ls, int row, off_t off);
+
 #endif

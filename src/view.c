@@ -243,3 +243,7 @@ int view_cursor_display_col(view_t *v, cursor_t *c)
 	return view_display_first_col(v)+(c->col-v->lines_first_col);
 }
 
+bool col_in_view(view_t *v, int col)
+{
+	return col >= v->lines_first_col && col <= view_lines_last_col(v);
+}
