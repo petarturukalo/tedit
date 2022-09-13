@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "test-chrp.h"
 
 static void assert_strnchr(char *s, int c, int expected_offset)
