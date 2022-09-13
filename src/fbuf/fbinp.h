@@ -10,7 +10,6 @@
 
 #include "bufs.h"
 #include "fbuf.h"
-#include "fbaux.h"
 #include "../move.h"
 #include "../linsert.h"
 #include "../tedata.h"

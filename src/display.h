@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <curses.h>
 #include "tedata.h"
-#include "fbuf/fbaux.h"
 
 // Refresh rates in micro seconds.
 #define REFRESH_RATE_60_HZ_USEC 16667

@@ -72,4 +72,23 @@ void fbuf_free(fbuf_t *f);
 void fbufs_free(fbufs_t *fs);
 bool fbufs_delete_fbuf(fbufs_t *fs, fbuf_t *f);
 
+/*
+ * fbuf_prev_line - Get the line before/above the line the file buffer's cursor is currently on
+ *
+ * Return NULL for no such line.
+ */
+line_t *fbuf_prev_line(fbuf_t *f);
+
+/*
+ * fbuf_cur_line - Get the current line the file buffer's cursor is on.
+ */
+line_t *fbuf_cur_line(fbuf_t *f);
+
+/*
+ * fbuf_next_line - Get the line after/below the line the file buffer's cursor is currently on
+ *
+ * Return NULL for no such line.
+ */
+line_t *fbuf_next_line(fbuf_t *f);
+
 #endif

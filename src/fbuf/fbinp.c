@@ -10,7 +10,7 @@
  */
 static void fbinp_left(fbuf_t *f)
 {
-	mv_left(&f->cursor, fbaux_cur_line(f));
+	mv_left(&f->cursor, fbuf_cur_line(f));
 }
 
 /*
@@ -34,7 +34,7 @@ static void fbinp_up(fbuf_t *f)
  */
 static void fbinp_right(fbuf_t *f)
 {
-	mv_right(&f->cursor, fbaux_cur_line(f));
+	mv_right(&f->cursor, fbuf_cur_line(f));
 }
 
 /*
@@ -50,7 +50,7 @@ static void fbinp_home(fbuf_t *f)
  */
 static void fbinp_end(fbuf_t *f)
 {
-	mv_end(&f->cursor, fbaux_cur_line(f));
+	mv_end(&f->cursor, fbuf_cur_line(f));
 }
 
 /*
@@ -76,7 +76,7 @@ static void fbinp_delete(fbuf_t *f)
 {
 	f->unsaved_edit = true;
 
-	if (lins_delete(fbaux_cur_line(f), fbaux_next_line(f), &f->cursor, f->tabsz))
+	if (lins_delete(fbuf_cur_line(f), fbuf_next_line(f), &f->cursor, f->tabsz))
 		// Delete next line since merged with current (cursor stay still so still +1 for next).
 		lines_delete(&f->lines, f->cursor.row+1);  
 }
@@ -88,7 +88,7 @@ static void fbinp_backspace(fbuf_t *f)
 {
 	f->unsaved_edit = true;
 
-	if (lins_backspace(fbaux_cur_line(f), fbaux_prev_line(f), &f->cursor, f->tabsz))
+	if (lins_backspace(fbuf_cur_line(f), fbuf_prev_line(f), &f->cursor, f->tabsz))
 		// Delete current line since merged with previous (cursor moved up so +1 for "current").
 		lines_delete(&f->lines, f->cursor.row+1);  
 }
@@ -100,7 +100,7 @@ static void fbinp_backspace(fbuf_t *f)
 static void fbinp_enter(fbuf_t *f)
 {
 	line_t nl;
-	lins_split(fbaux_cur_line(f), &f->cursor, f->tabsz, &nl);
+	lins_split(fbuf_cur_line(f), &f->cursor, f->tabsz, &nl);
 	// Cursor got moved down by one so inserting on current line will insert the new line
 	// after the line entered from.
 	dlist_insert(&f->lines, f->cursor.row, &nl);
@@ -142,7 +142,7 @@ static void fbinp_handle_seq_char(bufs_t *b, int c)
  */
 static void fbinp_insert_char(fbuf_t *f, char c)
 {
-	lins_insert_char(fbaux_cur_line(f), &f->cursor, c, f->tabsz);
+	lins_insert_char(fbuf_cur_line(f), &f->cursor, c, f->tabsz);
 }
 
 /*

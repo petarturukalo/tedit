@@ -15,7 +15,6 @@
 #include "../ds/str.h"
 #include "../cursor.h"
 #include "fbuf.h"
-#include "fbaux.h"
 
 typedef fbuf_t elbuf_t;
 
