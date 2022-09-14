@@ -31,8 +31,8 @@ typedef struct file_buffer fbuf_t;
 typedef dlist_t fbufs_t;
 
 /*
- * fbuf_reset - Reset all of a file buffer's struct members to default values except for
- *	its view (and leaves tab size unchanged)
+ * Reset all of a file buffer's struct members to default values except for
+ * its view (and leaves tab size unchanged)
  */
 void fbuf_reset_most(fbuf_t *f);
 /*
