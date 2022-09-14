@@ -222,6 +222,7 @@ bool lins_backspace(line_t *cur, line_t *prev, cursor_t *crs, int tabsz)
 void lins_split(line_t *l, cursor_t *c, int tabsz, line_t *newline)
 {
 	line_split(l, c->col, tabsz, newline);
+	str_align_next_tab(newline, 0, tabsz);
 
 	// Put cursor at start of next line, avoiding row entry function since first column
 	// is always valid, even if it's a tab as of it being the start of a tab and not a continuation
