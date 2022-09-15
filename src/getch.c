@@ -51,7 +51,7 @@ static int mygetch_fallback(void)
 
 	// Nonblockingly get characters to fallback handle escape
 	// sequenced characters that curses doesn't handle properly.
-	while (i < n && (d = getch()) != -1) 
+	while (i < n && (d = getch()) != ERR) 
 		s[i++] = d;
 	if (i == ESC_SEQ_MAX_LEN) {
 		if (strncmp(s, XTERM_HOME, i) == 0)

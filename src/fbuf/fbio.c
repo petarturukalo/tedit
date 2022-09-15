@@ -15,13 +15,13 @@ void fbuf_new(fbuf_t *f, WINDOW *w, int tabsz, int id)
 
 void fbuf_fork(fbuf_t *dest, fbuf_t *src, WINDOW *w, int id)
 {
+	fbuf_reset_most(dest);
 	dest->id = id;
 	dest->cursor = src->cursor;
 	dest->filepath = src->filepath;
 	lines_fork(&src->lines, &dest->lines);
 	dest->tabsz = src->tabsz;
 	dest->view = src->view;
-	dest->unsaved_edit = false;
 }
 
 /*

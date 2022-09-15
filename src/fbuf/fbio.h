@@ -33,7 +33,9 @@
 void fbuf_new(fbuf_t *f, WINDOW *w, int tabsz, int id);
 
 /*
- * fbuf_fork - Copy an entire file buffer to a new file buffer
+ * Copy an entire file buffer to a new file buffer. The new file buffer
+ * remains unlinked, not inheriting the source's link.
+ *
  * @dest: out-param destination file buffer to copy to
  * @src: source file buffer to copy from
  */

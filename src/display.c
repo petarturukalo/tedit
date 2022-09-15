@@ -119,8 +119,6 @@ void display_text_editor(tedata_t *t)
 	bufs_t *b = &t->bufs;
 	WINDOW *w = t->win;
 
-	// TODO tty display gets fixed when using clear instead of erase,
-	// but it introduces flicker which is why it was avoided
 	werase(w);
 	// Show current file buffer being edited along with echo line buffer where user enters commands.
 	display_fbuf_lines(b->active_fbuf, w);

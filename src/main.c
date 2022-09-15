@@ -47,6 +47,8 @@ static void display_start(tedata_t *t)
 		display_text_editor(t);
 		sem_post(&t->sem);
 
+		// To improve performance (lessen CPU usage) use a lower refresh rate.
+		// The tradeoff here is that the display won't be as smooth.
 		usleep(REFRESH_RATE_USE_USEC);
 	}
 }
