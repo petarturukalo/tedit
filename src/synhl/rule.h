@@ -76,7 +76,7 @@ void free_syntax_rules(void);
 syntax_rule_t *find_syntax_rules(char *file);
 
 /*
- * Process the text as per the syntax rules for a list of match_data. 
+ * Process the text as per the syntax rules for a list of regmatch_data_t. 
  */
 void exec_syntax_rules(char *text, syntax_rule_t *rules, dlist_t *out_matches);
 
