@@ -27,7 +27,7 @@ the set of supported types can be easily extended by adding new syntax/regex rul
 ## Commands
 
 Enter a command in the echo line buffer with format `cmd [args]` where `cmd` is the name of the command
-and `[args]` are arguments (optionally) used by the command.
+and `[args]` are arguments optionally used by the command.
 
 | Short name | Long name | Description |
 | --- | --- | --- |
