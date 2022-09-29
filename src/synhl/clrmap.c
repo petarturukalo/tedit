@@ -26,7 +26,12 @@ void clrmap_init(clrmap_t *c, WINDOW *w)
 /*
  * Take a snapshot of the current lines in a file buffer centered around the file buffer's view. 
  * A merged copy of the lines is stored into a single flattened string. Lines in the flat string
- * are delimited by a newline.
+ * are delimited by a newline character.
+ *
+ * Although there is a concept of "extra lines" above and below the view, there is no concept of extra
+ * columns to either side of the view becuase a typical source code file won't have long lines (so including the 
+ * full line won't affect performance) but there will be syntax elements that aren't fully in view horizontally 
+ * that need to be coloured. 
  *
  * @s: string to store flattened lines in
  * @extra_lines: number of extra lines above the view to include in the snapshot. And the same for
