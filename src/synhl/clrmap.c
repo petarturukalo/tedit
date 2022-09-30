@@ -201,7 +201,6 @@ static void clrmap_paint(matrix_t *clrmap, char *flat_lines_snapshot, dlist_t *m
 		// Fill substring with its colour.
 		for (; i < n && i < r->end; ++i)  
 			paint(&p, r->clrpair, flat_lines_snapshot[i]);
-		
 	}
 }
 
