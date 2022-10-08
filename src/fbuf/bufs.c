@@ -238,13 +238,13 @@ void bufs_reset_cmd_strs(bufs_t *b, char *s, int n)
 {
 	int max_len = sizeof(b->cmd_istr);
 
-	// Set input string.
+	// Set command input string.
 	strncpy(b->cmd_istr, s, max_len);
 	if (n >= max_len)
 		b->cmd_istr[max_len-1] = '\0';
 	else
 		b->cmd_istr[n] = '\0';
-	// Reset output string.
+	// Reset command output string.
 	b->cmd_ostr[0] = '\0';
 }
 
