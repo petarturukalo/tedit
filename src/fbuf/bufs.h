@@ -124,7 +124,7 @@ int bufs_write_other(bufs_t *b, char *fpath, WINDOW *w, int tabsz);
 void bufs_close(bufs_t *b, WINDOW *w);
 
 /*
- * Safely set the input string of the buffer.
+ * Safely set the command input string.
  * @s: string to set input string to
  * @n: length of string
  *
