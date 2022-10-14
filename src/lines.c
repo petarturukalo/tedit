@@ -29,10 +29,10 @@ int lines_from_file_aux(int fd, lines_t *ls, int tabsz)
 	line_t l;
 	static char readbuf[READSZ];
 
-	line_alloc(&l);
-
 	if (flock(fd, LOCK_EX|LOCK_NB) == -1)
 		return -1;
+
+	line_alloc(&l);
 
 	while ((bread = read(fd, readbuf, READSZ)) > 0) {
 		for (i = 0; i < bread;) {
