@@ -140,7 +140,7 @@ static void paint(struct paint_data *p, clrpair_t clrpair, char c)
 		next_cell(&p->cpos, c);
 		if (c == '\n')
 			// Moved to a next line because found a newline character, so
-			// make sure don't move to a next next line when get out of view.
+			// make sure don't move to a next line when get out of view.
 			p->nconsec_cols_in_view = 0;
 		else
 			++p->nconsec_cols_in_view;
