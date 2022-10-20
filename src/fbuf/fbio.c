@@ -54,7 +54,7 @@ bool fbuf_open(fbuf_t *f, char *fpath, WINDOW *w, int tabsz, int id)
 		fbuf_unlink(f);
 		return false;
 	}
-	read_success = lines_from_fd(&f->lines, fd, tabsz);
+	read_success = lines_from_file(fd, &f->lines, tabsz);
 	close(fd);
 
 	if (!read_success) 

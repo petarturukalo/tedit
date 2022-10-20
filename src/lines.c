@@ -20,18 +20,16 @@ void lines_free(lines_t *ls)
 
 static void lines_expand_tab_spaces(lines_t *ls, int tabsz);
 
-/*
- * Read all lines from a file into a list of lines.
- */
-int lines_from_file_aux(int fd, lines_t *ls, int tabsz)
+bool lines_from_file(int fd, lines_t *ls, int tabsz)
 {
 	int i, bread;  // Bytes read.
 	line_t l;
 	static char readbuf[READSZ];
 
 	if (flock(fd, LOCK_EX|LOCK_NB) == -1)
-		return -1;
+		return false;
 
+	lines_alloc(ls);
 	line_alloc(&l);
 
 	while ((bread = read(fd, readbuf, READSZ)) > 0) {
@@ -53,26 +51,16 @@ int lines_from_file_aux(int fd, lines_t *ls, int tabsz)
 	if (bread == 0) {
 		dlist_append(ls, &l);
 		lines_expand_tab_spaces(ls, tabsz);
-		return 0;
+		return true;
 	} 
-	return -1;
+	lines_free(ls);
+	return false;
 }
 
 void lines_alloc_empty(lines_t *ls)
 {
 	lines_alloc(ls);
 	dlist_append_init(ls, (dlist_elem_fn)line_alloc);
-}
-
-bool lines_from_fd(lines_t *ls, int fd, int tabsz)
-{
-	lines_alloc(ls);
-
-	if (lines_from_file_aux(fd, ls, tabsz) != -1) {
-		return true;
-	}
-	lines_free(ls);
-	return false;
 }
 
 static void line_expand_tab_spaces(line_t *l, int *tabsz)

@@ -23,14 +23,14 @@ void lines_free(lines_t *ls);
  */
 void lines_alloc_empty(lines_t *ls);
 /*
- * lines_from_fd - Read a file into lines from a file descriptor
- * @ls: out-param lines to store read file into
+ * Read a file into a list of lines.
  * @fd: file descriptor of opened file
+ * @ls: out-param lines to store read file into
  * @tabsz: see tab.h
  *
  * Return whether could successfully read lines. 
  */
-bool lines_from_fd(lines_t *ls, int fd, int tabsz);
+bool lines_from_file(int fd, lines_t *ls, int tabsz);
 
 
 /*
