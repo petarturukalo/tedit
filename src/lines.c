@@ -20,7 +20,7 @@ void lines_free(lines_t *ls)
 
 static void lines_expand_tab_spaces(lines_t *ls, int tabsz);
 
-bool lines_from_file(int fd, lines_t *ls, int tabsz)
+bool lines_from_file(lines_t *ls, int fd, int tabsz)
 {
 	int i, bread;  // Bytes read.
 	line_t l;
