@@ -29,7 +29,7 @@ void clrmap_init(clrmap_t *c, WINDOW *w)
  * are delimited by a newline character.
  *
  * Although there is a concept of "extra lines" above and below the view, there is no concept of extra
- * columns to either side of the view becuase a typical source code file won't have long lines (so including the 
+ * columns to either side of the view because a typical source code file won't have long lines (so including the 
  * full line won't affect performance) but there will be syntax elements that aren't fully in view horizontally 
  * that need to be coloured. 
  *
