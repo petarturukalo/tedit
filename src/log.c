@@ -24,7 +24,7 @@ static int log_open(const char *dirname)
 {
 	char fpath[128];
 	snprintf(fpath, sizeof(fpath), "%s/%d", dirname, getpid());
-	return open(fpath, O_CREAT|O_WRONLY|O_APPEND, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+	return open(fpath, O_CREAT|O_WRONLY|O_APPEND, 0644);
 }
 
 /*

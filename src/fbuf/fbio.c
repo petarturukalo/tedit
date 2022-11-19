@@ -32,7 +32,7 @@ void fbuf_fork(fbuf_t *dest, fbuf_t *src, WINDOW *w, int id)
  */
 int fbuf_openfd(fbuf_t *f, int flags)
 {
-	return open(f->filepath, flags, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+	return open(f->filepath, flags, 0644);
 }
 
 bool fbuf_open(fbuf_t *f, char *fpath, WINDOW *w, int tabsz, int id)
