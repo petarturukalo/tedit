@@ -73,7 +73,7 @@ void tlog(char *fmt, ...)
 			return;
 		// Create log directory if it doesn't already exist.
 		if (!file_exists(logdir)) {
-			if (mkdir(logdir, 0777) == -1) {
+			if (mkdir(logdir, 0755) == -1) {
 				return;
 			}
 		}
