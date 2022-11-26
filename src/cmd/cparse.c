@@ -7,7 +7,7 @@
 
 /*
  * Split a string of space separated arguments of format "cmdname [args ...]" into two strings
- * "cmdname" and "[args ...]". Removes any leading and trailing whitespace.
+ * "cmdname" and ["args ..."]. Removes any leading and trailing whitespace.
  */
 static void split_args(char *args, char **out_cmdname, char **out_remain_args)
 {
