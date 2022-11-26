@@ -13,7 +13,6 @@
 #include "../ds/stack.h"
 #include "../chrp.h"
 #include "fbuf.h"
-#include "fbio.h"
 #include "elbuf.h"
 
 struct buffers {
