@@ -2,7 +2,7 @@ srcs=$(shell find src -name "*.c" -print)
 objs=$(patsubst src/%.c, build/%.o, $(srcs))
 CC=gcc
 CFLAGS=-c -g
-LFLAGS=-lm -lcurses -lpthread
+LFLAGS=-lm -lncurses -lpthread
 
 tedit: $(objs)
 	$(CC) $^ $(LFLAGS) -o $@
