@@ -20,7 +20,7 @@ clean:
 	find build -name "*.o" -print -delete
 
 install:
-	cp tedit /usr/local/bin
+	cp tedit /usr/bin
 
 uninstall:
-	rm /usr/local/bin/tedit
+	rm /usr/bin/tedit
