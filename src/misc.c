@@ -32,11 +32,6 @@ int array_len(char *a, size_t eltsz)
 	return len;
 }
 
-int ptr_relative_off(char *p, char *q, off_t off)
-{
-	return (q-p)+off;
-}
-
 void freep(void **ptr)
 {
 	if (*ptr) {
@@ -55,4 +50,3 @@ bool file_exists(const char *fpath)
 	struct stat s;
 	return !(stat(fpath, &s) == -1 && errno == ENOENT);
 }
-

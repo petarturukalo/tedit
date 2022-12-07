@@ -21,11 +21,6 @@
 int array_len(char *a, size_t eltsz);
 
 /*
- * For two pointers p and q where p < q, make on offset from q relative to p.
- */
-int ptr_relative_off(char *p, char *q, off_t off);
-
-/*
  * Free pointer and set it to NULL if it's not NULL.
  * @ptr: address of pointer
  */

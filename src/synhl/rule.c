@@ -100,6 +100,14 @@ syntax_rule_t *find_syntax_rules(char *file)
 	return NULL;
 }
 
+/*
+ * For two pointers p and q where p < q, make on offset from q relative to p.
+ */
+static int ptr_relative_off(char *p, char *q, off_t off)
+{
+	return (q-p)+off;
+}
+
 static void exec_syntax_rule(char *text, syntax_rule_t *rule, dlist_t *out_matches)
 {
 	regmatch_t match;
