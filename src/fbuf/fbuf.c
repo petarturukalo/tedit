@@ -101,6 +101,12 @@ void fbuf_new(fbuf_t *f, WINDOW *w, int tabsz, int id)
 	dlist_append_init(&f->lines, (dlist_elem_fn)line_alloc);
 }
 
+bool fbuf_new_piped_stdin(fbuf_t *f, WINDOW *w, int tabsz, int id)
+{
+	fbuf_init_most(f, w, tabsz, id);
+	return lines_from_file(&f->lines, STDIN_FILENO, tabsz);
+}
+
 void fbuf_fork(fbuf_t *dest, fbuf_t *src, WINDOW *w, int id)
 {
 	fbuf_reset_most(dest);

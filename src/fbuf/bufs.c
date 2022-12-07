@@ -4,6 +4,8 @@
  * Copyright (C) 2021 Petar Turukalo
  */
 #include "bufs.h"
+#include "../misc.h"
+#include "../log.h"
 
 static const int FBUF_ID_START = 1;
 
@@ -97,45 +99,92 @@ void bufs_new(bufs_t *b, WINDOW *w, int tabsz)
 }
 
 /*
- * Build a string to indicate to the user a list of files that failed to be opened.
- *
- * @fpath: filepath of file that couldn't be opened
- * @i: index of filepath in list of filepaths (0-indexed)
+ * Open a new, unlinked file buffer with its contents the data piped into 
+ * stdin from the command line. Return whether successful.
  */
-static void build_files_fail_open_str(strncat_data_t *sdata, char *fpath, int i)
-{			
-	if (i == 0) 
-		strncat_cont("couldn't open files ", sdata);
-	else
-		strncat_cont(", ", sdata);
-	strncat_printf_cont(sdata, "'%s' (%s)", fpath, strerror(errno));
+static bool bufs_new_piped_stdin(bufs_t *b, WINDOW *w, int tabsz)
+{
+	fbuf_t f;
+	bool success;
+
+	success = fbuf_new_piped_stdin(&f, w, tabsz, bufs_next_id(b));
+	if (success) 
+		append_fbuf_set_active(b, &f);
+	else 
+		tlog("failed to create file buffer from data piped to stdin");
+	return success;
 }
 
-void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[])
+/*
+ * Try to open a file buffer for each file in fpaths. A list of files that couldn't be opened
+ * is flushed to the echo line buffer.
+ */
+static void bufs_open_files(bufs_t *b, WINDOW *w, char *fpaths[])
 {
 	char **s;
 	strncat_data_t sdata;
 	uint nfiles_fail_open = 0;
 
+	strncat_start(b->cmd_ostr, sizeof(b->cmd_ostr), &sdata);
+
+	for (s = fpaths; *s; ++s) {
+		if (bufs_open(b, *s, w, TABSZ) == -1) {
+			// Build error string.
+			if (nfiles_fail_open++ == 0) 
+				strncat_cont("couldn't open files ", &sdata);
+			else
+				strncat_cont(", ", &sdata);
+			strncat_printf_cont(&sdata, "'%s' (%s)", *s, strerror(errno));
+		}
+	}
+	// Flush error string to echo line buffer.
+	if (b->cmd_ostr[0]) {
+		elbuf_set(&b->elbuf, b->cmd_ostr);
+		b->cmd_ostr[0] = '\0';
+	}
+}
+
+static bool reopen_stdin(void)
+{
+	if (close(STDIN_FILENO) == -1)
+		return false;
+	if (open("/dev/tty", O_RDONLY) == -1)
+		return false;
+	return true;
+}
+
+static bool data_piped_to_stdin(void)
+{
+	// Will also return true if a file is redirected to stdin.
+	return !isatty(STDIN_FILENO) && errno == ENOTTY;
+}
+
+/*
+ * Create a new, unlinked file buffer out of user data piped to stdin, if there is any.
+ */
+static void bufs_handle_piped_stdin(bufs_t *b, WINDOW *w)
+{
+	if (data_piped_to_stdin()) {
+		bufs_new_piped_stdin(b, w, TABSZ);
+		// Need to reopen stdin after data is piped to stdin otherwise curses
+		// glitches out and the program becomes unusable.
+		if (!reopen_stdin())
+			tlog("failed to reopen stdin");
+	}
+}
+
+void bufs_init(bufs_t *b, WINDOW *w, char *fpaths[])
+{
 	dlist_init(&b->fbufs, DLIST_MIN_CAP, sizeof(fbuf_t));
 	b->active_buf = NULL;
 	elbuf_init(&b->elbuf, w);
 	b->nbufs = FBUF_ID_START;
 	b->cmd_istr[0] = '\0';
 	b->cmd_ostr[0] = '\0';
-	strncat_start(b->cmd_ostr, sizeof(b->cmd_ostr), &sdata);
 	stack_init(&b->recent_fbufs, sizeof(int));
 
-	for (s = fpaths; *s; s++) {
-		if (bufs_open(b, *s, w, TABSZ) == -1)  
-			build_files_fail_open_str(&sdata, *s, nfiles_fail_open++);
-	}
-	// Flush list of files that couldn't be opened to the echo line buffer so that it
-	// can be viewed by the user.
-	if (b->cmd_ostr[0]) {
-		elbuf_set(&b->elbuf, b->cmd_ostr);
-		b->cmd_ostr[0] = '\0';
-	}
+	bufs_open_files(b, w, fpaths);
+	bufs_handle_piped_stdin(b, w);
 	// Handles both cases where there are no filepaths given and 
 	// when there are filepaths but none could be opened.
 	if (b->fbufs.len == 0)

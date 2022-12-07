@@ -102,6 +102,11 @@ line_t *fbuf_next_line(fbuf_t *f);
  * with it by call to fbuf_link. Free with fbuf_free.
  */
 void fbuf_new(fbuf_t *f, WINDOW *w, int tabsz, int id);
+/*
+ * Same as fbuf_new() but fill the contents of the buffer with data piped to stdin.
+ * Only call this if stdin isn't a tty.
+ */
+bool fbuf_new_piped_stdin(fbuf_t *f, WINDOW *w, int tabsz, int id);
 
 /*
  * Copy an entire file buffer to a new file buffer. The new file buffer

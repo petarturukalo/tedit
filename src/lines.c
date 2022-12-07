@@ -45,7 +45,6 @@ bool lines_from_file(lines_t *ls, int fd, int tabsz)
 			}
 		}
 	}
-
 	flock(fd, LOCK_UN);
 
 	if (bread == 0) {
