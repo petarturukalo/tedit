@@ -59,12 +59,6 @@ static void clrmap_resz(clrmap_t *c)
 	matrix_resz(&c->clrmap, getmaxy(c->win), getmaxx(c->win));
 }
 
-/*
- * Return 
- * - a negative number if r1 < r2
- * - 0 if r1 == r2
- * - a positive number if r1 > r2
- */
 static int regmatch_data_cmp(regmatch_data_t *r1, regmatch_data_t *r2)
 {
 	return r1->start - r2->start;
