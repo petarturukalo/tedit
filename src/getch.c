@@ -37,20 +37,19 @@ static int mygetch_fallback(void)
 	char s[16];
 	int i, n, c, d;
 	
-	nodelay(stdscr, false);
-
 	i = 0;
 	n = sizeof(s);
 	bzero(s, n);
+
 	// Hang on to int version of char since might not be ASCII and would lose
 	// its actual value by overflow if only used char version stored in buffer.
+	nodelay(stdscr, false);
 	c = getch();  // Block for a character.
 	s[i++] = c;  
 	
-	nodelay(stdscr, true);
-
 	// Nonblockingly get characters to fallback handle escape
 	// sequenced characters that curses doesn't handle properly.
+	nodelay(stdscr, true);
 	while (i < n && (d = getch()) != ERR) 
 		s[i++] = d;
 	if (i == ESC_SEQ_MAX_LEN) {
