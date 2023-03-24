@@ -2,10 +2,10 @@ srcs=$(shell find src -name "*.c" -print)
 objs=$(patsubst src/%.c, build/%.o, $(srcs))
 CC=gcc
 CFLAGS=-c -g
-LDFLAGS=-lm -lncurses -lpthread
+LDLIBS=-lm -lncurses -lpthread
 
 tedit: $(objs)
-	$(CC) $^ $(LDFLAGS) -o $@
+	$(CC) $^ $(LDLIBS) -o $@
 
 # All header files reside in the same directory as its corresponding
 # .c file, but might not exist for some files, so use wildcard since it 
