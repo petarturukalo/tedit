@@ -15,7 +15,7 @@ tedit: $(objs)
 
 
 clean:
-	rm -f tedit
+	rm -fv tedit
 	find src -name '*.[od]' -print -delete
 
 install:
