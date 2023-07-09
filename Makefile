@@ -15,8 +15,8 @@ tedit: $(objs)
 
 
 clean:
-	rm -fv tedit
 	find src -name '*.[od]' -print -delete
+	rm tedit
 
 install:
 	sudo cp -v tedit /usr/bin
