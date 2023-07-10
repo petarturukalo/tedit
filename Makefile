@@ -5,10 +5,10 @@ CC=gcc
 CFLAGS=-c -g
 LDLIBS=-lm -lncurses -lpthread
 
--include $(deps)
-
 tedit: $(objs)
 	$(CC) $^ $(LDLIBS) -o $@
+
+-include $(deps)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -MMD $< -o $@
@@ -17,10 +17,4 @@ tedit: $(objs)
 clean:
 	find src -name '*.[od]' -print -delete
 	rm tedit
-
-install:
-	sudo cp -v tedit /usr/bin
-
-uninstall:
-	sudo rm -v /usr/bin/tedit
 
