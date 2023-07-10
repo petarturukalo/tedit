@@ -1,7 +1,7 @@
 srcs=$(shell find src -name '*.c' -print)
 # Test assert object files.
 objs=$(patsubst %.c, %.o, $(srcs))
-# Objects from text editor for assert object files.
+# Objects from text editor.
 TEOBJS=../src/ds/dlist.o ../src/math.o ../src/tab.o \
 	../src/ds/str.o ../src/chrp.o
 CC=gcc
